@@ -7,16 +7,6 @@ import { banners } from "../constants/index";
 import { useState, useEffect } from "react";
 
 const allProject = () => {
-  const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % banners.length);
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, []);
-
   return (
     <div className="flex flex-col items-center space-y-6 px-[5%] pb-12 xl:space-y-12 xl:px-12 mt-10">
       <div className="w-full space-y-4 flex justify-center flex-col items-center gap-4">
