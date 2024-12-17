@@ -10,7 +10,7 @@ export default function Home() {
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
-      className="h-screen flex items-center justify-center p-16"
+      className="h-screen flex items-center justify-center "
     >
       <div className="flex flex-row gap-10 max-w-6xl w-full justify-between ">
         <div className="flex-1 flex flex-col gap-2 max-w-lg transition duration-500 ease-in-out transform hover:scale-110">

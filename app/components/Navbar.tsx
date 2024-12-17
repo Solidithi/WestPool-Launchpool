@@ -4,6 +4,7 @@ import { Menu, X } from "lucide-react";
 
 import Image from "next/image";
 import Link from "next/link";
+import { ConnectWallet } from "@thirdweb-dev/react";
 
 import logo from "@/public/Logo/DL_Logo.png";
 import { navItems } from "@/app/constants";
@@ -15,7 +16,7 @@ const Navbar = () => {
   const toggleNavbar = () => setToggle(!toggle);
 
   return (
-    <nav className="sticky top-0 z-50 py-3 backdrop-blur-lg border-b border-neutral-700/50 text-white">
+    <nav className="sticky top-0 z-50 py-3 backdrop-blur-lg border-b-[2px] border-neutral-700/50 text-white">
       <div className="container px-4 mx-auto relative text-sm">
         <div className="flex justify-between items-center">
           <div className="flex items-center flex-shrink-0">
@@ -24,15 +25,19 @@ const Navbar = () => {
           </div>
           <ul className="hidden lg:flex ml-14 space-x-12">
             {navItems.map((item, index) => (
-              <li key={index}>
+              <li
+                key={index}
+                className="transition-transform transform hover:-translate-y-1 duration-300"
+              >
                 <Link href={item.path}>{item.label}</Link>
               </li>
             ))}
           </ul>
           <div className="hidden lg:flex justify-center items-center space-x-4">
-            <button className="bg-[#2F4993] py-2 px-3 rounded-3xl text-white w-[180px]">
-              Connect Wallet
-            </button>
+            <div className=" py-2 px-3 rounded-3xl text-white w-[180px]">
+              <ConnectWallet />
+              {/* Connect Wallet */}
+            </div>
           </div>
           <div className="lg:hidden md:flex flex-col justify-end">
             <button onClick={toggleNavbar}>
@@ -50,9 +55,10 @@ const Navbar = () => {
               ))}
             </ul>
             <div className="flex space-x-6">
-              <button className="bg-[#2F4993] py-2 px-3 rounded-3xl text-white w-[180px]">
-                Connect Wallet
-              </button>
+              <div className=" py-2 px-3 rounded-3xl text-white w-[180px]">
+                <ConnectWallet />
+                {/* Connect Wallet */}
+              </div>
             </div>
           </div>
         )}
