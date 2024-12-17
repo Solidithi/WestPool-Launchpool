@@ -1,6 +1,47 @@
-// import Image from "next/image";
+"use client"
+import { useEffect, useState } from "react";
 
 const ProjectDetailPage = () => {
+    const [timeLeft, setTimeLeft] = useState({
+        days: 15,
+        hours: 10,
+        minutes: 24,
+        seconds: 59,
+    });
+
+    // Countdown logic
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setTimeLeft((prevTime) => {
+                let { days, hours, minutes, seconds } = prevTime;
+
+                if (seconds > 0) {
+                    seconds--;
+                } else {
+                    seconds = 59;
+                    if (minutes > 0) {
+                        minutes--;
+                    } else {
+                        minutes = 59;
+                        if (hours > 0) {
+                            hours--;
+                        } else {
+                            hours = 23;
+                            if (days > 0) {
+                                days--;
+                            } else {
+                                clearInterval(timer); // Stop timer when countdown ends
+                            }
+                        }
+                    }
+                }
+
+                return { days, hours, minutes, seconds };
+            });
+        }, 1000);
+
+        return () => clearInterval(timer); // Cleanup on unmount
+    }, []);
 
 
 
@@ -51,6 +92,33 @@ const ProjectDetailPage = () => {
                     <div className="basis-1/4">
                         <div className="flex justify-center">
                             Remaining Time
+                        </div>
+                        {/* Date Time Countdown */}
+                        <div className="grid grid-flow-col mt-3 gap-5 text-center auto-cols-max justify-center ">
+                            <div className="flex flex-col p-2 bg-neutral rounded-box text-neutral-content">
+                                <span className="countdown font-mono text-4xl">
+                                    <span style={{ "--value": `${timeLeft.days}` } as React.CSSProperties}></span>
+                                </span>
+                                days
+                            </div>
+                            <div className="flex flex-col p-2 bg-neutral rounded-box text-neutral-content">
+                                <span className="countdown font-mono text-4xl">
+                                    <span style={{ "--value": `${timeLeft.hours}` } as React.CSSProperties}></span>
+                                </span>
+                                hours
+                            </div>
+                            <div className="flex flex-col p-2 bg-neutral rounded-box text-neutral-content">
+                                <span className="countdown font-mono text-4xl">
+                                    <span style={{ "--value": `${timeLeft.minutes}` } as React.CSSProperties}></span>
+                                </span>
+                                min
+                            </div>
+                            <div className="flex flex-col p-2 bg-neutral rounded-box text-neutral-content">
+                                <span className="countdown font-mono text-4xl">
+                                    <span style={{ "--value": `${timeLeft.seconds}` } as React.CSSProperties}></span>
+                                </span>
+                                sec
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -116,7 +184,7 @@ const ProjectDetailPage = () => {
                 </div>
 
             </div>
-        </div>
+        </div >
     )
 }
 
