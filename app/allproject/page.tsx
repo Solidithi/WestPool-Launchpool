@@ -1,6 +1,7 @@
 "use client";
 import StatCard from "../components/StatCard";
 import Image from "next/image";
+import Link from "next/link";
 
 import { banners } from "../constants/index";
 import { dataTable } from "../constants/index";
@@ -8,50 +9,68 @@ import { dataTable } from "../constants/index";
 import { useState } from "react";
 
 const AllProject = () => {
-  const [expandedRow, setExpandedRow] = useState<number | null>(null);
+  const [expandedRows, setExpandedRows] = useState<number[]>([]);
+  const [activeId, setActiveId] = useState(banners[0].id);
 
   const toggleRow = (index: number) => {
-    setExpandedRow(expandedRow === index ? null : index);
+    const isCurrentlyExpanded = expandedRows.includes(index);
+    setExpandedRows((current) =>
+      isCurrentlyExpanded
+        ? current.filter((i) => i !== index)
+        : [...current, index]
+    );
   };
 
+  const handleSelectImage = (id: string) => {
+    setActiveId(id);
+  };
+
+  // const handleBannerClick = (event, id) => {
+  //   event.preventDefault();
+  // };
+
   return (
-    <div className="flex flex-col items-center space-y-6 px-[5%] pb-12 xl:space-y-12 xl:px-12 mt-10">
+    <div className="flex flex-col items-center space-y-6 px-[5%] pb-12 xl:space-y-12 xl:px-12 mt-10 ">
       <div className="w-full space-y-4 flex justify-center flex-col items-center gap-4">
-        <h1 className="text-[52px] leading-[56px] font-bold bg-gradient-to-r from-[#7BA9EF] to-[#FFFFFF] to-50% text-transparent bg-clip-text">
+        <h1 className="text-[72px] leading-[86px] font-bold bg-gradient-to-r from-[#7BA9EF] to-[#FFFFFF] to-50% text-transparent bg-clip-text">
           Launchpool
         </h1>
         <p className="text-[#A7B7DB]">Choose your favorite project!!!!</p>
       </div>
 
       {/* -------------------------Banner----------------------------- */}
-
-      <div className="carousel w-full ">
-        {banners.map((banner) => (
-          <div
-            key={banner.id}
-            id={banner.id}
-            className="carousel-item w-full flex  justify-center"
-          >
-            <Image
-              src={banner.src}
-              className="lg:w-[1400px] md:w-[800px] sm:w-[600px] h-[350px] rounded-lg "
-              alt={banner.alt}
-              width={banner.width}
-              height={banner.height}
-            />
-          </div>
-        ))}
-      </div>
-      <div className="flex w-full justify-center gap-2 py-2">
-        {banners.map((banner, index) => (
-          <a
-            key={banner.id}
-            href={`#${banner.id}`}
-            className="btn btn-sm bg-[#6D93CD] text-white hover:bg-[#324664] active:bg-[#324664]"
-          >
-            {index + 1}
-          </a>
-        ))}
+      <div>
+        <div className="carousel w-full">
+          {banners.map((banner) => (
+            <div
+              key={banner.id}
+              id={banner.id}
+              className="carousel-item w-full flex  justify-center"
+            >
+              <Image
+                src={banner.src}
+                className="lg:w-[1400px] md:w-[800px] sm:w-[600px] h-[350px] rounded-lg "
+                alt={banner.alt}
+                width={banner.width}
+                height={banner.height}
+              />
+            </div>
+          ))}
+        </div>
+        <div className="flex w-full justify-center gap-2 py-2">
+          {banners.map((banner, index) => (
+            <Link
+              key={banner.id}
+              href={`#${banner.id}`}
+              onClick={() => handleSelectImage(banner.id)}
+              className={`btn btn-sm ${
+                activeId === banner.id ? "bg-[#324664]" : "bg-[#6D93CD]"
+              } text-white hover:bg-[#324664] active:bg-[#324664]`}
+            >
+              {index + 1}
+            </Link>
+          ))}
+        </div>
       </div>
 
       {/* ----------------------------3 StatCard--------------------------------- */}
@@ -78,109 +97,275 @@ const AllProject = () => {
       </div>
 
       {/* ----------------------------Data Table--------------------------------- */}
-      <div className="w-full bg-[#102343] rounded-2xl shadow-lg">
-        <div className="overflow-x-auto">
-          <table className="table">
-            <thead>
-              <tr className="text-[#82B2FA] text-center text-[20px] font-extralight border-b-[#E0E0E0]">
-                <th className="py-12"></th>
-                <th>Title</th>
-                <th>Earned</th>
-                <th>Token</th>
-                <th>Total Staked</th>
-                <th>APR</th>
-                <th>Ends in</th>
-              </tr>
-            </thead>
-            <tbody className="text-center ">
-              {dataTable.map((data, index) => (
-                <>
-                  <tr
-                    onClick={() => toggleRow(index)}
-                    className="cursor-pointer hover:bg-[#1A2E4A] text-white border-b border-[#E0E0E0] last:border-b-0"
-                  >
-                    <th>{index + 1}</th>
-                    <td>
-                      <div className="flex items-center gap-4 justify-center">
-                        <Image
-                          src={data.image}
-                          width={50}
-                          height={50}
-                          alt="icon"
-                          className="rounded-full"
-                        />
-                        <div className="flex flex-col text-left gap-1">
-                          <span className="text-[17px] font-bold">
-                            {data.title}
-                          </span>
-                          <span className="text-[12px] font-light text-[#DDDDDD]">
-                            {data.short_description}
-                          </span>
-                        </div>
-                      </div>
-                    </td>
-                    <td>{data.earned}</td>
-                    <td>{data.token}</td>
-                    <td>{data.totalStaked}</td>
-                    <td>{data.apr}</td>
-                    <td>{data.endsIn}</td>
-                  </tr>
 
-                  {expandedRow === index && (
-                    <tr className="bg-[#0D1C33] text-white ">
-                      <td colSpan={7} className="p-4">
-                        <div className="flex justify-between items-center p-2 gap-3">
-                          <div className="w-[600px] ">
-                            <p>APR: {data.apr}</p>
-                            <p>Ends in: {data.endsIn}</p>
-                            <p>
-                              View Project Detail
-                              <svg
-                                width="24"
-                                height="24"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                xmlns="http://www.w3.org/2000/svg"
-                              >
-                                <path
-                                  d="M12 5L11.2929 4.29289L12 3.58579L12.7071 4.29289L12 5ZM13 14C13 14.5523 12.5523 15 12 15C11.4477 15 11 14.5523 11 14L13 14ZM6.29289 9.29289L11.2929 4.29289L12.7071 5.70711L7.70711 10.7071L6.29289 9.29289ZM12.7071 4.29289L17.7071 9.29289L16.2929 10.7071L11.2929 5.70711L12.7071 4.29289ZM13 5L13 14L11 14L11 5L13 5Z"
-                                  fill="#7BA9EF"
-                                />
-                                <path
-                                  d="M5 16L5 17C5 18.1046 5.89543 19 7 19L17 19C18.1046 19 19 18.1046 19 17V16"
-                                  stroke="#7BA9EF"
-                                  stroke-width="2"
-                                />
-                              </svg>
-                            </p>
-                          </div>
-                          <div className="flex flex-col border border-[#7BA9EF] rounded-2xl p-4 w-full h-[100px] justify-between ">
-                            <div className="flex flex-row ">
-                              <span className="font-bold">EARNED</span>
+      <div role="tablist" className="tabs tabs-lifted w-full ">
+        <input
+          type="radio"
+          name="my_tabs_2"
+          role="tab"
+          className="tab text-[#7BA9EF] text-[15px]"
+          aria-label="Live"
+          defaultChecked
+        />
+        <div
+          role="tabpanel"
+          className="tab-content bg-[#060f1f] border-base-300 rounded-box p-5"
+        >
+          <div className="w-full bg-[#102343]  shadow-lg rounded-2xl ">
+            <div className="overflow-x-auto">
+              <table className="table">
+                <thead>
+                  <tr className="text-[#82B2FA] text-center text-[20px] font-extralight border-b-[#E0E0E0]">
+                    <th className="py-12"></th>
+                    <th>Title</th>
+                    <th>Earned</th>
+                    <th>Token</th>
+                    <th>Total Staked</th>
+                    <th>APR</th>
+                    <th>Ends in</th>
+                  </tr>
+                </thead>
+                <tbody className="text-center ">
+                  {dataTable
+                    .filter((data) => data.endsIn !== "--")
+                    .map((data, index) => (
+                      <>
+                        <tr
+                          onClick={() => toggleRow(index)}
+                          className="cursor-pointer hover:bg-[#1A2E4A] text-white border-b border-[#E0E0E0] last:border-b-0 "
+                        >
+                          <th>{index + 1}</th>
+                          <td>
+                            <div className="flex items-center gap-4 justify-center">
+                              <Image
+                                src={data.image}
+                                width={50}
+                                height={50}
+                                alt="icon"
+                                className="rounded-full"
+                              />
+                              <div className="flex flex-col text-left gap-1">
+                                <span className="text-[17px] font-bold">
+                                  {data.title}
+                                </span>
+                                <span className="text-[12px] font-light text-[#DDDDDD]">
+                                  {data.short_description}
+                                </span>
+                              </div>
                             </div>
-                            <div className="flex justify-between items-center">
-                              <span>0</span>
-                              <button className="bg-gray-500 text-white py-1 px-4 rounded-3xl h-[35px]">
-                                Harvest
-                              </button>
+                          </td>
+                          <td>{data.earned}</td>
+                          <td>{data.token}</td>
+                          <td>{data.totalStaked}</td>
+                          <td>{data.apr}</td>
+                          <td>{data.endsIn}</td>
+                        </tr>
+
+                        {expandedRows.includes(index) && (
+                          <tr className="bg-[#0D1C33] text-white ">
+                            <td colSpan={7} className="p-4">
+                              <div className="flex justify-between items-center p-2 gap-6">
+                                <div className="w-[600px] ">
+                                  <div className="flex justify-between mb-4">
+                                    <span>APR:</span>
+                                    <span>{data.apr}</span>
+                                  </div>
+                                  <div className="flex justify-between mb-4">
+                                    <span>Ends in:</span>
+                                    <span>{data.endsIn}</span>
+                                  </div>
+                                  <div className="flex justify-start items-center gap-2">
+                                    <span className="text-[#7BA9EF]">
+                                      View Project Detail
+                                    </span>
+                                    <svg
+                                      width="24"
+                                      height="24"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <path
+                                        d="M12 5L11.2929 4.29289L12 3.58579L12.7071 4.29289L12 5ZM13 14C13 14.5523 12.5523 15 12 15C11.4477 15 11 14.5523 11 14L13 14ZM6.29289 9.29289L11.2929 4.29289L12.7071 5.70711L7.70711 10.7071L6.29289 9.29289ZM12.7071 4.29289L17.7071 9.29289L16.2929 10.7071L11.2929 5.70711L12.7071 4.29289ZM13 5L13 14L11 14L11 5L13 5Z"
+                                        fill="#7BA9EF"
+                                      />
+                                      <path
+                                        d="M5 16L5 17C5 18.1046 5.89543 19 7 19L17 19C18.1046 19 19 18.1046 19 17V16"
+                                        stroke="#7BA9EF"
+                                        stroke-width="2"
+                                      />
+                                    </svg>
+                                  </div>
+                                </div>
+                                <div className="flex flex-col border border-[#7BA9EF] rounded-2xl p-4 w-full h-[100px] justify-between ">
+                                  <div className="flex flex-row ">
+                                    <span className="font-bold">EARNED</span>
+                                  </div>
+                                  <div className="flex justify-between items-center">
+                                    <input
+                                      type="text"
+                                      value={0}
+                                      className="bg-transparent"
+                                    />
+                                    <button className="bg-gray-500 text-white py-1 px-4 rounded-3xl h-[35px]">
+                                      Harvest
+                                    </button>
+                                  </div>
+                                </div>
+                                <div className="flex flex-col border border-[#7BA9EF] rounded-2xl p-4 w-full h-[100px] justify-between items-start gap-3">
+                                  <span className="font-bold">
+                                    START STAKING
+                                  </span>
+                                  <button className="ml-2 bg-[#6D93CD] text-white py-1 px-4 rounded-3xl w-full h-[40px]">
+                                    Connect Wallet
+                                  </button>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <input
+          type="radio"
+          name="my_tabs_2"
+          role="tab"
+          className="tab  text-[#7BA9EF] text-[15px]"
+          aria-label="Finished"
+        />
+        <div
+          role="tabpanel"
+          className="tab-content bg-[#060f1f] border-base-300 rounded-box p-5"
+        >
+          <div className="w-full bg-[#102343]  shadow-lg rounded-2xl ">
+            <div className="overflow-x-auto">
+              <table className="table">
+                <thead>
+                  <tr className="text-[#82B2FA] text-center text-[20px] font-extralight border-b-[#E0E0E0]">
+                    <th className="py-12"></th>
+                    <th>Title</th>
+                    <th>Earned</th>
+                    <th>Token</th>
+                    <th>Total Staked</th>
+                    <th>APR</th>
+                    <th>Ends in</th>
+                  </tr>
+                </thead>
+                <tbody className="text-center ">
+                  {dataTable
+                    .filter((data) => data.endsIn == "--")
+                    .map((data, index) => (
+                      <>
+                        <tr
+                          onClick={() => toggleRow(index)}
+                          className="cursor-pointer hover:bg-[#1A2E4A] text-white border-b border-[#E0E0E0] last:border-b-0"
+                        >
+                          <th>{index + 1}</th>
+                          <td>
+                            <div className="flex items-center gap-4 justify-center">
+                              <Image
+                                src={data.image}
+                                width={50}
+                                height={50}
+                                alt="icon"
+                                className="rounded-full"
+                              />
+                              <div className="flex flex-col text-left gap-1">
+                                <span className="text-[17px] font-bold">
+                                  {data.title}
+                                </span>
+                                <span className="text-[12px] font-light text-[#DDDDDD]">
+                                  {data.short_description}
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                          <div className="flex flex-col border border-[#7BA9EF] rounded-2xl p-4 w-full h-[100px] justify-between items-start gap-3">
-                            <span className="font-bold">START STAKING</span>
-                            <button className="ml-2 bg-[#6D93CD] text-white py-1 px-4 rounded-3xl w-full h-[40px]">
-                              Connect Wallet
-                            </button>
-                          </div>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-                </>
-              ))}
-            </tbody>
-          </table>
+                          </td>
+                          <td>{data.earned}</td>
+                          <td>{data.token}</td>
+                          <td>{data.totalStaked}</td>
+                          <td>{data.apr}</td>
+                          <td>{data.endsIn}</td>
+                        </tr>
+
+                        {expandedRows.includes(index) && (
+                          <tr className="bg-[#0D1C33] text-white ">
+                            <td colSpan={7} className="p-4">
+                              <div className="flex justify-between items-center p-2 gap-6">
+                                <div className="w-[600px] ">
+                                  <div className="flex justify-between mb-4">
+                                    <span>APR:</span>
+                                    <span>{data.apr}</span>
+                                  </div>
+                                  <div className="flex justify-between mb-4">
+                                    <span>Ends in:</span>
+                                    <span>{data.endsIn}</span>
+                                  </div>
+                                  <div className="flex justify-start items-center gap-2">
+                                    <span className="text-[#7BA9EF]">
+                                      View Project Detail
+                                    </span>
+                                    <svg
+                                      width="24"
+                                      height="24"
+                                      viewBox="0 0 24 24"
+                                      fill="none"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                    >
+                                      <path
+                                        d="M12 5L11.2929 4.29289L12 3.58579L12.7071 4.29289L12 5ZM13 14C13 14.5523 12.5523 15 12 15C11.4477 15 11 14.5523 11 14L13 14ZM6.29289 9.29289L11.2929 4.29289L12.7071 5.70711L7.70711 10.7071L6.29289 9.29289ZM12.7071 4.29289L17.7071 9.29289L16.2929 10.7071L11.2929 5.70711L12.7071 4.29289ZM13 5L13 14L11 14L11 5L13 5Z"
+                                        fill="#7BA9EF"
+                                      />
+                                      <path
+                                        d="M5 16L5 17C5 18.1046 5.89543 19 7 19L17 19C18.1046 19 19 18.1046 19 17V16"
+                                        stroke="#7BA9EF"
+                                        stroke-width="2"
+                                      />
+                                    </svg>
+                                  </div>
+                                </div>
+                                <div className="flex flex-col border border-[#7BA9EF] rounded-2xl p-4 w-full h-[100px] justify-between ">
+                                  <div className="flex flex-row ">
+                                    <span className="font-bold">EARNED</span>
+                                  </div>
+                                  <div className="flex justify-between items-center">
+                                    <input
+                                      type="text"
+                                      value={0}
+                                      className="bg-transparent"
+                                    />
+                                    <button className="bg-gray-500 text-white py-1 px-4 rounded-3xl h-[35px]">
+                                      Harvest
+                                    </button>
+                                  </div>
+                                </div>
+                                <div className="flex flex-col border border-[#7BA9EF] rounded-2xl p-4 w-full h-[100px] justify-between items-start gap-3">
+                                  <span className="font-bold">
+                                    START STAKING
+                                  </span>
+                                  <button className="ml-2 bg-[#6D93CD] text-white py-1 px-4 rounded-3xl w-full h-[40px]">
+                                    Connect Wallet
+                                  </button>
+                                </div>
+                              </div>
+                            </td>
+                          </tr>
+                        )}
+                      </>
+                    ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
+
+      {/* ------------------------------------------------------------------------ */}
     </div>
   );
 };

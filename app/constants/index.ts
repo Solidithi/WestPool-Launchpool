@@ -47,7 +47,7 @@ export const dataTable = [
     token: "BNB",
     totalStaked: "692,182 BNB",
     apr: "3,13%",
-    endsIn: "77 days",
+    endsIn: "--",
   },
   {
     title: "Project's Name",
