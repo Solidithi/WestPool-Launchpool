@@ -5,7 +5,7 @@ import {
   ThirdwebProvider,
   metamaskWallet,
   coinbaseWallet,
-  walletConnect,
+  walletConnect,    
 } from "@thirdweb-dev/react";
 import {
   Astar,
@@ -41,7 +41,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       activeChain={LocalChain}
       clientId={process.env.THIRDWEB_CLIENT_ID!}
     >
-      {children};
+      {children}
     </ThirdwebProvider>
   );
 }
