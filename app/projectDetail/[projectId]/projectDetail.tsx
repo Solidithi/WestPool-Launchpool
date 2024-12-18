@@ -1,4 +1,5 @@
 "use client"
+import VerticalProgressBar from "@/app/components/Progress";
 import { useEffect, useState } from "react";
 
 const ProjectDetailPage = () => {
@@ -8,6 +9,13 @@ const ProjectDetailPage = () => {
         minutes: 24,
         seconds: 59,
     });
+    const steps = [
+        { name: "Starting" },
+        { name: "Funding" },
+        { name: "Awaiting" },
+        { name: "Distributing" },
+    ];
+    const [currentStep, setCurrentStep] = useState(2); // The active step index (e.g., 0-based)
 
     // Countdown logic
     useEffect(() => {
@@ -66,9 +74,9 @@ const ProjectDetailPage = () => {
                     </div>
 
                     {/* Project Area */}
-                    <div className="basis-1/2">
+                    <div className="basis-2/5">
                         <div className="flex">
-                            <div className="text-2xl font-bold">
+                            <div className="text-2xl font-bold bg-gradient-to-r from-[#82B2FA] to-[#FFFFFF] bg-clip-text text-transparent">
                                 Project Name
                             </div>
 
@@ -77,7 +85,7 @@ const ProjectDetailPage = () => {
                             </div>
                         </div>
 
-                        <div className="mt-2">
+                        <div className="mt-2 text-sm">
                             <span>
 
                                 Lorem Ipsum is simply dummy text of the printing and typesetting industry.
@@ -89,8 +97,8 @@ const ProjectDetailPage = () => {
 
 
                     {/* Project Time */}
-                    <div className="basis-1/4">
-                        <div className="flex justify-center">
+                    <div className="basis-1/3">
+                        <div className="flex justify-center bg-gradient-to-r from-[#82B2FA] to-[#FFFFFF] bg-clip-text text-transparent">
                             Remaining Time
                         </div>
                         {/* Date Time Countdown */}
@@ -141,49 +149,81 @@ const ProjectDetailPage = () => {
             </div>
 
             {/* Similar to Binance */}
-            <div className="mt-10 ml-16 mr-16 border rounded-xl">
-                <div className="bg-black text-white p-6 rounded-md">
-                    {/* <!-- Main Container --> */}
-                    <div className="grid grid-cols-2 gap-y-6 gap-x-12">
-                        {/* <!-- Row 1 --> */}
-                        <div>
-                            <p className="text-gray-400">Tổng số token FDUSD được airdrop trong bể</p>
-                            <p className="text-2xl font-bold text-white">720,000.0000 VANA</p>
+            <div className="flex mt-10">
+
+                <div className=" ml-16 mr-16 border rounded-xl">
+                    <div className="bg-black text-white p-6 rounded-xl">
+                        {/* <!-- Main Container --> */}
+                        <div className="grid grid-cols-2 gap-y-6 gap-x-12">
+                            {/* <!-- Row 1 --> */}
+                            <div>
+                                <p className="text-gray-400">Tổng số token FDUSD được airdrop trong bể</p>
+                                <p className="text-2xl font-bold text-white">720,000.0000 VANA</p>
+                            </div>
+                            <div>
+                                <p className="text-gray-400">Token khóa</p>
+                                <p className="text-2xl font-bold text-green-500">● FDUSD</p>
+                            </div>
+
+                            {/* <!-- Row 2 --> */}
+                            <div>
+                                <p className="text-gray-400">Số token VANA được airdrop trong bể hôm nay</p>
+                                <p className="text-2xl font-bold text-white">360,000.0000 VANA</p>
+                            </div>
+                            <div>
+                                <p className="text-gray-400">Tổng số token FDUSD bị khóa</p>
+                                <p className="text-2xl font-bold text-white">1,213,004,343.2789 FDUSD</p>
+                            </div>
+
+                            {/* <!-- Row 3 --> */}
+                            <div>
+                                <p className="text-gray-400">Thời gian dự án</p>
+                                <p className="text-2xl font-bold text-white">2 Ngày</p>
+                            </div>
+                            <div>
+                                <p className="text-gray-400">Người tham gia:</p>
+                                <p className="text-2xl font-bold text-white">76.382</p>
+                            </div>
+
+                            {/* <!-- Row 4 --> */}
+                            <div>
+                                <p className="text-gray-400">Số lượng airdrop tối đa hàng giờ</p>
+                                <p className="text-2xl font-bold text-white">1,500.0000 VANA</p>
+                            </div>
                         </div>
-                        <div>
-                            <p className="text-gray-400">Token khóa</p>
-                            <p className="text-2xl font-bold text-green-500">● FDUSD</p>
+                    </div>
+
+                </div>
+                <div className="border rounded-xl w-96 bg-gradient-to-b from-blue-900 to-blue-800 text-white p-8 max-w-4xl flex">
+                    <div className="flex-1">
+                        <div className="">
+                            <div className="text-2xl font-bold mb-4">Project Progress</div>
+                            <p className="text-gray-300 mb-6">
+                                If you have funded this project, we will be in touch to let you know when the
+                                rewards have started distributing and when you can claim them. If you have
+                                funded this project, we will be in touch to let you know when the rewards have
+                                started distributing and when you can claim them.
+                            </p>
+                            <p className="text-gray-400 text-sm">
+                                Follow us on{' '}
+                                <a href="#" className="text-blue-400 underline">
+                                    Twitter
+                                </a>{' '}
+                                or{' '}
+                                <a href="#" className="text-blue-400 underline">
+                                    Telegram
+                                </a>{' '}
+                                to keep updated.
+                            </p>
                         </div>
 
-                        {/* <!-- Row 2 --> */}
-                        <div>
-                            <p className="text-gray-400">Số token VANA được airdrop trong bể hôm nay</p>
-                            <p className="text-2xl font-bold text-white">360,000.0000 VANA</p>
-                        </div>
-                        <div>
-                            <p className="text-gray-400">Tổng số token FDUSD bị khóa</p>
-                            <p className="text-2xl font-bold text-white">1,213,004,343.2789 FDUSD</p>
-                        </div>
-
-                        {/* <!-- Row 3 --> */}
-                        <div>
-                            <p className="text-gray-400">Thời gian dự án</p>
-                            <p className="text-2xl font-bold text-white">2 Ngày</p>
-                        </div>
-                        <div>
-                            <p className="text-gray-400">Người tham gia:</p>
-                            <p className="text-2xl font-bold text-white">76.382</p>
-                        </div>
-
-                        {/* <!-- Row 4 --> */}
-                        <div>
-                            <p className="text-gray-400">Số lượng airdrop tối đa hàng giờ</p>
-                            <p className="text-2xl font-bold text-white">1,500.0000 VANA</p>
+                        <div className="flex">
+                            <VerticalProgressBar steps={steps} currentStep={2} />
                         </div>
                     </div>
                 </div>
-
             </div>
+
         </div >
     )
 }
