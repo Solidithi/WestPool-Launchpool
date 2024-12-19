@@ -1,7 +1,7 @@
 // ----------------------------Navbar----------------------------------
 export const navItems = [
-  { label: "My Project", path: "/" },
-  { label: "My Investment", path: "/" },
+  // { label: "My Project", path: "/myProject" },
+  { label: "My Staking", path: "/myStaking" },
   { label: "Launchpool", path: "/allproject" },
 ];
 

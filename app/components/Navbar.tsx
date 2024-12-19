@@ -9,11 +9,37 @@ import { ConnectWallet } from "@thirdweb-dev/react";
 import logo from "@/public/Logo/DL_Logo.png";
 import { navItems } from "@/app/constants";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
   const [toggle, setToggle] = useState(false);
   const toggleNavbar = () => setToggle(!toggle);
+  const [NAV_MENU, SET_NAV_MENU] = useState(navItems);
+
+  useEffect(() => {
+    const checkProjectOwner = async () => {
+      const owner = false; // Replace with actual API call
+      if (owner) {
+        SET_NAV_MENU((prevMenu) => {
+          const isMyProjectAdded = prevMenu.some(
+            (item) => item.label === "My project"
+          );
+          if (!isMyProjectAdded) {
+            return [
+              {
+                label: "My project",
+                path: "/myProject",
+              },
+              ...prevMenu,
+            ];
+          }
+          return prevMenu;
+        });
+      }
+    };
+    checkProjectOwner();
+  }, []);
+  
 
   return (
     <nav className="sticky top-0 z-50 py-3 backdrop-blur-lg border-b-[2px] border-neutral-700/50 text-white">
@@ -24,7 +50,7 @@ const Navbar = () => {
             <span className="text-xl tracking-tight">SwimmingPool</span>
           </div>
           <ul className="hidden lg:flex ml-14 space-x-12">
-            {navItems.map((item, index) => (
+            {NAV_MENU.map((item, index) => (
               <li
                 key={index}
                 className="transition-transform transform hover:-translate-y-1 duration-300"
@@ -48,7 +74,7 @@ const Navbar = () => {
         {toggle && (
           <div className="fixed right-0 z-20 bg-[#000626] w-full p-12 flex flex-col justify-center items-center lg:hidden">
             <ul>
-              {navItems.map((item, index) => (
+              {NAV_MENU.map((item, index) => (
                 <li key={index} className="py-4">
                   <Link href={item.path}>{item.label}</Link>
                 </li>
