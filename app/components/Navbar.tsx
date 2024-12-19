@@ -16,7 +16,7 @@ const Navbar = () => {
   const toggleNavbar = () => setToggle(!toggle);
 
   return (
-    <nav className="sticky top-0 z-50 py-3 backdrop-blur-lg border-b-[2px] border-neutral-700/50 text-white">
+    <nav className="sticky top-0 z-50 py-3 backdrop-blur-lg border-b-[1px] border-[#60799e] text-white">
       <div className="container px-4 mx-auto relative text-sm">
         <div className="flex justify-between items-center">
           <div className="flex items-center flex-shrink-0">

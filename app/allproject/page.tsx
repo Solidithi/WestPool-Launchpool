@@ -12,6 +12,7 @@ const AllProject = () => {
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
   const [activeId, setActiveId] = useState(banners[0].id);
 
+  //  ------------Xử lí khi mở nhiều row--------------
   const toggleRow = (index: number) => {
     const isCurrentlyExpanded = expandedRows.includes(index);
     setExpandedRows((current) =>
@@ -178,6 +179,7 @@ const AllProject = () => {
                                     <Link
                                       key={index}
                                       href={`/projectDetail/${index + 1}`}
+                                      className="flex items-center flex-row gap-3"
                                     >
                                       <span className="text-[#7BA9EF]">
                                         View Project Detail
