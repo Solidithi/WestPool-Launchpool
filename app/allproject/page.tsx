@@ -175,26 +175,31 @@ const AllProject = () => {
                                     <span>{data.endsIn}</span>
                                   </div>
                                   <div className="flex justify-start items-center gap-2">
-                                    <span className="text-[#7BA9EF]">
-                                      View Project Detail
-                                    </span>
-                                    <svg
-                                      width="24"
-                                      height="24"
-                                      viewBox="0 0 24 24"
-                                      fill="none"
-                                      xmlns="http://www.w3.org/2000/svg"
+                                    <Link
+                                      key={index}
+                                      href={`/projectDetail/${index + 1}`}
                                     >
-                                      <path
-                                        d="M12 5L11.2929 4.29289L12 3.58579L12.7071 4.29289L12 5ZM13 14C13 14.5523 12.5523 15 12 15C11.4477 15 11 14.5523 11 14L13 14ZM6.29289 9.29289L11.2929 4.29289L12.7071 5.70711L7.70711 10.7071L6.29289 9.29289ZM12.7071 4.29289L17.7071 9.29289L16.2929 10.7071L11.2929 5.70711L12.7071 4.29289ZM13 5L13 14L11 14L11 5L13 5Z"
-                                        fill="#7BA9EF"
-                                      />
-                                      <path
-                                        d="M5 16L5 17C5 18.1046 5.89543 19 7 19L17 19C18.1046 19 19 18.1046 19 17V16"
-                                        stroke="#7BA9EF"
-                                        stroke-width="2"
-                                      />
-                                    </svg>
+                                      <span className="text-[#7BA9EF]">
+                                        View Project Detail
+                                      </span>
+                                      <svg
+                                        width="24"
+                                        height="24"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        xmlns="http://www.w3.org/2000/svg"
+                                      >
+                                        <path
+                                          d="M12 5L11.2929 4.29289L12 3.58579L12.7071 4.29289L12 5ZM13 14C13 14.5523 12.5523 15 12 15C11.4477 15 11 14.5523 11 14L13 14ZM6.29289 9.29289L11.2929 4.29289L12.7071 5.70711L7.70711 10.7071L6.29289 9.29289ZM12.7071 4.29289L17.7071 9.29289L16.2929 10.7071L11.2929 5.70711L12.7071 4.29289ZM13 5L13 14L11 14L11 5L13 5Z"
+                                          fill="#7BA9EF"
+                                        />
+                                        <path
+                                          d="M5 16L5 17C5 18.1046 5.89543 19 7 19L17 19C18.1046 19 19 18.1046 19 17V16"
+                                          stroke="#7BA9EF"
+                                          stroke-width="2"
+                                        />
+                                      </svg>
+                                    </Link>
                                   </div>
                                 </div>
                                 <div className="flex flex-col border border-[#7BA9EF] rounded-2xl p-4 w-full h-[100px] justify-between ">
