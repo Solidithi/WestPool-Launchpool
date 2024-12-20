@@ -168,7 +168,10 @@ const ProjectDetailPage = () => {
             VToken Pool
           </button>
 
-          <button className="btn btn-ghost rounded-lg px-8 py-2 bg-[#2A5697] text-white">
+          <button
+            className="btn btn-ghost rounded-lg px-8 py-2 bg-[#2A5697] text-white"
+            onClick={() => setActiveButton("MoreDetail")}
+          >
             More Detail
           </button>
         </div>
@@ -176,64 +179,138 @@ const ProjectDetailPage = () => {
 
       {/* Similar to Binance */}
       <div className="flex mt-10 w-full p-8 h-auto">
-        <div className=" ml-16 mr-16 border  rounded-xl w-[65%]">
-          <div className=" text-white p-6 rounded-xl">
-            {/* <!-- Main Container --> */}
-            <div className="grid grid-cols-2 gap-y-6 gap-x-12">
-              {/* <!-- Row 1 --> */}
-              <div>
-                <p className="text-gray-400 text-lg">
-                  Total FDUSD tokens airdropped in the pool
-                </p>
-                <p className="text-lg font-bold text-white">
-                  720,000.0000 VANA
-                </p>
-              </div>
-              <div>
-                <p className="text-gray-400 text-lg">Locked token</p>
-                <p className="text-lg font-bold text-green-500">● FDUSD</p>
-              </div>
+        {activeButton === "FROST" && (
+          <div className=" ml-16 mr-16 border  rounded-xl w-[60%]">
+            <div className=" text-white p-6 rounded-xl">
+              {/* <!-- Main Container --> */}
+              <div className="grid grid-cols-2 gap-y-6 gap-x-12">
+                {/* <!-- Row 1 --> */}
+                <div>
+                  <p className="text-gray-400 text-lg">
+                    Total FDUSD tokens airdropped in the pool
+                  </p>
+                  <p className="text-lg font-bold text-white">
+                    720,000.0000 VANA
+                  </p>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-lg">Locked token</p>
+                  <p className="text-lg font-bold text-green-500">● FDUSD</p>
+                </div>
 
-              {/* <!-- Row 2 --> */}
-              <div>
-                <p className="text-gray-400 text-lg">
-                  Number of VANA tokens airdropped in the pool today
-                </p>
-                <p className="text-lg font-bold text-white">
-                  360,000.0000 VANA
-                </p>
-              </div>
-              <div>
-                <p className="text-gray-400 text-lg">
-                  Total FDUSD tokens locked
-                </p>
-                <p className="text-lg font-bold text-white">
-                  1,213,004,343.2789 FDUSD
-                </p>
-              </div>
+                {/* <!-- Row 2 --> */}
+                <div>
+                  <p className="text-gray-400 text-lg">
+                    Number of VANA tokens airdropped in the pool today
+                  </p>
+                  <p className="text-lg font-bold text-white">
+                    360,000.0000 VANA
+                  </p>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-lg">
+                    Total FDUSD tokens locked
+                  </p>
+                  <p className="text-lg font-bold text-white">
+                    1,213,004,343.2789 FDUSD
+                  </p>
+                </div>
 
-              {/* <!-- Row 3 --> */}
-              <div>
-                <p className="text-gray-400 text-lg ">Project duration</p>
-                <p className="text-lg font-bold text-white">2 Days</p>
-              </div>
-              <div>
-                <p className="text-gray-400 text-lg">Participants</p>
-                <p className="text-lg font-bold text-white">76,382</p>
-              </div>
+                {/* <!-- Row 3 --> */}
+                <div>
+                  <p className="text-gray-400 text-lg ">Project duration</p>
+                  <p className="text-lg font-bold text-white">2 Days</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-lg">Participants</p>
+                  <p className="text-lg font-bold text-white">76,382</p>
+                </div>
 
-              {/* <!-- Row 4 --> */}
-              <div>
-                <p className="text-gray-400 text-lg ">
-                  Maximum hourly airdrop amount
-                </p>
-                <p className="text-lg font-bold text-white">1,500.0000 VANA</p>
+                {/* <!-- Row 4 --> */}
+                <div>
+                  <p className="text-gray-400 text-lg ">
+                    Maximum hourly airdrop amount
+                  </p>
+                  <p className="text-lg font-bold text-white">
+                    1,500.0000 VANA
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
-        <div className="border rounded-xl  bg-[#465377] text-white w-[35%]">
+        {activeButton === "VToken" && (
+          <div className=" ml-16 mr-16 border  rounded-xl w-[60%]">
+            <div className=" text-white p-6 rounded-xl">
+              {/* <!-- Main Container --> */}
+              <div className="grid grid-cols-2 gap-y-6 gap-x-12">
+                {/* <!-- Row 1 --> */}
+                <div>
+                  <p className="text-gray-400 text-lg">
+                    Total ABC tokens airdropped in the pool
+                  </p>
+                  <p className="text-lg font-bold text-white">
+                    1,000,000.0000 ABC
+                  </p>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-lg">Locked token</p>
+                  <p className="text-lg font-bold text-red-600">● XYZ</p>
+                </div>
+
+                {/* <!-- Row 2 --> */}
+                <div>
+                  <p className="text-gray-400 text-lg">
+                    Number of ABC tokens airdropped in the pool today
+                  </p>
+                  <p className="text-lg font-bold text-white">
+                    500,000.0000 ABC
+                  </p>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-lg">
+                    Total XYZ tokens locked
+                  </p>
+                  <p className="text-lg font-bold text-white">
+                    2,000,000,000.0000 XYZ
+                  </p>
+                </div>
+
+                {/* <!-- Row 3 --> */}
+                <div>
+                  <p className="text-gray-400 text-lg ">Project duration</p>
+                  <p className="text-lg font-bold text-white">5 Days</p>
+                </div>
+                <div>
+                  <p className="text-gray-400 text-lg">Participants</p>
+                  <p className="text-lg font-bold text-white">123,456</p>
+                </div>
+
+                {/* <!-- Row 4 --> */}
+                <div>
+                  <p className="text-gray-400 text-lg ">
+                    Maximum hourly airdrop amount
+                  </p>
+                  <p className="text-lg font-bold text-white">3,000.0000 ABC</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        
+        {activeButton === "MoreDetail" && (
+          <div className=" ml-16 mr-16 border  rounded-xl w-[60%]">
+            <div className=" text-white p-6 rounded-xl">
+              {/* <!-- Main Container --> */}
+              <div className="grid grid-cols-2 gap-y-6 gap-x-12">
+                More Detail content
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="border rounded-xl  bg-[#465377] text-white w-[40%]">
           <div className="flex-row flex items-stretch justify-between">
             <div className="p-8">
               <div className="text-2xl font-bold mb-4 bg-gradient-to-r from-[#82B2FA] to-[#FFFFFF] bg-clip-text text-transparent">
