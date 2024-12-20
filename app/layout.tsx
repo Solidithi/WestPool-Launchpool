@@ -77,7 +77,7 @@ export default function RootLayout({
             <Image
               src={w2}
               alt="Top Left"
-              className="absolute top-0 left-0 w-[600px] h-[500px] transform scale-100 animate-[pulse_5s_infinite]"
+              className="absolute top-0 left-0 w-[600px] h-[500px] transform scale-100 animate-[pulse_3s_infinite]"
             />
             <Image
               src={w1}

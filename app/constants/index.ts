@@ -5,7 +5,7 @@ export const navItems = [
   { label: "Launchpool", path: "/allproject" },
 ];
 
-// -----------------------All_Project_Page-----------------------------
+// -----------------------All_Project_Page -----------------------------
 export const banners = [
   {
     id: "item1",
@@ -37,12 +37,13 @@ export const banners = [
   },
 ];
 
+// -----------------------All_Project_Page & MyStaking & MyProject -----------------------------
 export const dataTable = [
   {
     title: "Project's Name",
     short_description: "Short Description",
     image:
-      "https://i.pinimg.com/736x/87/11/f0/8711f0d6248f89d0163d5a65157614cf.jpg",
+      "https://i.pinimg.com/736x/ad/8e/9b/ad8e9b5cf76fb9b020d7f7ee301f4553.jpg",
     earned: "0",
     token: "BNB",
     totalStaked: "692,182 BNB",
@@ -64,7 +65,7 @@ export const dataTable = [
     title: "Project's Name",
     short_description: "Short Description",
     image:
-      "https://i.pinimg.com/736x/87/11/f0/8711f0d6248f89d0163d5a65157614cf.jpg",
+      "https://i.pinimg.com/736x/7e/37/f9/7e37f9865d9f07683bfeb7cb5276c35d.jpg",
     earned: "30",
     token: "USDT",
     totalStaked: "1,000,000 USDT",
@@ -86,7 +87,7 @@ export const dataTable = [
     title: "Project's Name",
     short_description: "Short Description",
     image:
-      "https://i.pinimg.com/736x/87/11/f0/8711f0d6248f89d0163d5a65157614cf.jpg",
+      "https://i.pinimg.com/736x/09/64/7b/09647b05eb441d9f223d021c4a3074f9.jpg",
     earned: "30",
     token: "USDT",
     totalStaked: "1,000,000 USDT",
