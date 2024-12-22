@@ -37,6 +37,7 @@ const ProjectDetailPage = () => {
     };
 
     const handleSubmit = () => {
+        console.log(projectName, shortDescription, longDescription, maxStake, minStake, acceptedVToken, fromDate, toDate, projectImage, projectLogo);
         if (projectName === "" || shortDescription === "" || longDescription === "" || maxStake === undefined || minStake === undefined || acceptedVToken === "" || fromDate === "" || toDate === "" || projectImage === null || projectLogo === null) {
             alert("Please fill all the fields");
             return;

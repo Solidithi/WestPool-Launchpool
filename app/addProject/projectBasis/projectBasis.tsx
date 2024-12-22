@@ -24,6 +24,7 @@ const ProjectBasisPage = () => {
 
     const handleSubmit = () => {
         console.log(chain)
+        console.log(chain, isTrading, poolBudget, targetStake, targetAudience)
         if (chain === "" || isTrading === "" || poolBudget === undefined || targetStake === undefined || targetAudience === "") {
             alert("Please fill all the fields");
             return;

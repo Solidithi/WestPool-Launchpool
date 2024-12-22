@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { availableNetworks } from "../constants";
-import useAvailableChain, { AvailableChainState } from "../zustand/store";
+import useAvailableChain, { AvailableChainState, useProjectBasisStore } from "../zustand/store";
 
 interface CustomDropdownProps {
     className: string;
@@ -9,11 +9,16 @@ interface CustomDropdownProps {
 const CustomDropdown = ({ className }: CustomDropdownProps) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState("Select a chain");
-    const setNetwork = useAvailableChain((state: AvailableChainState) => state.setChain);
+    const { chain,setChain } = useProjectBasisStore();
+    // const setChain = useAvailableChain((state: AvailableChainState) => state.setChain);
     const dropdownRef = useRef<HTMLDivElement>(null);
     
 
     const options = availableNetworks;
+
+    // const handleOnclick = () => {
+    //     console.log(chain);
+    // }
 
     // const options = [
     //     {
@@ -83,7 +88,7 @@ const CustomDropdown = ({ className }: CustomDropdownProps) => {
                             onClick={() => {
                                 setSelectedOption(option.name);
                                 setIsOpen(false);
-                                setNetwork(option.name)
+                                setChain(option.name)
                             }}
                         >
                             <img
