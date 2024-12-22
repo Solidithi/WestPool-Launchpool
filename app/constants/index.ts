@@ -3,6 +3,7 @@ export const navItems = [
   // { label: "My Project", path: "/myProject" },
   { label: "My Staking", path: "/myStaking" },
   { label: "Launchpool", path: "/allproject" },
+  { label: "Pre-market", path: "/preMarket" },
 ];
 
 // -----------------------All_Project_Page -----------------------------
@@ -96,4 +97,56 @@ export const dataTable = [
   },
 ];
 
-// ------------------------------------------------------------------------------
+// --------------------------------------premarket----------------------------------------
+export const tokenTable = [
+  {
+    id: 1,
+    icon: "https://i.pinimg.com/736x/2e/99/73/2e9973b4ca3af5f314dfab0a6c23b352.jpg",
+    name: "Token's name",
+    price: "$0.99",
+    change1h: "-1.11%",
+    change1d: "+2.00%",
+    marketCap: "$2.7B",
+    volume: "$1.0B",
+  },
+  {
+    id: 2,
+    icon: "https://i.pinimg.com/736x/c2/6b/8c/c26b8c12fa9490fa1bdd38a4224e31a9.jpg",
+    name: "AlphaToken",
+    price: "$1.45",
+    change1h: "+3.20%",
+    change1d: "+5.12%",
+    marketCap: "$3.5B",
+    volume: "$2.2B",
+  },
+  {
+    id: 3,
+    icon: "https://i.pinimg.com/736x/e4/29/e6/e429e66ab46e2c9d94f4921f70682ac1.jpg",
+    name: "BetaCoin",
+    price: "$0.75",
+    change1h: "-0.85%",
+    change1d: "-1.50%",
+    marketCap: "$1.8B",
+    volume: "$0.9B",
+  },
+  {
+    id: 4,
+    icon: "https://i.pinimg.com/736x/4d/31/69/4d3169b7cbee7bec7176cd6e69be11bd.jpg",
+    name: "GammaToken",
+    price: "$2.10",
+    change1h: "+0.45%",
+    change1d: "+4.75%",
+    marketCap: "$4.2B",
+    volume: "$3.1B",
+  },
+  {
+    id: 5,
+    icon: "https://i.pinimg.com/736x/eb/bb/8a/ebbb8ad82d36f91ea2d839c4e59f589c.jpg",
+    name: "DeltaCoin",
+    price: "$0.58",
+    change1h: "-2.34%",
+    change1d: "-3.67%",
+    marketCap: "$1.2B",
+    volume: "$0.6B",
+  },
+];
