@@ -130,13 +130,6 @@ const TokenOffer = () => {
                         </div>
                       </div>
 
-                      {/* <div className="flex justify-center items-center mb-4">
-                        <div className="w-[80%] h-[2px] bg-[#2D468D]"></div>
-                        <div className="w-8 h-8 bg-[#5A78B8] rounded-full flex justify-center items-center text-white">
-                          ↓
-                        </div>
-                      </div> */}
-
                       <div className="bg-[#5A78B8] rounded-lg p-4 relative">
                         <div className="flex justify-between items-center mb-2">
                           <span className="text-gray-200 font-bold text-sm">
@@ -265,11 +258,62 @@ const TokenOffer = () => {
                     SELL
                   </button>
                   <dialog id="sell1" className="modal">
-                    <div className="modal-box">
-                      <h3 className="font-bold text-lg">Hello!</h3>
-                      <p className="py-4">
-                        Press ESC key or click outside to close
-                      </p>
+                    <div className="modal-box bg-[#2D468D]">
+                      <h3 className="font-bold text-lg mb-4 text-white">
+                        WCT/USDC
+                      </h3>
+
+                      <div className="bg-[#5A78B8] rounded-lg p-4 mb-4 relative">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-[#ff2323] font-bold text-sm">
+                            SELLING
+                          </span>
+                          <span className="text-white text-xs">
+                            MAX 104 WCT
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center mb-2">
+                          <input
+                            className="text-3xl font-bold text-white bg-transparent w-2/3 outline-none"
+                            placeholder="enter"
+                          />
+                          <Image
+                            src="https://i.pinimg.com/736x/2e/99/73/2e9973b4ca3af5f314dfab0a6c23b352.jpg"
+                            alt="logo"
+                            width={30}
+                            height={30}
+                            className="rounded-full"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="bg-[#5A78B8] rounded-lg p-4 relative">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="text-gray-200 font-bold text-sm">
+                            COLLATERAL
+                          </span>
+                          <span className="text-white text-xs">
+                            Balance: 0.001 USDC
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center mb-2">
+                          <input
+                            className="text-3xl font-bold text-white bg-transparent w-2/3 outline-none"
+                            placeholder="enter"
+                          />
+                          <Image
+                            src="https://i.pinimg.com/736x/c2/6b/8c/c26b8c12fa9490fa1bdd38a4224e31a9.jpg"
+                            alt="logo"
+                            width={30}
+                            height={30}
+                            className="rounded-full"
+                          />
+                        </div>
+                      </div>
+
+                      <button className="btn bg-white text-[#e86c6c] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#2a1919]">
+                        Sell
+                      </button>
                     </div>
                     <form method="dialog" className="modal-backdrop">
                       <button>close</button>
