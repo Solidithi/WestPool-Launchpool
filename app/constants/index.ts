@@ -97,7 +97,6 @@ export const dataTable = [
   },
 ];
 
-];
 
 export const availableNetworks = [
   {
