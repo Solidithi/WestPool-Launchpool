@@ -18,7 +18,7 @@ const Navbar = () => {
 
   useEffect(() => {
     const checkProjectOwner = async () => {
-      const owner = false; // Replace with actual API call
+      const owner = true; // Replace with actual API call
       if (owner) {
         SET_NAV_MENU((prevMenu) => {
           const isMyProjectAdded = prevMenu.some(
