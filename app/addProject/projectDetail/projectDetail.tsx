@@ -37,6 +37,18 @@ const ProjectDetailPage = () => {
     };
 
     const handleSubmit = () => {
+        //fake data fill
+        setProjectName("Project Name");
+        setShortDescription("Short Description");
+        setLongDescription("Long Description");
+        setMaxStake(5000);
+        setMinStake(100);
+        setAcceptedVToken("VToken");
+        setFromDate("2021-09-01T08:30");
+        setToDate("2021-09-30T08:30");
+        setProjectImage(null);
+        setProjectLogo(null);
+
         console.log(projectName, shortDescription, longDescription, maxStake, minStake, acceptedVToken, fromDate, toDate, projectImage, projectLogo);
         if (projectName === "" || shortDescription === "" || longDescription === "" || maxStake === undefined || minStake === undefined || acceptedVToken === "" || fromDate === "" || toDate === "" || projectImage === null || projectLogo === null) {
             alert("Please fill all the fields");

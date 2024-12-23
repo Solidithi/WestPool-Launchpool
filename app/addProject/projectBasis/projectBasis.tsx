@@ -23,6 +23,13 @@ const ProjectBasisPage = () => {
     const router = useRouter();
 
     const handleSubmit = () => {
+        //fake fill data
+        setChain("Moonbeam");
+        setIsTrading("Yes");
+        setPoolBudget(5000000);
+        setTargetStake(500000);
+        setTargetAudience("Crypto Enthusiasts");
+
         console.log(chain)
         console.log(chain, isTrading, poolBudget, targetStake, targetAudience)
         if (chain === "" || isTrading === "" || poolBudget === undefined || targetStake === undefined || targetAudience === "") {

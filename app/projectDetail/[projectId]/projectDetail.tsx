@@ -2,6 +2,9 @@
 import VerticalProgressBar from "@/app/components/Progress";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import StatusDisplay from "@/app/components/Status";
+type Status = "upcoming" | "ongoing" | "completed";
+
 const ProjectDetailPage = () => {
   const [timeLeft, setTimeLeft] = useState({
     days: 15,
@@ -16,7 +19,31 @@ const ProjectDetailPage = () => {
     { name: "Distributing" },
   ];
   const [currentStep, setCurrentStep] = useState(2); // The active step index (e.g., 0-based)
+  const [status, setStatus] = useState<Status>("upcoming");
   const [activeButton, setActiveButton] = useState("FROST");
+
+  //Create these state var acceptedVToken,
+    // minStake,
+    // maxStake,
+    // projectName,
+    // projectLogo,
+    // projectImage,
+    // shortDescription,
+    // longDescription,
+    // fromDate,
+    // toDate
+
+    const [projectName, setProjectName] = useState<string>('');
+    const [projectLogo, setProjectLogo] = useState<File | null>(null);
+    const [projectImage, setProjectImage] = useState<File | null>(null);
+    const [shortDescription, setShortDescription] = useState<string>('');
+    const [longDescription, setLongDescription] = useState<string>('');
+    const [acceptedVToken, setAcceptedVToken] = useState<string>('');
+    const [minStake, setMinStake] = useState<number | undefined>(undefined);
+    const [maxStake, setMaxStake] = useState<number | undefined>(undefined);
+    const [fromDate, setFromDate] = useState<string>('');
+    const [toDate, setToDate] = useState<string>('');
+
 
   // Countdown logic
   useEffect(() => {
@@ -73,21 +100,18 @@ const ProjectDetailPage = () => {
             <div className="basis-3/5">
               <div className="flex">
                 <div className="text-2xl font-bold bg-gradient-to-r from-[#82B2FA] to-[#FFFFFF] bg-clip-text text-transparent">
-                  Project Name
+                  {projectName}
                 </div>
 
-                <div className="ml-5 rounded-xl px-5 flex items-center justify-center bg-[#102821] text-[#0E9A36]">
+                <StatusDisplay status={status} />
+                {/* <div className="ml-5 rounded-xl px-5 flex items-center justify-center bg-[#102821] text-[#0E9A36]">
                   On going
-                </div>
+                </div> */}
               </div>
 
               <div className="mt-2 text-sm">
                 <span>
-                  Lorem Ipsum is simply dummy text of the printing and
-                  typesetting industry. Lorem Ipsum has been the industry
-                  standard dummy text ever since the 1500s, when an unknown
-                  printer took a galley of type and scrambled it to make a type
-                  specimen book.
+                  {shortDescription}
                 </span>
               </div>
             </div>
@@ -151,18 +175,16 @@ const ProjectDetailPage = () => {
         {/* Pool Button */}
         <div className="mt-24 flex gap-5 px-8">
           <button
-            className={`btn btn-ghost rounded-3xl px-8 py-2 text-white transition-colors duration-300 ${
-              activeButton === "FROST" ? "bg-[#6D93CD]" : "bg-transparent"
-            }`}
+            className={`btn btn-ghost rounded-3xl px-8 py-2 text-white transition-colors duration-300 ${activeButton === "FROST" ? "bg-[#6D93CD]" : "bg-transparent"
+              }`}
             onClick={() => setActiveButton("FROST")}
           >
             FROST Pool
           </button>
 
           <button
-            className={`btn btn-ghost rounded-3xl px-8 py-2 text-white transition-colors duration-300 ${
-              activeButton === "VToken" ? "bg-[#6D93CD]" : "bg-transparent"
-            }`}
+            className={`btn btn-ghost rounded-3xl px-8 py-2 text-white transition-colors duration-300 ${activeButton === "VToken" ? "bg-[#6D93CD]" : "bg-transparent"
+              }`}
             onClick={() => setActiveButton("VToken")}
           >
             VToken Pool
@@ -298,13 +320,13 @@ const ProjectDetailPage = () => {
             </div>
           </div>
         )}
-        
+
         {activeButton === "MoreDetail" && (
           <div className=" ml-16 mr-16 border  rounded-xl w-[60%]">
             <div className=" text-white p-6 rounded-xl">
               {/* <!-- Main Container --> */}
               <div className="grid grid-cols-2 gap-y-6 gap-x-12">
-                More Detail content
+                {longDescription}
               </div>
             </div>
           </div>
