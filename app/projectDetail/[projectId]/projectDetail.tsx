@@ -12,15 +12,13 @@ const ProjectDetailPage = () => {
     minutes: 24,
     seconds: 59,
   });
-  const steps = [
-    { name: "Starting" },
-    { name: "Funding" },
-    { name: "Awaiting" },
-    { name: "Distributing" },
-  ];
+  const steps = [{ name: "Debut" }, { name: "Staking" }, { name: "End" }];
   const [currentStep, setCurrentStep] = useState(2); // The active step index (e.g., 0-based)
   const [status, setStatus] = useState<Status>("upcoming");
   const [activeButton, setActiveButton] = useState("FROST");
+
+  const [stakeAmount, setStakeAmount] = useState("");
+  const [totalStaked, setTotalStaked] = useState(0);
 
   //Create these state var acceptedVToken,
   // minStake,
@@ -77,6 +75,14 @@ const ProjectDetailPage = () => {
 
     return () => clearInterval(timer); // Cleanup on unmount
   }, []);
+
+  const handleStake = () => {
+    const amount = parseFloat(stakeAmount);
+    if (amount > 0 && amount != null) {
+      setTotalStaked((prevTotal) => prevTotal + amount);
+      setStakeAmount("");
+    }
+  };
 
   return (
     <div>
@@ -199,8 +205,11 @@ const ProjectDetailPage = () => {
       </div>
 
       <div className=" text-white ml-20">
-        <div className="w-full h-[500px] mt-10 border border-blue-50 px-8">
-          <div className="flex flex-col gap-10">
+        <div
+          className="flex gap-40 w-full h-auto mt-10  px-8 
+        sm:grid sm:grid-rows-2 sm:grid-flow-col sm:gap-20 md:grid md:grid-rows-2 md:grid-flow-col md:gap-20  lg:grid lg:grid-rows-2 lg:grid-flow-col lg:gap-20  xl:flex xl:flex-row xl:gap-40"
+        >
+          <div className="flex flex-col gap-6">
             <div className="flex items-center gap-5 w-full">
               <Image
                 src="https://i.pinimg.com/736x/e4/29/e6/e429e66ab46e2c9d94f4921f70682ac1.jpg"
@@ -212,12 +221,130 @@ const ProjectDetailPage = () => {
               <span className="text-[20px] font-bold">My money</span>
             </div>
 
-            <div className="flex flex-col gap-3">
-              <span className="text-[16px] ">Số token FDUSD bị khoá</span>
-              <span>-- FDUSD</span>
+            <div className="flex flex-col gap-1">
+              <span className="text-[16px] text-[#CACACA]">
+                FDUSD Tokens Locked
+              </span>
+              <span className="text-[36px] text-white font-bold">
+                {totalStaked} FDUSD
+              </span>
             </div>
 
-            <div>fvđfv</div>
+            <div className="flex flex-col gap-2">
+              <span className="text-[16px] text-[#a7a7a7]">
+                Available: 0.0000 FDUSD
+              </span>
+              <div className="flex gap-5">
+                <button
+                  className=" bg-[#6D93CD] text-white rounded-md px-2 py-2 text-[13px] flex justify-center w-[300px] hover:scale-105 duration-300"
+                  onClick={() =>
+                    (
+                      document.getElementById("lock") as HTMLDialogElement
+                    ).showModal()
+                  }
+                >
+                  Lock
+                </button>
+                <dialog id="lock" className="modal">
+                  <div className="modal-box bg-[#2D468D]">
+                    <h3 className="font-bold text-lg mb-4 text-white">
+                      Please enter how many token you want to stake
+                    </h3>
+
+                    <div className="bg-[#5A78B8] rounded-lg p-4 mb-4 relative">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-[#abcaf7] font-bold text-sm">
+                          Staking
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center mb-2">
+                        <input
+                          type="number"
+                          className="text-3xl font-bold text-white bg-transparent w-2/3 outline-none 
+                          [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-moz-appearance:textfield]"
+                          placeholder="enter"
+                          value={stakeAmount}
+                          onChange={(e) => setStakeAmount(e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={handleStake}
+                      className="btn bg-white text-[#7BA9EF] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#2C3E6F]"
+                    >
+                      Stake
+                    </button>
+                  </div>
+                  <form method="dialog" className="modal-backdrop">
+                    <button>close</button>
+                  </form>
+                </dialog>
+
+                <button
+                  className=" bg-[#2A5697] text-white rounded-md px-2 py-2 text-[13px] flex justify-center w-[100px] hover:scale-105 duration-300"
+                  // onClick={() =>
+                  //   (
+                  //     document.getElementById("unlock") as HTMLDialogElement
+                  //   ).showModal()
+                  // }
+                >
+                  Unlock
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-6">
+            <div className="flex items-center gap-5 w-full">
+              <Image
+                src="https://i.pinimg.com/736x/e4/29/e6/e429e66ab46e2c9d94f4921f70682ac1.jpg"
+                width={50}
+                height={50}
+                alt="icon"
+                className="rounded-full"
+              />
+              <span className="text-[20px] font-bold">
+                My airdrop&apos;s token
+              </span>
+            </div>
+
+            <div className="flex flex-col gap-1">
+              <span className="text-[16px] text-[#CACACA]">
+                Number of airdrop tokens not received
+              </span>
+              <span className="text-[36px] text-white font-bold">-- VANA</span>
+            </div>
+
+            <div className="flex flex-col gap-2">
+              <div className="flex gap-5 mt-[30px]">
+                <button
+                  className=" bg-[#6D93CD] text-white rounded-md px-2 py-2 text-[13px] flex justify-center w-[300px] hover:scale-105 duration-300"
+                  onClick={() =>
+                    (
+                      document.getElementById("airdrop") as HTMLDialogElement
+                    ).showModal()
+                  }
+                >
+                  Receive token airdrop
+                </button>
+                <dialog id="airdrop" className="modal">
+                  <div className="modal-box bg-[#2D468D]"></div>
+                  <form method="dialog" className="modal-backdrop">
+                    <button>close</button>
+                  </form>
+                </dialog>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-1 mt-[75px]">
+              <span className="text-[16px] text-[#CACACA]">
+                Summary of airdrop token
+              </span>
+              <span className="text-[36px] text-white font-bold">-- VANA</span>
+            </div>
           </div>
         </div>
       </div>
@@ -228,7 +355,7 @@ const ProjectDetailPage = () => {
           <div className=" ml-16 mr-16 border  rounded-xl w-[60%]">
             <div className=" text-white p-6 rounded-xl">
               {/* <!-- Main Container --> */}
-              <div className="grid grid-cols-2 gap-y-6 gap-x-12">
+              <div className="lg:grid lg:grid-cols-2 gap-y-6 gap-x-12 md:flex md:flex-col md:gap-6 sm:flex sm:flex-col sm:gap-6">
                 {/* <!-- Row 1 --> */}
                 <div>
                   <p className="text-gray-400 text-lg">
@@ -289,7 +416,7 @@ const ProjectDetailPage = () => {
           <div className=" ml-16 mr-16 border  rounded-xl w-[60%]">
             <div className=" text-white p-6 rounded-xl">
               {/* <!-- Main Container --> */}
-              <div className="grid grid-cols-2 gap-y-6 gap-x-12">
+              <div className="lg:grid lg:grid-cols-2 gap-y-6 gap-x-12 md:flex md:flex-col md:gap-6 sm:flex sm:flex-col sm:gap-6">
                 {/* <!-- Row 1 --> */}
                 <div>
                   <p className="text-gray-400 text-lg">
@@ -348,7 +475,7 @@ const ProjectDetailPage = () => {
           <div className=" ml-16 mr-16 border  rounded-xl w-[60%]">
             <div className=" text-white p-6 rounded-xl">
               {/* <!-- Main Container --> */}
-              <div className="grid grid-cols-2 gap-y-6 gap-x-12">
+              <div className="lg:grid lg:grid-cols-2 gap-y-6 gap-x-12 md:flex md:flex-col md:gap-6 sm:flex sm:flex-col sm:gap-6">
                 {longDescription}
               </div>
             </div>
@@ -356,7 +483,7 @@ const ProjectDetailPage = () => {
         )}
 
         <div className="border rounded-xl  bg-[#465377] text-white w-[40%]">
-          <div className="flex-row flex items-stretch justify-between">
+          <div className="xl:flex-row flex items-stretch justify-between md:flex-col md:gap-5 sm:flex-col smL:gap-5">
             <div className="p-8">
               <div className="text-2xl font-bold mb-4 bg-gradient-to-r from-[#82B2FA] to-[#FFFFFF] bg-clip-text text-transparent">
                 Project Progress
