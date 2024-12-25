@@ -23,27 +23,26 @@ const ProjectDetailPage = () => {
   const [activeButton, setActiveButton] = useState("FROST");
 
   //Create these state var acceptedVToken,
-    // minStake,
-    // maxStake,
-    // projectName,
-    // projectLogo,
-    // projectImage,
-    // shortDescription,
-    // longDescription,
-    // fromDate,
-    // toDate
+  // minStake,
+  // maxStake,
+  // projectName,
+  // projectLogo,
+  // projectImage,
+  // shortDescription,
+  // longDescription,
+  // fromDate,
+  // toDate
 
-    const [projectName, setProjectName] = useState<string>('');
-    const [projectLogo, setProjectLogo] = useState<File | null>(null);
-    const [projectImage, setProjectImage] = useState<File | null>(null);
-    const [shortDescription, setShortDescription] = useState<string>('');
-    const [longDescription, setLongDescription] = useState<string>('');
-    const [acceptedVToken, setAcceptedVToken] = useState<string>('');
-    const [minStake, setMinStake] = useState<number | undefined>(undefined);
-    const [maxStake, setMaxStake] = useState<number | undefined>(undefined);
-    const [fromDate, setFromDate] = useState<string>('');
-    const [toDate, setToDate] = useState<string>('');
-
+  const [projectName, setProjectName] = useState<string>("");
+  const [projectLogo, setProjectLogo] = useState<File | null>(null);
+  const [projectImage, setProjectImage] = useState<File | null>(null);
+  const [shortDescription, setShortDescription] = useState<string>("");
+  const [longDescription, setLongDescription] = useState<string>("");
+  const [acceptedVToken, setAcceptedVToken] = useState<string>("");
+  const [minStake, setMinStake] = useState<number | undefined>(undefined);
+  const [maxStake, setMaxStake] = useState<number | undefined>(undefined);
+  const [fromDate, setFromDate] = useState<string>("");
+  const [toDate, setToDate] = useState<string>("");
 
   // Countdown logic
   useEffect(() => {
@@ -110,9 +109,7 @@ const ProjectDetailPage = () => {
               </div>
 
               <div className="mt-2 text-sm">
-                <span>
-                  {shortDescription}
-                </span>
+                <span>{shortDescription}</span>
               </div>
             </div>
           </div>
@@ -175,16 +172,18 @@ const ProjectDetailPage = () => {
         {/* Pool Button */}
         <div className="mt-24 flex gap-5 px-8">
           <button
-            className={`btn btn-ghost rounded-3xl px-8 py-2 text-white transition-colors duration-300 ${activeButton === "FROST" ? "bg-[#6D93CD]" : "bg-transparent"
-              }`}
+            className={`btn btn-ghost rounded-3xl px-8 py-2 text-white transition-colors duration-300 ${
+              activeButton === "FROST" ? "bg-[#6D93CD]" : "bg-transparent"
+            }`}
             onClick={() => setActiveButton("FROST")}
           >
             FROST Pool
           </button>
 
           <button
-            className={`btn btn-ghost rounded-3xl px-8 py-2 text-white transition-colors duration-300 ${activeButton === "VToken" ? "bg-[#6D93CD]" : "bg-transparent"
-              }`}
+            className={`btn btn-ghost rounded-3xl px-8 py-2 text-white transition-colors duration-300 ${
+              activeButton === "VToken" ? "bg-[#6D93CD]" : "bg-transparent"
+            }`}
             onClick={() => setActiveButton("VToken")}
           >
             VToken Pool
@@ -196,6 +195,30 @@ const ProjectDetailPage = () => {
           >
             More Detail
           </button>
+        </div>
+      </div>
+
+      <div className=" text-white ml-20">
+        <div className="w-full h-[500px] mt-10 border border-blue-50 px-8">
+          <div className="flex flex-col gap-10">
+            <div className="flex items-center gap-5 w-full">
+              <Image
+                src="https://i.pinimg.com/736x/e4/29/e6/e429e66ab46e2c9d94f4921f70682ac1.jpg"
+                width={50}
+                height={50}
+                alt="icon"
+                className="rounded-full"
+              />
+              <span className="text-[20px] font-bold">My money</span>
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <span className="text-[16px] ">Số token FDUSD bị khoá</span>
+              <span>-- FDUSD</span>
+            </div>
+
+            <div>fvđfv</div>
+          </div>
         </div>
       </div>
 
