@@ -2,6 +2,7 @@
 import StatCard from "../components/StatCard";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 import { banners } from "../constants/index";
 import { dataTable } from "../constants/index";
@@ -26,6 +27,11 @@ const AllProject = () => {
     setActiveId(id);
   };
 
+  const route = useRouter();
+  const handleSubmit = () => {
+    route.push("/addProject/verifyToken");
+  };
+
   // const handleBannerClick = (event, id) => {
   //   event.preventDefault();
   // };
@@ -36,7 +42,12 @@ const AllProject = () => {
         <h1 className="text-[72px] leading-[86px] font-bold bg-gradient-to-r from-[#7BA9EF] to-[#FFFFFF] to-50% text-transparent bg-clip-text">
           Launchpool
         </h1>
-        <p className="text-[#A7B7DB]">Choose your favorite project!!!!</p>
+        <button
+          className="btn text-[#ffff] bg-[#6D93CD] w-[150px] animate-bounce"
+          onClick={handleSubmit}
+        >
+          Add project
+        </button>
       </div>
 
       {/* -------------------------Banner----------------------------- */}
