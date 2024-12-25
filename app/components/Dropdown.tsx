@@ -1,20 +1,37 @@
 import { useState, useRef, useEffect } from "react";
 import { availableNetworks } from "../constants";
-import useAvailableChain, { AvailableChainState, useProjectBasisStore } from "../zustand/store";
+import useAvailableChain, { AvailableChainState, useCombinedStore, useCreateOfferStore, useProjectBasisStore } from "../zustand/store";
 
 interface CustomDropdownProps {
     className: string;
+    options: {
+        id: string;
+        name: string;
+        image: string;
+    }[];
+    placeholder?: string;
+    state: string;
 }
 
-const CustomDropdown = ({ className }: CustomDropdownProps) => {
+const CustomDropdown = ({ className, options, placeholder, state }: CustomDropdownProps) => {
     const [isOpen, setIsOpen] = useState(false);
-    const [selectedOption, setSelectedOption] = useState("Select a chain");
-    const { chain,setChain } = useProjectBasisStore();
+    const [selectedOption, setSelectedOption] = useState(placeholder);
+    // const { chain, setChain } = useProjectBasisStore();
     // const setChain = useAvailableChain((state: AvailableChainState) => state.setChain);
-    const dropdownRef = useRef<HTMLDivElement>(null);
-    
 
-    const options = availableNetworks;
+// const globalState = useCombinedStore((store) => store[state]);
+// const setGlobalState = useCombinedStore((store) => store[`set${state.charAt(0).toUpperCase()}${state.slice(1)}`]);
+    // const globalState = useCombinedStore((store) => store[state as keyof typeof store]);
+    // const setGlobalState = useCombinedStore((store: { [key: string]: any }) => store[`set${state.charAt(0).toUpperCase()}${state.slice(1)}`]);
+    const setGlobalState = useCombinedStore((store) => {
+        const setterName = `set${state.charAt(0).toUpperCase()}${state.slice(1)}`;
+        return (store as any)[setterName] || (() => console.error(`Setter ${setterName} is not defined.`));
+    });
+    
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+
+    // const options = availableNetworks;
 
     // const handleOnclick = () => {
     //     console.log(chain);
@@ -57,10 +74,10 @@ const CustomDropdown = ({ className }: CustomDropdownProps) => {
         <div className={`relative ${className}`} ref={dropdownRef}>
             {/* Dropdown Toggle */}
             <button
-                className={`w-full px-4 py-4 text-left bg-[#f3f3f3] border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none flex items-center ${className}`}
+                className={`w-full px-4 py-4 text-left bg-[#f3f3f3] border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none flex items-center justify-center ${className}`}
                 onClick={() => setIsOpen(!isOpen)}
             >
-                {selectedOption !== "Select a chain" ? (
+                {selectedOption !== placeholder ? (
                     <div className="flex items-center">
                         {/* Display selected option image */}
                         <img
@@ -74,13 +91,15 @@ const CustomDropdown = ({ className }: CustomDropdownProps) => {
                         {selectedOption}
                     </div>
                 ) : (
-                    selectedOption
+                    <span className="text-center w-full">
+                        {selectedOption}
+                    </span>
                 )}
             </button>
 
             {/* Dropdown Options */}
             {isOpen && (
-                <div className="absolute w-full bg-white border border-gray-300 rounded-3xl shadow-lg mt-2 z-10">
+                <div className="absolute w-full bg-white border border-gray-300 rounded-3xl shadow-lg mt-2 z-10 max-h-72 overflow-y-auto">
                     {options.map((option) => (
                         <div
                             key={option.id}
@@ -88,7 +107,7 @@ const CustomDropdown = ({ className }: CustomDropdownProps) => {
                             onClick={() => {
                                 setSelectedOption(option.name);
                                 setIsOpen(false);
-                                setChain(option.name)
+                                setGlobalState(option.name);
                             }}
                         >
                             <img
@@ -101,6 +120,7 @@ const CustomDropdown = ({ className }: CustomDropdownProps) => {
                     ))}
                 </div>
             )}
+
         </div>
     );
 };

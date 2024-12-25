@@ -97,6 +97,74 @@ export const dataTable = [
   },
 ];
 
+export const availableTokens = [
+  {
+    id: "1",
+    name: "BNB",
+    image: "https://cryptologos.cc/logos/binance-coin-bnb-logo.png?v=013",
+  },
+  {
+    id: "2",
+    name: "ETH",
+    image: "https://cryptologos.cc/logos/ethereum-eth-logo.png?v=022",
+  },
+  {
+    id: "3",
+    name: "USDT",
+    image: "https://cryptologos.cc/logos/tether-usdt-logo.png?v=013",
+  },
+  {
+    id: "4",
+    name: "BTC",
+    image: "https://cryptologos.cc/logos/bitcoin-btc-logo.png?v=013",
+  },
+  {
+    id: "5",
+    name: "ADA",
+    image: "https://cryptologos.cc/logos/cardano-ada-logo.png?v=013",
+  },
+  {
+    id: "6",
+    name: "DOT",
+    image: "https://cryptologos.cc/logos/polkadot-new-dot-logo.png?v=013",
+  },
+  {
+    id: "7",
+    name: "DOGE",
+    image: "https://cryptologos.cc/logos/dogecoin-doge-logo.png?v=013",
+  },
+  {
+    id: "8",
+    name: "SOL",
+    image: "https://cryptologos.cc/logos/solana-sol-logo.png?v=013",
+  },
+  {
+    id: "9",
+    name: "LTC",
+    image: "https://cryptologos.cc/logos/litecoin-ltc-logo.png?v=013",
+  },
+  {
+    id: "10",
+    name: "UNI",
+    image: "https://cryptologos.cc/logos/uniswap-uni-logo.png?v=013",
+  },
+  {
+    id: "11",
+    name: "LINK",
+    image: "https://cryptologos.cc/logos/chainlink-link-logo.png?v=013",
+  },
+  {
+    id: "12",
+    name: "BCH",
+    image: "https://cryptologos.cc/logos/bitcoin-cash-bch-logo.png?v=013",
+  },
+  {
+    id: "13",
+    name: "XRP",
+    image: "https://cryptologos.cc/logos/xrp-xrp-logo.png?v=013",
+  }
+]
+
 
 export const availableNetworks = [
   {
