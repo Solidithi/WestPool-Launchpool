@@ -1,5 +1,6 @@
 "use client";
 import CustomDropdown from "@/app/components/Dropdown";
+import { availableNetworks } from "@/app/constants";
 import useAvailableChain, { useProjectBasisStore } from "@/app/zustand/store";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -64,7 +65,7 @@ const ProjectBasisPage = () => {
                                     <option value="Bifrost">Bifrost</option>
 
                                 </select> */}
-                                <CustomDropdown className="" />
+                                <CustomDropdown className="" options={availableNetworks} placeholder="Select a chain" state="chain"/>
                                 {/* <div className="dropdown">
                                     <div tabIndex={0} role="button" className="btn w-full px-4 py-4 bg-white hover:bg-red-500">Select a Chain</div>
                                     <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-3xl z-[1] w-52 p-2 shadow">

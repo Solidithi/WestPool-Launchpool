@@ -46,6 +46,68 @@ type ProjectDetailState = {
     setProjectLogo: (value: File | null) => void;
 }
 
+type CombinedState = {
+    // Project Basis State
+    chain: string;
+    isTrading: string;
+    poolBudget: number;
+    targetStake: number;
+    targetAudience: string;
+
+    // Project Detail State
+    projectName: string;
+    shortDescription: string;
+    longDescription: string;
+    maxStake?: number;
+    minStake?: number;
+    acceptedVToken: string;
+    fromDate: string;
+    toDate: string;
+    projectImage: File | null;
+    projectLogo: File | null;
+
+    // Create Offer State
+    role: string;
+    pricePerToken: number;
+    amount: number;
+    collateral: number;
+    selectedNetwork: string;
+    selectedToken: string;
+    selectedCollateralToken: string;
+
+    //Create Offer Setters
+    setRole: (value: string) => void;
+    setPricePerToken: (value: number) => void;
+    setAmount: (value: number) => void;
+    setCollateral: (value: number) => void;
+    setSelectedNetwork: (value: string) => void;
+    setSelectedToken: (value: string) => void;
+    setSelectedCollateralToken: (value: string) => void;
+    
+};
+
+type CombinedSetters = {
+    [K in keyof CombinedState as `set${Capitalize<string & K>}`]: (value: CombinedState[K]) => void;
+};
+
+type CreateOfferState = {
+    role: string;
+    pricePerToken: number;
+    amount: number;
+    collateral: number;
+    selectedNetwork: string;
+    selectedToken: string;
+    selectedCollateralToken: string;
+
+    setRole: (value: string) => void;
+    setPricePerToken: (value: number) => void;
+    setAmount: (value: number) => void;
+    setCollateral: (value: number) => void;
+    setSelectedNetwork: (value: string) => void;
+    setSelectedToken: (value: string) => void;
+    setSelectedCollateralToken: (value: string) => void;
+};
+
 
 const useAvailableChain = create<AvailableChainState>((set) => ({
     chain: "",
@@ -94,6 +156,76 @@ const useProjectDetailStore = create<ProjectDetailState>((set) => ({
     setProjectLogo: (value) => set({ projectLogo: value }),
 }));
 
+const useCombinedStore = create<CombinedState>((set) => ({
+    // Initial State
+    chain: "",
+    isTrading: "",
+    poolBudget: 0,
+    targetStake: 0,
+    targetAudience: "",
+    projectName: "",
+    shortDescription: "",
+    longDescription: "",
+    maxStake: undefined,
+    minStake: undefined,
+    acceptedVToken: "",
+    fromDate: "",
+    toDate: "",
+    projectImage: null,
+    projectLogo: null,
+    // Create Offer State
+    role: "buyer",
+    pricePerToken: 0,
+    amount: 0,
+    collateral: 0,
+    selectedNetwork: "Select Network",
+    selectedToken: "Select Token",
+    selectedCollateralToken: "Select Token",
+
+    // Dynamic Setters
+    setChain: (value: string) => set({ chain: value }),
+    setIsTrading: (value: string) => set({ isTrading: value }),
+    setPoolBudget: (value: number) => set({ poolBudget: value }),
+    setTargetStake: (value: number) => set({ targetStake: value }),
+    setTargetAudience: (value: string) => set({ targetAudience: value }),
+    setProjectName: (value: string) => set({ projectName: value }),
+    setShortDescription: (value: string) => set({ shortDescription: value }),
+    setLongDescription: (value: string) => set({ longDescription: value }),
+    setMaxStake: (value: number | undefined) => set({ maxStake: value }),
+    setMinStake: (value: number | undefined) => set({ minStake: value }),
+    setAcceptedVToken: (value: string) => set({ acceptedVToken: value }),
+    setFromDate: (value: string) => set({ fromDate: value }),
+    setToDate: (value: string) => set({ toDate: value }),
+    setProjectImage: (value: File | null) => set({ projectImage: value }),
+    setProjectLogo: (value: File | null) => set({ projectLogo: value }),
+    // Create Offer Setters
+    setRole: (value: string) => set({ role: value }),
+    setPricePerToken: (value: number) => set({ pricePerToken: value }),
+    setAmount: (value: number) => set({ amount: value }),
+    setCollateral: (value: number) => set({ collateral: value }),
+    setSelectedNetwork: (value: string) => set({ selectedNetwork: value }),
+    setSelectedToken: (value: string) => set({ selectedToken: value }),
+    setSelectedCollateralToken: (value: string) => set({ selectedCollateralToken: value }),
+}));
+
+const useCreateOfferStore = create<CreateOfferState>((set) => ({
+    role: "buyer",
+    pricePerToken: 0,
+    amount: 0,
+    collateral: 0,
+    selectedNetwork: "Select Network",
+    selectedToken: "Select Token",
+    selectedCollateralToken: "Select Token",
+
+    setRole: (value: string) => set({ role: value }),
+    setPricePerToken: (value: number) => set({ pricePerToken: value }),
+    setAmount: (value: number) => set({ amount: value }),
+    setCollateral: (value: number) => set({ collateral: value }),
+    setSelectedNetwork: (value: string) => set({ selectedNetwork: value }),
+    setSelectedToken: (value: string) => set({ selectedToken: value }),
+    setSelectedCollateralToken: (value: string) => set({ selectedCollateralToken: value }),
+}));
+
 export default useAvailableChain;
-export { useVerifiedToken, useProjectBasisStore, useProjectDetailStore };
-export type { AvailableChainState, VerifiedTokenState, ProjectBasisState, ProjectDetailState };
+export { useVerifiedToken, useProjectBasisStore, useProjectDetailStore, useCombinedStore, useCreateOfferStore };
+export type { AvailableChainState, VerifiedTokenState, ProjectBasisState, ProjectDetailState, CombinedState, CombinedSetters };
