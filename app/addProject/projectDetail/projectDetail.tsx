@@ -3,203 +3,273 @@ import { useProjectDetailStore } from "@/app/zustand/store";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
-
-
 const ProjectDetailPage = () => {
-    const {
-        projectName,
-        setProjectName,
-        shortDescription,
-        setShortDescription,
-        longDescription,
-        setLongDescription,
-        maxStake,
-        setMaxStake,
-        minStake,
-        setMinStake,
-        acceptedVToken,
-        setAcceptedVToken,
-        fromDate,
-        setFromDate,
-        toDate,
-        setToDate,
-        projectImage,
-        setProjectImage,
-        projectLogo,
-        setProjectLogo,
-    } = useProjectDetailStore();
+  const {
+    projectName,
+    setProjectName,
+    shortDescription,
+    setShortDescription,
+    longDescription,
+    setLongDescription,
+    maxStake,
+    setMaxStake,
+    minStake,
+    setMinStake,
+    acceptedVToken,
+    setAcceptedVToken,
+    fromDate,
+    setFromDate,
+    toDate,
+    setToDate,
+    projectImage,
+    setProjectImage,
+    projectLogo,
+    setProjectLogo,
+  } = useProjectDetailStore();
 
-    const router = useRouter();
+  const router = useRouter();
 
-    const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, setter: (value: File | null) => void) => {
-        const file = event.target.files?.[0] || null;
-        setter(file);
-    };
-
-    const handleSubmit = () => {
-        //fake data fill
-        setProjectName("Project Name");
-        setShortDescription("Short Description");
-        setLongDescription("Long Description");
-        setMaxStake(5000);
-        setMinStake(100);
-        setAcceptedVToken("VToken");
-        setFromDate("2021-09-01T08:30");
-        setToDate("2021-09-30T08:30");
-        setProjectImage(null);
-        setProjectLogo(null);
-
-        console.log(projectName, shortDescription, longDescription, maxStake, minStake, acceptedVToken, fromDate, toDate, projectImage, projectLogo);
-        if (projectName === "" || shortDescription === "" || longDescription === "" || maxStake === undefined || minStake === undefined || acceptedVToken === "" || fromDate === "" || toDate === "" || projectImage === null || projectLogo === null) {
-            alert("Please fill all the fields");
-            return;
-        }
-        try {
-            router.push("/addProject/preview");
-        } catch (e) {
-            console.log(e)
-        }
+  const handleFileImage = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = Array.from(event.target.files || []);
+    if (files.length + projectImage.length > 4) {
+      alert("You must choose 4 images");
+      return;
     }
 
-    return (
-        <div>
-            <div className="flex flex-col items-center">
-                <div className="w-[90%] max-w-4xl p-8 bg-white rounded-3xl shadow-lg">
-                    <div className="flex flex-col font-bold text-[#404040] gap-y-10">
-                        <div className="">
-                            Project Name
-                            <div className="">
-                                <input type="text"
-                                    className="w-full mt-5 px-4 py-4 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none bg-[#f3f3f3]"
-                                    placeholder="Enter Project Name"
-                                    onChange={(e) => setProjectName(e.target.value)}
-                                />
-                            </div>
+    const base64Promises = files.map((file) => convertToBase64(file));
+    const base64Images = await Promise.all(base64Promises);
 
-                        </div>
+    console.log("1" + base64Promises);
+    console.log("2" + base64Images);
 
-                        <div className="">
-                            Short Description
-                            <div className="">
-                                <input type="text"
-                                    className="w-full mt-5 px-4 py-4 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none bg-[#f3f3f3]"
-                                    placeholder="Enter Short Description"
-                                    onChange={(e) => setShortDescription(e.target.value)}
-                                />
-                            </div>
-                        </div>
+    setProjectImage([...projectImage, ...base64Images]);
+  };
 
-                        {/* Long Description */}
-                        <div className="">
-                            Long Description
-                            <div className="">
-                                <textarea
-                                    className="w-full mt-5 px-4 pt-4 pb-24 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none bg-[#f3f3f3]"
-                                    placeholder="Enter Long Description"
-                                    onChange={(e) => setLongDescription(e.target.value)}
-                                />
-                            </div>
-                        </div>
+  const handleFileLogo = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
 
-                        {/* Project Imafe & Project Logo */}
-                        <div className="grid grid-cols-2 gap-16">
-                            <div className="">
-                                Project Image
-                                <div className="">
-                                    <input type="file"
-                                        className="w-full mt-5 px-4 py-24 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none bg-[#f3f3f3]"
-                                        onChange={(e) => handleFileChange(e, setProjectImage)}
-                                    />
-                                </div>
-                            </div>
+    const base64Image = await convertToBase64(file);
 
-                            <div className="">
-                                Project Logo
-                                <div className="">
-                                    <input type="file"
-                                        className="w-full mt-5 px-4 py-24 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none bg-[#f3f3f3]"
-                                        onChange={(e) => handleFileChange(e, setProjectLogo)}
-                                    />
-                                </div>
-                            </div>
-                        </div>
+    setProjectLogo(base64Image);
+  };
 
-                        {/* Accepted VToken */}
-                        <div className="">
-                            Accepted VToken
-                            <div className="">
-                                <input type="text"
-                                    className="w-full mt-5 px-4 py-4 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none bg-[#f3f3f3]"
-                                    placeholder="Enter Accepted VToken"
-                                    onChange={(e) => setAcceptedVToken(e.target.value)}
-                                />
-                            </div>
-                        </div>
+  const convertToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
+  };
 
-                        {/* Max Stake */}
-                        <div className="">
-                            Max Stake
-                            <div className="">
-                                <input type="number"
-                                    className="w-full mt-5 px-4 py-4 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none bg-[#f3f3f3]"
-                                    placeholder="Enter Max Stake"
-                                    onChange={(e) => setMaxStake(Number(e.target.value))}
-                                />
-                            </div>
-                        </div>
+  const handleToDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedToDate = e.target.value;
 
-                        {/* Min Stake */}
-                        <div className="">
-                            Min Stake
-                            <div className="">
-                                <input type="number"
-                                    className="w-full mt-5 px-4 py-4 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none bg-[#f3f3f3]"
-                                    placeholder="Enter Min Stake"
-                                    onChange={(e) => setMinStake(Number(e.target.value))}
-                                />
-                            </div>
-                        </div>
+    if (fromDate && new Date(selectedToDate) <= new Date(fromDate)) {
+      alert("The 'To' date must be after the 'From' date.");
+      e.target.value = ""; // Reset value
+      setToDate("");
+    } else {
+      setToDate(selectedToDate);
+    }
+  };
 
-                        {/* From & To Duration DateTime */}
+  const handleSubmit = () => {
+    //fake data fill
+    // setProjectName("Project Name");
+    // setShortDescription("Short Description");
+    // setLongDescription("Long Description");
+    // setMaxStake(5000);
+    // setMinStake(100);
+    // setAcceptedVToken("VToken");
+    // setFromDate("2021-09-01T08:30");
+    // setToDate("2021-09-30T08:30");
+    // setProjectImage([]);
+    // setProjectLogo(null);
 
-                        <div className="grid grid-cols-2 gap-16">
-                            <div className="">
-                                From
-                                <div className="">
-                                    <input type="datetime-local"
-                                        className="w-full mt-5 px-4 py-4 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none bg-[#f3f3f3]"
-                                        onChange={(e) => setFromDate(e.target.value)}
-                                    />
-                                </div>
-                            </div>
+    console.log(
+      projectName,
+      shortDescription,
+      longDescription,
+      maxStake,
+      minStake,
+      acceptedVToken,
+      fromDate,
+      toDate,
+      projectImage,
+      projectLogo
+    );
+    if (
+      projectName === "" ||
+      shortDescription === "" ||
+      longDescription === "" ||
+      maxStake === undefined ||
+      minStake === undefined ||
+      acceptedVToken === "" ||
+      fromDate === "" ||
+      toDate === "" ||
+      projectImage === null ||
+      projectLogo === null
+    ) {
+      alert("Please fill all the fields");
+      return;
+    }
+    try {
+      router.push("/addProject/preview");
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
-                            <div className="">
-                                To
-                                <div className="">
-                                    <input type="datetime-local"
-                                        className="w-full mt-5 px-4 py-4 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none bg-[#f3f3f3]"
-                                        onChange={(e) => setToDate(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-
-                        </div>
-                        {/* Submit button */}
-                        <div className="flex justify-center mt-10 mb-4">
-                            <button
-                                className="w-8/12 px-10 py-3 text-white bg-[#6d93cd] hover:bg-[#2a5697] rounded-3xl"
-                                onClick={handleSubmit}
-                            >
-                                Continue
-                            </button>
-                        </div>
-
-                    </div>
-                </div>
+  return (
+    <div>
+      <div className="flex flex-col items-center">
+        <div className="w-[90%] max-w-4xl p-8 bg-white rounded-3xl shadow-[0px_10px_20px_rgba(109,147,205,0.5),0px_-10px_20px_rgba(109,147,205,0.5),10px_0px_20px_rgba(109,147,205,0.5),-10px_0px_20px_rgba(109,147,205,0.5)]">
+          <div className="flex flex-col font-bold text-[#404040] gap-y-10">
+            <div className="">
+              Project Name
+              <div className="">
+                <input
+                  type="text"
+                  className="w-full mt-5 px-4 py-4 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none bg-[#f3f3f3]"
+                  placeholder="Enter Project Name"
+                  onChange={(e) => setProjectName(e.target.value)}
+                />
+              </div>
             </div>
-        </div>
-    )
 
-}
+            <div className="">
+              Short Description
+              <div className="">
+                <input
+                  type="text"
+                  className="w-full mt-5 px-4 py-4 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none bg-[#f3f3f3]"
+                  placeholder="Enter Short Description"
+                  onChange={(e) => setShortDescription(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* Long Description */}
+            <div className="">
+              Long Description
+              <div className="">
+                <textarea
+                  className="w-full mt-5 px-4 pt-4 pb-24 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none bg-[#f3f3f3]"
+                  placeholder="Enter Long Description"
+                  onChange={(e) => setLongDescription(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* Project Imafe & Project Logo */}
+            <div className="grid grid-cols-2 gap-16">
+              <div className="">
+                Project Image
+                <div className="">
+                  <input
+                    type="file"
+                    className="w-full mt-5 px-4 py-24 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none bg-[#f3f3f3]"
+                    onChange={(e) => handleFileImage(e)}
+                    multiple
+                  />
+                </div>
+              </div>
+
+              <div className="">
+                Project Logo
+                <div className="">
+                  <input
+                    type="file"
+                    className="w-full mt-5 px-4 py-24 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none bg-[#f3f3f3]"
+                    onChange={(e) => handleFileLogo(e)}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Accepted VToken */}
+            <div className="">
+              Accepted VToken
+              <div className="">
+                <input
+                  type="text"
+                  className="w-full mt-5 px-4 py-4 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none bg-[#f3f3f3]"
+                  placeholder="Enter Accepted VToken"
+                  onChange={(e) => setAcceptedVToken(e.target.value)}
+                />
+              </div>
+            </div>
+
+            {/* Max Stake */}
+            <div className="">
+              Max Stake
+              <div className="">
+                <input
+                  type="number"
+                  className="w-full mt-5 px-4 py-4 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none bg-[#f3f3f3]"
+                  placeholder="Enter Max Stake"
+                  onChange={(e) => setMaxStake(Number(e.target.value))}
+                />
+              </div>
+            </div>
+
+            {/* Min Stake */}
+            <div className="">
+              Min Stake
+              <div className="">
+                <input
+                  type="number"
+                  className="w-full mt-5 px-4 py-4 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none bg-[#f3f3f3]"
+                  placeholder="Enter Min Stake"
+                  onChange={(e) => setMinStake(Number(e.target.value))}
+                />
+              </div>
+            </div>
+
+            {/* From & To Duration DateTime */}
+
+            <div className="grid grid-cols-2 gap-16">
+              <div className="">
+                From
+                <div className="">
+                  <input
+                    type="datetime-local"
+                    className="w-full mt-5 px-4 py-4 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none bg-[#f3f3f3]"
+                    onChange={(e) => setFromDate(e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div className="">
+                To
+                <div className="">
+                  <input
+                    type="datetime-local"
+                    className="w-full mt-5 px-4 py-4 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none bg-[#f3f3f3]"
+                    onChange={handleToDateChange}
+                    value={toDate || ""}
+                  />
+                </div>
+              </div>
+            </div>
+            {/* Submit button */}
+            <div className="flex justify-center mt-10 mb-4">
+              <button
+                className="w-8/12 px-10 py-3 text-white bg-[#6d93cd] hover:bg-[#2a5697] rounded-3xl"
+                onClick={handleSubmit}
+              >
+                Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default ProjectDetailPage;

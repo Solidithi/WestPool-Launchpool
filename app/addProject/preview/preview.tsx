@@ -2,29 +2,23 @@
 import VerticalProgressBar from "@/app/components/Progress";
 import { useEffect, useState } from "react";
 import Image from "next/image";
-import { useProjectBasisStore, useProjectDetailStore } from "@/app/zustand/store";
+import {
+  useProjectBasisStore,
+  useProjectDetailStore,
+} from "@/app/zustand/store";
 import StatusDisplay from "@/app/components/Status";
 const PreviewPage = () => {
   const [timeLeft, setTimeLeft] = useState({
     days: 15,
     hours: 10,
     minutes: 24,
-    seconds: 59,
+    seconds: 0,
   });
-  const steps = [
-    { name: "Starting" },
-    { name: "Funding" },
-    { name: "Awaiting" },
-    { name: "Distributing" },
-  ];
+  const steps = [{ name: "Debut" }, { name: "Staking" }, { name: "End" }];
   const [currentStep, setCurrentStep] = useState(2); // The active step index (e.g., 0-based)
   const [activeButton, setActiveButton] = useState("FROST");
 
-  const {
-    chain,
-    poolBudget,
-    targetStake,
-  } = useProjectBasisStore();
+  const { chain, poolBudget, targetStake } = useProjectBasisStore();
 
   const {
     acceptedVToken,
@@ -36,7 +30,7 @@ const PreviewPage = () => {
     shortDescription,
     longDescription,
     fromDate,
-    toDate
+    toDate,
   } = useProjectDetailStore();
 
   // Countdown logic
@@ -105,9 +99,7 @@ const PreviewPage = () => {
               </div>
 
               <div className="mt-2 text-sm">
-                <span>
-                  {shortDescription}
-                </span>
+                <span>{shortDescription}</span>
               </div>
             </div>
           </div>
@@ -170,16 +162,18 @@ const PreviewPage = () => {
         {/* Pool Button */}
         <div className="mt-24 flex gap-5 px-8">
           <button
-            className={`btn btn-ghost rounded-3xl px-8 py-2 text-white transition-colors duration-300 ${activeButton === "FROST" ? "bg-[#6D93CD]" : "bg-transparent"
-              }`}
+            className={`btn btn-ghost rounded-3xl px-8 py-2 text-white transition-colors duration-300 ${
+              activeButton === "FROST" ? "bg-[#6D93CD]" : "bg-transparent"
+            }`}
             onClick={() => setActiveButton("FROST")}
           >
             FROST Pool
           </button>
 
           <button
-            className={`btn btn-ghost rounded-3xl px-8 py-2 text-white transition-colors duration-300 ${activeButton === "VToken" ? "bg-[#6D93CD]" : "bg-transparent"
-              }`}
+            className={`btn btn-ghost rounded-3xl px-8 py-2 text-white transition-colors duration-300 ${
+              activeButton === "VToken" ? "bg-[#6D93CD]" : "bg-transparent"
+            }`}
             onClick={() => setActiveButton("VToken")}
           >
             VToken Pool
@@ -212,7 +206,9 @@ const PreviewPage = () => {
                 </div>
                 <div>
                   <p className="text-gray-400 text-lg">Locked token</p>
-                  <p className="text-lg font-bold text-green-500">● {activeButton}</p>
+                  <p className="text-lg font-bold text-green-500">
+                    ● {activeButton}
+                  </p>
                 </div>
 
                 {/* <!-- Row 2 --> */}
