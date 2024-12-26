@@ -34,8 +34,8 @@ type ProjectDetailState = {
   setMaxStake: (value: number | undefined) => void;
   minStake: number | undefined;
   setMinStake: (value: number | undefined) => void;
-  acceptedVToken: string;
-  setAcceptedVToken: (value: string) => void;
+  acceptedVToken: string[];
+  setAcceptedVToken: (value: string[]) => void;
   fromDate: string;
   setFromDate: (value: string) => void;
   toDate: string;
@@ -143,7 +143,7 @@ const useProjectDetailStore = create<ProjectDetailState>((set) => ({
   setMaxStake: (value) => set({ maxStake: value }),
   minStake: undefined,
   setMinStake: (value) => set({ minStake: value }),
-  acceptedVToken: "",
+  acceptedVToken: [],
   setAcceptedVToken: (value) => set({ acceptedVToken: value }),
   fromDate: "",
   setFromDate: (value) => set({ fromDate: value }),

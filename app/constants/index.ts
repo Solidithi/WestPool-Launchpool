@@ -393,3 +393,27 @@ export const sellTable = [
     status: "Overdue",
   },
 ];
+
+// ------------------------------------- Add Project- Project Detail ----------------------------------------
+export const availablePool = [
+  {
+    id: "1",
+    name: "BNB Pool",
+  },
+  {
+    id: "2",
+    name: "ETH Pool",
+  },
+  {
+    id: "3",
+    name: "USDT Pool",
+  },
+  {
+    id: "4",
+    name: "BTC Pool",
+  },
+  {
+    id: "5",
+    name: "ADA Pool",
+  },
+];

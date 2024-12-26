@@ -2,6 +2,8 @@
 import { useProjectDetailStore } from "@/app/zustand/store";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import MultiSelect from "@/app/components/MultiSelect";
+import { availablePool } from "@/app/constants";
 
 const ProjectDetailPage = () => {
   const {
@@ -108,7 +110,7 @@ const ProjectDetailPage = () => {
       longDescription === "" ||
       maxStake === undefined ||
       minStake === undefined ||
-      acceptedVToken === "" ||
+      acceptedVToken === null ||
       fromDate === "" ||
       toDate === "" ||
       projectImage === null ||
@@ -194,12 +196,17 @@ const ProjectDetailPage = () => {
             {/* Accepted VToken */}
             <div className="">
               Accepted VToken
-              <div className="">
-                <input
+              <div className="mt-5">
+                {/* <input
                   type="text"
                   className="w-full mt-5 px-4 py-4 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none bg-[#f3f3f3]"
                   placeholder="Enter Accepted VToken"
                   onChange={(e) => setAcceptedVToken(e.target.value)}
+                /> */}
+                <MultiSelect
+                  placeholder="Select Pool"
+                  options={availablePool}
+                  state="acceptedVToken"
                 />
               </div>
             </div>
