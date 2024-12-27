@@ -404,22 +404,22 @@ export const sellTable = [
 export const availablePool = [
   {
     id: "1",
-    name: "BNB Pool",
+    name: "BNB",
   },
   {
     id: "2",
-    name: "ETH Pool",
+    name: "ETH",
   },
   {
     id: "3",
-    name: "USDT Pool",
+    name: "USDT",
   },
   {
     id: "4",
-    name: "BTC Pool",
+    name: "BTC",
   },
   {
     id: "5",
-    name: "ADA Pool",
+    name: "ADA",
   },
 ];

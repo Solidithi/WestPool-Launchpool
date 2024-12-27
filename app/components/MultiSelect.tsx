@@ -82,9 +82,8 @@ const MultiSelect = ({
           {options.map((option) => (
             <div
               key={option.id}
-              className={`px-4 py-3 flex items-center hover:bg-gray-100 cursor-pointer ${
-                selectedOptions.includes(option.name) ? "bg-gray-200" : ""
-              }`}
+              className={`px-4 py-3 flex items-center hover:bg-gray-100 cursor-pointer ${selectedOptions.includes(option.name) ? "bg-gray-200" : ""
+                }`}
               onClick={() => toggleOption(option.name)}
             >
               <input
@@ -93,7 +92,7 @@ const MultiSelect = ({
                 readOnly
                 className="checkbox"
               />
-              <span className="ml-5">{option.name}</span>
+              <span className="ml-5">{option.name} Pool</span>
             </div>
           ))}
         </div>

@@ -42,8 +42,8 @@ type ProjectDetailState = {
   setToDate: (value: string) => void;
   projectImage: string[];
   setProjectImage: (value: string[]) => void;
-  projectLogo: string | null;
-  setProjectLogo: (value: string | null) => void;
+  projectLogo: string;
+  setProjectLogo: (value: string) => void;
 };
 
 type CombinedState = {
@@ -151,7 +151,7 @@ const useProjectDetailStore = create<ProjectDetailState>((set) => ({
   setToDate: (value) => set({ toDate: value }),
   projectImage: [],
   setProjectImage: (value) => set({ projectImage: value }),
-  projectLogo: null,
+  projectLogo: "",
   setProjectLogo: (value) => set({ projectLogo: value }),
 }));
 
