@@ -99,7 +99,7 @@ const Dashboard = () => {
                               "font-extrabold rounded-2xl p-1 w-[100px] text-center ml-auto",
                               {
                                 "text-[#ce7b51] bg-[#423533]":
-                                  data.status === "Overdue",
+                                  data.status === "Open",
                                 "text-[#e3cc1b] bg-[#333b0d]":
                                   data.status === "Pending",
                                 "text-[#329A81] bg-[#1B2B30]":
@@ -113,27 +113,42 @@ const Dashboard = () => {
                           </div>
                         </td>
                         <td>
-                          <button
-                            className={clsx(
-                              "rounded-md text-[13px] duration-300 ml-auto py-2 px-4",
-                              {
-                                " text-gray-600 cursor-not-allowed":
-                                  data.status === "Cancelled",
-                                "bg-transparent text-[#ce7b51] hover:scale-105":
-                                  data.status !== "Cancelled",
+                          {data.status === "Completed" ? (
+                            <button
+                              className="text-[#329A81] py-2 px-4 rounded-md text-[13px] duration-300 hover:scale-105"
+                              onClick={() =>
+                                (
+                                  document.getElementById(
+                                    `withdraw-${data.offerid}`
+                                  ) as HTMLDialogElement
+                                ).showModal()
                               }
-                            )}
-                            onClick={() =>
-                              (
-                                document.getElementById(
-                                  `cancel-order-${data.offerid}`
-                                ) as HTMLDialogElement
-                              ).showModal()
-                            }
-                            disabled={data.status === "Cancelled"}
-                          >
-                            CANCEL ORDER
-                          </button>
+                            >
+                              WITHDRAW
+                            </button>
+                          ) : (
+                            <button
+                              className={clsx(
+                                "rounded-md text-[13px] duration-300 ml-auto py-2 px-4",
+                                {
+                                  "text-gray-600 cursor-not-allowed": data.status === "Cancelled",
+                                  "bg-transparent text-[#ce7b51] hover:scale-105":
+                                    data.status !== "Cancelled",
+                                }
+                              )}
+                              onClick={() =>
+                                (
+                                  document.getElementById(
+                                    `cancel-order-${data.offerid}`
+                                  ) as HTMLDialogElement
+                                ).showModal()
+                              }
+                              disabled={data.status === "Cancelled"}
+                            >
+                              CANCEL ORDER
+                            </button>
+                          )}
+
                           <dialog
                             id={`cancel-order-${data.offerid}`}
                             className="modal"
@@ -148,7 +163,7 @@ const Dashboard = () => {
                                     alt="icon"
                                     className="rounded-full"
                                   />
-                                  <div className="flex flex-col  gap-1">
+                                  <div className="flex flex-col gap-1">
                                     <span className="text-[17px] font-bold">
                                       {data.offerid}
                                     </span>
@@ -160,9 +175,7 @@ const Dashboard = () => {
                                 <div className="flex justify-between">
                                   <div>My deposit</div>
                                   <div className="flex gap-3">
-                                    <span className=" font-bold">
-                                      {data.deposit}
-                                    </span>
+                                    <span className="font-bold">{data.deposit}</span>
                                     <Image
                                       src={data.deposit_icon}
                                       width={20}
@@ -175,9 +188,7 @@ const Dashboard = () => {
                                 <div className="flex justify-between">
                                   <div>My Compensation</div>
                                   <div className="flex gap-3">
-                                    <span className=" font-bold">
-                                      {data.deposit}
-                                    </span>
+                                    <span className="font-bold">{data.deposit}</span>
                                     <Image
                                       src={data.deposit_icon}
                                       width={20}
@@ -201,7 +212,59 @@ const Dashboard = () => {
                               <button>close</button>
                             </form>
                           </dialog>
+
+                          <dialog
+                            id={`withdraw-${data.offerid}`}
+                            className="modal"
+                          >
+                            <div className="modal-box bg-[#0C141E]">
+                              <h3 className="font-bold text-lg mb-4 text-white">
+                                <div className="flex items-center gap-4 justify-start">
+                                  <Image
+                                    src={data.icon}
+                                    width={50}
+                                    height={50}
+                                    alt="icon"
+                                    className="rounded-full"
+                                  />
+                                  <div className="flex flex-col gap-1">
+                                    <span className="text-[17px] font-bold">
+                                      {data.offerid}
+                                    </span>
+                                  </div>
+                                </div>
+                              </h3>
+
+                              <div className="flex flex-col justify-start gap-5 border-gray-300 border rounded-lg p-4 my-5 ">
+                                <div className="flex justify-between">
+                                  <div>My project&apos;s token</div>
+                                  <div className="flex gap-3">
+                                    <span className="font-bold">{data.for}</span>
+                                    <Image
+                                      src={data.icon}
+                                      width={20}
+                                      height={20}
+                                      alt="icon"
+                                      className="rounded-full"
+                                    />
+                                  </div>
+                                </div>
+                                <div className="flex justify-between">
+                                  <div>Platform fee</div>
+                                  <div>2.5%</div>
+                                </div>
+                              </div>
+
+                              <button className="btn text-[#329A81] bg-[#1B2B30] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#201a19]">
+                                Withdraw
+                              </button>
+                            </div>
+                            <form method="dialog" className="modal-backdrop">
+                              <button>close</button>
+                            </form>
+                          </dialog>
                         </td>
+
                       </tr>
                     </>
                   ))}
@@ -297,11 +360,13 @@ const Dashboard = () => {
                               "font-extrabold rounded-2xl p-1 w-[100px] text-center ml-auto",
                               {
                                 "text-[#ce7b51] bg-[#423533]":
-                                  data.status === "Overdue",
+                                  data.status === "Open",
                                 "text-[#329A81] bg-[#1B2B30]":
                                   data.status === "Settled",
                                 "text-gray-500 bg-slate-800":
-                                  data.status === "Cancelled",
+                                  data.status === "Closed",
+                                "text-[#e3cc1b] bg-[#333b0d]":
+                                  data.status === "Pending",
                               }
                             )}
                           >
@@ -313,27 +378,47 @@ const Dashboard = () => {
                             className={clsx(
                               "rounded-md text-[13px] duration-300 ml-auto py-2 px-4",
                               {
-                                " text-gray-600 cursor-not-allowed":
-                                  data.status === "Cancelled",
-                                "bg-transparent text-[#329A81] hover:scale-105":
-                                  data.status !== "Cancelled",
+                                "text-gray-600 cursor-not-allowed ":
+                                  data.status === "Closed",
+
+                                " text-[#329A81] hover:scale-105":
+                                  data.status === "Pending",
+
+                                " text-[#ce7b51] hover:scale-105":
+                                  data.status === "Open",
+
+                                " text-[#e3cc1b] hover:scale-105":
+                                  data.status === "Settled",
                               }
                             )}
-                            onClick={() =>
-                              (
-                                document.getElementById(
-                                  `settle-${data.offerid}`
-                                ) as HTMLDialogElement
-                              ).showModal()
-                            }
-                            disabled={data.status === "Cancelled"}
+                            onClick={() => {
+                              if (data.status === "Pending") {
+                                (
+                                  document.getElementById(`settle-${data.offerid}`) as HTMLDialogElement
+                                ).showModal();
+                              } else if (data.status === "Open") {
+                                (
+                                  document.getElementById(`close-${data.offerid}`) as HTMLDialogElement
+                                ).showModal();
+                              } else if (data.status === "Settled") {
+                                (
+                                  document.getElementById(`withdraw1-${data.offerid}`) as HTMLDialogElement
+                                ).showModal();
+                              }
+                            }}
+                            disabled={data.status === "Closed"}
                           >
-                            Settle
+                            {data.status === "Pending"
+                              ? "Settle"
+                              : data.status === "Open"
+                                ? "Close"
+                                : data.status === "Settled"
+                                  ? "Withdraw"
+                                  : "Close"}
                           </button>
-                          <dialog
-                            id={`settle-${data.offerid}`}
-                            className="modal"
-                          >
+
+                          {/* Modal Settle */}
+                          <dialog id={`settle-${data.offerid}`} className="modal">
                             <div className="modal-box bg-[#0C141E]">
                               <h3 className="font-bold text-lg mb-4 text-white">
                                 <div className="flex items-center gap-4 justify-start">
@@ -344,21 +429,17 @@ const Dashboard = () => {
                                     alt="icon"
                                     className="rounded-full"
                                   />
-                                  <div className="flex flex-col  gap-1">
-                                    <span className="text-[17px] font-bold">
-                                      {data.offerid}
-                                    </span>
+                                  <div className="flex flex-col gap-1">
+                                    <span className="text-[17px] font-bold">{data.offerid}</span>
                                   </div>
                                 </div>
                               </h3>
 
-                              <div className="flex flex-col justify-start gap-5 border-gray-300 border rounded-lg p-4 my-5 ">
+                              <div className="flex flex-col justify-start gap-5 border-gray-300 border rounded-lg p-4 my-5">
                                 <div className="flex justify-between">
                                   <div>Filled amount</div>
                                   <div className="flex gap-3">
-                                    <span className=" font-bold">
-                                      {data.for}
-                                    </span>
+                                    <span className="font-bold">{data.for}</span>
                                     <Image
                                       src={data.icon}
                                       width={20}
@@ -371,9 +452,7 @@ const Dashboard = () => {
                                 <div className="flex justify-between">
                                   <div>My deposit</div>
                                   <div className="flex gap-3">
-                                    <span className=" font-bold">
-                                      {data.deposit}
-                                    </span>
+                                    <span className="font-bold">{data.deposit}</span>
                                     <Image
                                       src={data.deposit_icon}
                                       width={20}
@@ -386,9 +465,7 @@ const Dashboard = () => {
                                 <div className="flex justify-between">
                                   <div>My Compensation</div>
                                   <div className="flex gap-3">
-                                    <span className=" font-bold">
-                                      {data.deposit}
-                                    </span>
+                                    <span className="font-bold">{data.deposit}</span>
                                     <Image
                                       src={data.deposit_icon}
                                       width={20}
@@ -405,7 +482,81 @@ const Dashboard = () => {
                               </div>
 
                               <button className="btn text-[#329A81] bg-[#1B2B30] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#141f23]">
-                                Setlled
+                                Settle
+                              </button>
+                            </div>
+                            <form method="dialog" className="modal-backdrop">
+                              <button>close</button>
+                            </form>
+                          </dialog>
+
+                          <dialog id={`withdraw1-${data.offerid}`} className="modal">
+                            <div className="modal-box bg-[#0C141E]">
+                              <h3 className="font-bold text-lg mb-4 text-white">
+                                <div className="flex items-center gap-4 justify-start">
+                                  <Image
+                                    src={data.icon}
+                                    width={50}
+                                    height={50}
+                                    alt="icon"
+                                    className="rounded-full"
+                                  />
+                                  <div className="flex flex-col gap-1">
+                                    <span className="text-[17px] font-bold">{data.offerid}</span>
+                                  </div>
+                                </div>
+                              </h3>
+
+                              <div className="flex flex-col justify-start gap-5 border-gray-300 border rounded-lg p-4 my-5">
+                                <div className="flex justify-between">
+                                  <div>My received token</div>
+                                  <div className="flex gap-3">
+                                    <span className="font-bold">{data.deposit}</span>
+                                    <Image
+                                      src={data.deposit_icon}
+                                      width={20}
+                                      height={20}
+                                      alt="icon"
+                                      className="rounded-full"
+                                    />
+                                  </div>
+                                </div>
+                                <div className="flex justify-between">
+                                  <div>Platform fee</div>
+                                  <div>2.5%</div>
+                                </div>
+                              </div>
+
+                              <button className="btn text-[#e3cc1b] bg-[#333b0d] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#1c1e12]">
+                                Withdraw
+                              </button>
+                            </div>
+                            <form method="dialog" className="modal-backdrop">
+                              <button>close</button>
+                            </form>
+                          </dialog>
+
+                          <dialog id={`close-${data.offerid}`} className="modal">
+                            <div className="modal-box bg-[#0C141E]">
+                              <h3 className="font-bold text-lg mb-4 text-white">
+                                <div className="flex items-center gap-4 justify-start">
+                                  <Image
+                                    src={data.icon}
+                                    width={50}
+                                    height={50}
+                                    alt="icon"
+                                    className="rounded-full"
+                                  />
+                                  <div className="flex flex-col gap-1">
+                                    <span className="text-[17px] font-bold">{data.offerid}</span>
+                                  </div>
+                                </div>
+                              </h3>
+
+                              <div className="flex my-5 text-[24px]">Do you want to close this offer</div>
+
+                              <button className="btn text-[#ce7b51] bg-[#423533] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#281f1d]">
+                                Close
                               </button>
                             </div>
                             <form method="dialog" className="modal-backdrop">
@@ -413,6 +564,7 @@ const Dashboard = () => {
                             </form>
                           </dialog>
                         </td>
+
                       </tr>
                     </>
                   ))}

@@ -272,7 +272,7 @@ export const buyTable = [
       "https://i.pinimg.com/736x/1b/9f/c2/1b9fc2f3a48868013b251accf905c205.jpg",
     for: 3024,
     tx: "0xdsf7458990340567343647034968",
-    status: "Overdue",
+    status: "Completed",
   },
   {
     icon: "https://i.pinimg.com/736x/42/cb/8e/42cb8e5a763748d9052fe520930f2c2b.jpg",
@@ -327,7 +327,7 @@ export const buyTable = [
       "https://i.pinimg.com/736x/1b/9f/c2/1b9fc2f3a48868013b251accf905c205.jpg",
     for: 4000,
     tx: "0xabcdef1234567890fedc",
-    status: "Overdue",
+    status: "Open",
   },
 ];
 
@@ -341,7 +341,7 @@ export const sellTable = [
       "https://i.pinimg.com/736x/1b/9f/c2/1b9fc2f3a48868013b251accf905c205.jpg",
     for: 3024,
     tx: "0xdsf7458990340567343647034968",
-    status: "Overdue",
+    status: "Pending",
   },
   {
     icon: "https://i.pinimg.com/736x/42/cb/8e/42cb8e5a763748d9052fe520930f2c2b.jpg",
@@ -374,7 +374,7 @@ export const sellTable = [
       "https://i.pinimg.com/736x/1b/9f/c2/1b9fc2f3a48868013b251accf905c205.jpg",
     for: 2500,
     tx: "0xfedcba09876543210",
-    status: "Cancelled",
+    status: "Closed",
   },
   {
     icon: "https://i.pinimg.com/736x/39/e9/bd/39e9bd24557a1287fd1d55a1ce3eefc9.jpg",
@@ -385,7 +385,7 @@ export const sellTable = [
       "https://i.pinimg.com/736x/1b/9f/c2/1b9fc2f3a48868013b251accf905c205.jpg",
     for: 5000,
     tx: "0x1234567890abcdef9876",
-    status: "Cancelled",
+    status: "Closed",
   },
   {
     icon: "https://i.pinimg.com/736x/39/e9/bd/39e9bd24557a1287fd1d55a1ce3eefc9.jpg",
@@ -396,7 +396,7 @@ export const sellTable = [
       "https://i.pinimg.com/736x/1b/9f/c2/1b9fc2f3a48868013b251accf905c205.jpg",
     for: 4000,
     tx: "0xabcdef1234567890fedc",
-    status: "Overdue",
+    status: "Open",
   },
 ];
 
@@ -410,16 +410,16 @@ export const availablePool = [
     id: "2",
     name: "ETH",
   },
-  {
-    id: "3",
-    name: "USDT",
-  },
-  {
-    id: "4",
-    name: "BTC",
-  },
-  {
-    id: "5",
-    name: "ADA",
-  },
+  // {
+  //   id: "3",
+  //   name: "USDT",
+  // },
+  // {
+  //   id: "4",
+  //   name: "BTC",
+  // },
+  // {
+  //   id: "5",
+  //   name: "ADA",
+  // },
 ];

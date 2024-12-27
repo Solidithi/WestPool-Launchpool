@@ -85,8 +85,11 @@ const TokenOffer = () => {
                   </div>
                 </td>
                 <td>
-                  <div className="border border-[#B8B8B8] text-[#B8B8B8] rounded-2xl px-2  text-[10px] flex justify-center w-2/3">
+                  {/* <div className="border border-[#B8B8B8] text-[#B8B8B8] rounded-2xl px-2  text-[10px] flex justify-center w-2/3">
                     PARTIAL
+                  </div> */}
+                  <div className="border border-[#B8B8B8] text-[#00D4FF] rounded-2xl px-2  text-[11px] flex justify-center w-2/3 font-bold">
+                    FULL
                   </div>
                 </td>
                 <td>
@@ -242,8 +245,11 @@ const TokenOffer = () => {
                   </div>
                 </td>
                 <td>
-                  <div className="border border-[#B8B8B8] text-[#B8B8B8] rounded-2xl px-2  text-[10px] flex justify-center w-2/3">
+                  {/* <div className="border border-[#B8B8B8] text-[#B8B8B8] rounded-2xl px-2  text-[10px] flex justify-center w-2/3">
                     PARTIAL
+                  </div> */}
+                  <div className="border border-[#B8B8B8] text-[#00D4FF] rounded-2xl px-2  text-[11px] flex justify-center w-2/3 font-bold">
+                    FULL
                   </div>
                 </td>
                 <td>
