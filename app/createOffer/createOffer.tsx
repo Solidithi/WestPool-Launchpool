@@ -158,12 +158,18 @@ const CreateOfferPage = () => {
               </div>
             </div>
 
-            <div
+            {/* <div
               className="mt-7 mx-16 my-14 py-4 border text-[#5a88ce] bg-white rounded-3xl text-3xl text-center flex justify-center items-center"
               onClick={handleDeposit}
             >
               Deposit
-            </div>
+            </div> */}
+            <button
+              className="btn mt-7 mx-16 my-14  text-3xl text-center h-16  bg-[#ffffff] hover:bg-[#2d4466] rounded-2xl text-[24px] text-[#7BA9EF]"
+              onClick={handleDeposit}
+            >
+              Deposit
+            </button>
           </div>
         </div>
       </div>
