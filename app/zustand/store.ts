@@ -7,7 +7,7 @@ type AvailableChainState = {
 
 type VerifiedTokenState = {
   verifiedToken: string;
-  setVerifiedToken: (verifiedToken: string) => void;
+  setVerifiedToken: (value: string) => void;
 };
 
 type ProjectBasisState = {

@@ -5,8 +5,10 @@ import Image from "next/image";
 import {
   useProjectBasisStore,
   useProjectDetailStore,
+  useVerifiedToken,
 } from "@/app/zustand/store";
 import StatusDisplay from "@/app/components/Status";
+import axios from "axios";
 const PreviewPage = () => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -14,6 +16,7 @@ const PreviewPage = () => {
     minutes: 0,
     seconds: 0,
   });
+  const [ projectStatus, setProjectStatus ] = useState("upcoming");
 
   const {
     acceptedVToken,
@@ -27,6 +30,8 @@ const PreviewPage = () => {
     fromDate,
     toDate,
   } = useProjectDetailStore();
+
+  const { verifiedToken } = useVerifiedToken() as { verifiedToken: string };
 
   const steps = [{ name: "Debut" }, { name: "Staking" }, { name: "End" }];
   const [currentStep, setCurrentStep] = useState(2); // The active step index (e.g., 0-based)
@@ -57,6 +62,8 @@ const PreviewPage = () => {
     const initialTimeLeft = calculateInitialTimeLeft(fromDate, toDate);
     setTimeLeft(initialTimeLeft);
   }, [fromDate, toDate]);
+
+
 
   // Countdown logic
   useEffect(() => {
@@ -92,6 +99,42 @@ const PreviewPage = () => {
 
     return () => clearInterval(timer); // Dọn dẹp interval khi unmount
   }, []);
+
+  const handleSubmit = async () => {
+    //log all the data below
+    console.log(
+      "Project Name: "+ projectName + "\n" +
+      "Verified Token: "+ verifiedToken + "\n" +
+      "Project Logo: "+ projectLogo + "\n" +
+      "Project Image: "+ projectImage + "\n" +
+      "Short Description" + shortDescription + "\n" +
+      "Long Description" + longDescription + "\n" +
+      "Accepted VToken" + acceptedVToken + "\n" +
+      "Min Stake" + minStake + "\n" +
+      "Max Stake" + maxStake + "\n" +
+      "From Date" + fromDate + "\n" +
+      "To Date" + toDate + "\n"
+    );
+    const response = await axios.post("/api/launchpool/addProject", {
+      projectName,
+      verifiedToken,
+      projectLogo,
+      projectImage,
+      shortDescription,
+      longDescription,
+      acceptedVToken,
+      minStake,
+      maxStake,
+      fromDate,
+      toDate,
+      projectStatus,
+    })
+
+    console.log(response);
+    if(response.status === 200) {
+      alert("Success");
+    }
+  };
 
   return (
     <div>
@@ -353,7 +396,9 @@ const PreviewPage = () => {
       </div>
 
       <div className="w-full mb-10 pl-24 pr-[28px]">
-        <button className="btn w-full bg-[#6D93CD] text-white">Submit</button>
+        <button className="btn w-full bg-[#6D93CD] text-white"
+          onClick={handleSubmit}
+        >Submit</button>
       </div>
     </div>
   );
