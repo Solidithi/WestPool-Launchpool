@@ -18,6 +18,9 @@ export async function POST(req: NextRequest, res: NextResponse) {
     //     fromDate,
     //     toDate,
     //     projectStatus
+    //     chain,
+    //     poolBudget,
+    //     targetStake,
     // } = body;
 
     try {
@@ -59,7 +62,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
             },
         })
 
-        if(!project) {
+        if (!project) {
             return NextResponse.json({ success: false, message: "failed to create new project" }, { status: 500 });
         }
 

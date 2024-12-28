@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Project {
-  id                  Int      @id @default(autoincrement())
+  id                  String       @id @default(uuid())
   projectName         String
   projectOwnerAddress String
   verifiedToken       String
@@ -16,19 +16,114 @@ model Project {
   projectImage        String[]
   shortDescription    String
   longDescription     String
-  acceptedVToken      Int
+  acceptedVToken      String[]
   minStake            Int
   maxStake            Int
   fromDate            DateTime
   toDate              DateTime
   txHashCreated       String
   projectStatus       String
+  chain               Int
+  poolBudget          Int
+  targetStake         Int
+  projectOwner        ProjectOwner @relation(fields: [projectOwnerAddress], references: [userAddress], onDelete: Cascade, onUpdate: Cascade)
+  userId              String?
+  offers              Offer[]
+  invested            InvestedProject[]
 }
 
-model VTokenData {
-  id Int @id @default(autoincrement())
-}
+// model AvailableNetwork {
+//   id          String       @id @default(uuid())
+//   networkName String
+//   chainId     Int          @unique
+//   networkLogo String
+//   // vTokenData  VTokenData[]
+// }
+
+// model VTokenData {
+//   id               String           @id @default(uuid())
+//   vTokenName       String
+//   vTokenSymbol     String
+//   vTokenDecimals   Int
+//   vTokenLogo       String
+//   vTokenAddress    String
+//   chainId          Int
+//   availableNetwork AvailableNetwork @relation(fields: [chainId], references: [chainId], onDelete: Cascade, onUpdate: Cascade) // Relation to AvailableNetwork
+// }
 
 model User {
-  id Int @id @default(autoincrement())
+  id          String      @id @default(uuid())
+  userAddress String      @unique
+  offers      UserOffer[]
+  invested    InvestedProject[]
+  // projects    Project[]
+  // offerId     String?
+  // User        User?     @relation(fields: [userId], references: [id])
+}
+
+model ProjectOwner {
+  id          String @id @default(uuid())
+  userAddress String @unique
+
+  Project Project[]
+}
+
+//Offer model buy sell like premarket
+model Offer {
+  id                   String            @id @default(uuid())
+  pricePerToken        Decimal
+  Amount               Int
+  Collateral           Int
+  TokenImagePreToken   String
+  TokenImageCollateral String
+  offerType            String
+  startDate            DateTime
+  CreatorStatus        CreateOfferStatus
+  FillerStatus         FillerOfferStatus
+  CreatorAddress       String
+  projectId            String
+  FillerAddress        String
+  project              Project           @relation(fields: [projectId], references: [id])
+  users                UserOffer[]
+}
+
+model UserOffer {
+  userId  String
+  offerId String
+
+  User  User  @relation(fields: [userId], references: [id])
+  Offer Offer @relation(fields: [offerId], references: [id])
+
+  @@id([userId, offerId])
+}
+
+model InvestedProject {
+  userId    String
+  projectId String
+
+  User    User    @relation(fields: [userId], references: [id])
+  Project Project @relation(fields: [projectId], references: [id])
+
+  @@id([userId, projectId])
+}
+
+enum ProjectStatus {
+  Upcoming
+  Ongoing
+  Completed
+}
+
+enum CreateOfferStatus {
+  Open
+  Pending
+  Settled
+  Canceled
+  CanceledWithdraw
+}
+
+enum FillerOfferStatus {
+  Pending
+  Completed
+  Canceled
+  CanceledWithdraw
 }

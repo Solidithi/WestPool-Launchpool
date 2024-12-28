@@ -262,6 +262,10 @@ export const tokenTable = [
 ];
 
 // --------------------------------------Dashboard----------------------------------------
+[
+  
+
+]
 export const buyTable = [
   {
     icon: "https://i.pinimg.com/736x/eb/bb/8a/ebbb8ad82d36f91ea2d839c4e59f589c.jpg",

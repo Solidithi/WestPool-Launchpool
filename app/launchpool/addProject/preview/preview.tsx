@@ -143,6 +143,9 @@ const PreviewPage = () => {
       fromDate,
       toDate,
       projectStatus,
+      chain,
+      poolBudget,
+      targetStake,
     })
 
     console.log(response);
