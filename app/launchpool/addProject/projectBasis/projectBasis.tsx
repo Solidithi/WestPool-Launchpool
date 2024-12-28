@@ -41,7 +41,7 @@ const ProjectBasisPage = () => {
       return;
     }
     try {
-      router.push("/addProject/projectDetail");
+      router.push("/launchpool/addProject/projectDetail");
     } catch (e) {
       console.log(e);
     }

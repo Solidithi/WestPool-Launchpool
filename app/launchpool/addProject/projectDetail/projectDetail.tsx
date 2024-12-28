@@ -148,7 +148,7 @@ const ProjectDetailPage = () => {
       return;
     }
     try {
-      router.push("/addProject/preview");
+      router.push("/launchpool/addProject/preview");
     } catch (e) {
       console.log(e);
     }

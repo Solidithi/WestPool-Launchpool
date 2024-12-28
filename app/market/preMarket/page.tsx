@@ -1,9 +1,11 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
-import { banners } from "../constants/index";
-import { tokenTable } from "../constants/index";
+
+import { banners } from "../../constants/index";
+import { tokenTable } from "../../constants/index";
 
 import { useState } from "react";
 const PreMarket = () => {
@@ -12,6 +14,17 @@ const PreMarket = () => {
   const handleSelectImage = (id: string) => {
     setActiveId(id);
   };
+
+  const router = useRouter();
+
+  const handleSubmit = () => {
+    try {
+      router.push("/market/createOffer");
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
 
   return (
     <div className="flex flex-col items-center space-y-6 px-[5%] pb-12 xl:space-y-12 xl:px-12 mt-10 ">
@@ -47,9 +60,8 @@ const PreMarket = () => {
               key={banner.id}
               href={`#${banner.id}`}
               onClick={() => handleSelectImage(banner.id)}
-              className={`btn btn-sm ${
-                activeId === banner.id ? "bg-[#324664]" : "bg-[#6D93CD]"
-              } text-white hover:bg-[#324664] active:bg-[#324664]`}
+              className={`btn btn-sm ${activeId === banner.id ? "bg-[#324664]" : "bg-[#6D93CD]"
+                } text-white hover:bg-[#324664] active:bg-[#324664]`}
             >
               {index + 1}
             </Link>
@@ -58,7 +70,10 @@ const PreMarket = () => {
       </div>
 
       {/* ----------------------------Data Table--------------------------------- */}
-
+      <div className="flex justify-between w-full items-center">
+        <span className=" text-[45px] bg-gradient-to-r from-[#7BA9EF] to-[#FFFFFF] to-50% text-transparent bg-clip-text">Token</span>
+        <button className="btn text-[20px] bg-[#3A66A9] text-white " onClick={handleSubmit}>Create Offer</button>
+      </div>
       <div className="w-full bg-[#102343]  shadow-lg rounded-2xl ">
         <div className="overflow-x-auto ">
           <table className="table">
@@ -79,7 +94,7 @@ const PreMarket = () => {
                     <td>
                       <Link
                         key={index}
-                        href={`/tokenOffer/${index + 1}`}
+                        href={`/market/tokenOffer/${index + 1}`}
                         className="flex items-center gap-4 justify-start pl-6 transform hover:-translate-y-1 hover:scale-105 duration-300"
                       >
                         <Image
@@ -98,20 +113,18 @@ const PreMarket = () => {
                     </td>
                     <td>{data.price}</td>
                     <td
-                      className={`${
-                        parseFloat(data.change1h) >= 0
-                          ? "text-green-500 font-bold"
-                          : "text-red-500 font-bold"
-                      }`}
+                      className={`${parseFloat(data.change1h) >= 0
+                        ? "text-green-500 font-bold"
+                        : "text-red-500 font-bold"
+                        }`}
                     >
                       {data.change1h}
                     </td>
                     <td
-                      className={`${
-                        parseFloat(data.change1h) >= 0
-                          ? "text-green-500 font-bold"
-                          : "text-red-500 font-bold"
-                      }`}
+                      className={`${parseFloat(data.change1h) >= 0
+                        ? "text-green-500 font-bold"
+                        : "text-red-500 font-bold"
+                        }`}
                     >
                       {data.change1d}
                     </td>

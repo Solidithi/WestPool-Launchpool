@@ -3,10 +3,10 @@ import { time } from "console";
 // ----------------------------Navbar----------------------------------
 export const navItems = [
   // { label: "My Project", path: "/myProject" },
-  { label: "My Staking", path: "/myStaking" },
-  { label: "Launchpool", path: "/allproject" },
-  { label: "Pre-market", path: "/preMarket" },
-  { label: "Dashboard", path: "/dashboard" },
+  { label: "My Staking", path: "/launchpool/myStaking" },
+  { label: "Launchpool", path: "/launchpool/allproject" },
+  { label: "Pre-market", path: "/market/preMarket" },
+  { label: "Dashboard", path: "/market/dashboard" },
 ];
 
 // -----------------------All_Project_Page -----------------------------

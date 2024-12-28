@@ -28,7 +28,7 @@ const Navbar = () => {
             return [
               {
                 label: "My project",
-                path: "/myProject",
+                path: "/launchpool/myProject",
               },
               ...prevMenu,
             ];

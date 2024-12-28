@@ -27,7 +27,7 @@ const VerifyTokenPage = () => {
     try {
       console.log("Token verified");
       setVerifiedToken(tokenAddress);
-      router.push("/addProject/projectBasis");
+      router.push("/launchpool/addProject/projectBasis");
     } catch (error) {
       console.log(error);
     }

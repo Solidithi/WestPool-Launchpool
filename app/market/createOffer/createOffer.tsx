@@ -1,9 +1,9 @@
 "use client";
 import { useRouter } from "next/navigation";
-import CustomDropdown from "../components/Dropdown";
-import SidePick from "../components/SidePick";
-import { availableNetworks, availableTokens } from "../constants";
-import { useCombinedStore, useCreateOfferStore } from "../zustand/store";
+import CustomDropdown from "../../components/Dropdown";
+import SidePick from "../../components/SidePick";
+import { availableNetworks, availableTokens } from "../../constants";
+import { useCombinedStore, useCreateOfferStore } from "../../zustand/store";
 import { useEffect } from "react";
 
 const CreateOfferPage = () => {
@@ -39,7 +39,7 @@ const CreateOfferPage = () => {
       alert("Please fill all the fields");
       return;
     }
-    router.push("/createOffer/preview");
+    router.push("/market/createOffer/preview");
   };
 
   // const handleCollateral = () => {

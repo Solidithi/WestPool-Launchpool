@@ -1,11 +1,11 @@
 "use client";
-import StatCard from "../components/StatCard";
+import StatCard from "../../components/StatCard";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-import { banners } from "../constants/index";
-import { dataTable } from "../constants/index";
+import { banners } from "../../constants/index";
+import { dataTable } from "../../constants/index";
 
 import { useState } from "react";
 
@@ -29,7 +29,7 @@ const AllProject = () => {
 
   const route = useRouter();
   const handleSubmit = () => {
-    route.push("/addProject/verifyToken");
+    route.push("/launchpool/addProject/verifyToken");
   };
 
   // const handleBannerClick = (event, id) => {
@@ -75,9 +75,8 @@ const AllProject = () => {
               key={banner.id}
               href={`#${banner.id}`}
               onClick={() => handleSelectImage(banner.id)}
-              className={`btn btn-sm ${
-                activeId === banner.id ? "bg-[#324664]" : "bg-[#6D93CD]"
-              } text-white hover:bg-[#324664] active:bg-[#324664]`}
+              className={`btn btn-sm ${activeId === banner.id ? "bg-[#324664]" : "bg-[#6D93CD]"
+                } text-white hover:bg-[#324664] active:bg-[#324664]`}
             >
               {index + 1}
             </Link>
@@ -189,7 +188,7 @@ const AllProject = () => {
                                   <div className="flex justify-start items-center gap-2">
                                     <Link
                                       key={index}
-                                      href={`/projectDetail/${index + 1}`}
+                                      href={`/launchpool/projectDetail/${index + 1}`}
                                       className="flex items-center flex-row gap-3"
                                     >
                                       <span className="text-[#7BA9EF]">

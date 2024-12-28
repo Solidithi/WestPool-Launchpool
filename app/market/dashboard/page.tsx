@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Image from "next/image";
-import { buyTable, sellTable } from "../constants/index";
+import { buyTable, sellTable } from "../../constants/index";
 import clsx from "clsx";
 const Dashboard = () => {
   return (

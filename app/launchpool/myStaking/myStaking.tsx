@@ -1,20 +1,20 @@
 "use client";
 
 import Image from "next/image";
-import { dataTable } from "../constants/index";
+import { dataTable } from "../../constants/index";
 
-const MyProjectPage = () => {
+const MyStakingPage = () => {
   return (
     <div>
       <div className="py-10">
         {/* Ended Launchpool */}
         <div className="flex flex-col">
-          <div className="ml-32 mb-10 text-3xl font-bold bg-gradient-to-r from-[#82B2FA] to-[#FFFFFF] bg-clip-text text-transparent">
-            Ended Pool
+          <div className="ml-32 mb-10 text-3xl font-bold bg-gradient-to-r from-[#82B2FA] to-[#FFFFFF] bg-clip-text text-transparent ">
+            Ended Launchpool
           </div>
 
           {/* Project Collapse component */}
-          <div className="flex flex-col justify-center items-center gap-5">
+          <div className="flex flex-col justify-center items-center gap-5 ">
             <>
               {dataTable
                 .filter((data) => data.endsIn === "--")
@@ -43,7 +43,7 @@ const MyProjectPage = () => {
 
                     <div
                       className="collapse-content bg-blue-500 text-white peer-checked:bg-[#628FD4] peer-checked:text-secondary-content
-                                     border border-b rounded-b-2xl"
+                                 border border-b rounded-b-2xl"
                     >
                       <div className="flex items-center">
                         <div className="">
@@ -71,9 +71,9 @@ const MyProjectPage = () => {
         {/* Pending Launchpool */}
         <div className="mt-20">
           <div className="ml-32 mb-10 text-3xl font-bold bg-gradient-to-r from-[#82B2FA] to-[#FFFFFF] bg-clip-text text-transparent">
-            Pending Pool
+            Pending Launchpool
           </div>
-          <div className="flex flex-col justify-center items-center gap-5">
+          <div className="flex flex-col justify-center items-center gap-5 ">
             <>
               {dataTable
                 .filter((data) => data.endsIn !== "--")
@@ -102,7 +102,7 @@ const MyProjectPage = () => {
 
                     <div
                       className="collapse-content bg-blue-500 text-white peer-checked:bg-[#628FD4] peer-checked:text-secondary-content
-                                     border border-b rounded-b-2xl"
+                                 border border-b rounded-b-2xl"
                     >
                       <div className="flex items-center">
                         <div className="">
@@ -131,4 +131,4 @@ const MyProjectPage = () => {
   );
 };
 
-export default MyProjectPage;
+export default MyStakingPage;
