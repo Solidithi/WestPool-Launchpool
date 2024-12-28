@@ -16,7 +16,7 @@ const PreviewPage = () => {
     minutes: 0,
     seconds: 0,
   });
-  const [ projectStatus, setProjectStatus ] = useState("upcoming");
+  const [projectStatus, setProjectStatus] = useState("upcoming");
 
   const {
     acceptedVToken,
@@ -46,6 +46,10 @@ const PreviewPage = () => {
       const fromTime = new Date(from);
       const toTime = new Date(to);
 
+      if (fromTime > new Date()) {
+        return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+      }
+
       const diffInMs = toTime.getTime() - fromTime.getTime();
       if (diffInMs <= 0) {
         return { days: 0, hours: 0, minutes: 0, seconds: 0 };
@@ -65,8 +69,18 @@ const PreviewPage = () => {
 
 
 
+
   // Countdown logic
   useEffect(() => {
+    if (
+      timeLeft.days === 0 &&
+      timeLeft.hours === 0 &&
+      timeLeft.minutes === 0 &&
+      timeLeft.seconds === 0
+    ) {
+      return;
+    }
+
     const timer = setInterval(() => {
       setTimeLeft((prevTime) => {
         let { days, hours, minutes, seconds } = prevTime;
@@ -98,15 +112,16 @@ const PreviewPage = () => {
     }, 1000);
 
     return () => clearInterval(timer); // Dọn dẹp interval khi unmount
-  }, []);
+  }, [timeLeft]);
+
 
   const handleSubmit = async () => {
     //log all the data below
     console.log(
-      "Project Name: "+ projectName + "\n" +
-      "Verified Token: "+ verifiedToken + "\n" +
-      "Project Logo: "+ projectLogo + "\n" +
-      "Project Image: "+ projectImage + "\n" +
+      "Project Name: " + projectName + "\n" +
+      "Verified Token: " + verifiedToken + "\n" +
+      "Project Logo: " + projectLogo + "\n" +
+      "Project Image: " + projectImage + "\n" +
       "Short Description" + shortDescription + "\n" +
       "Long Description" + longDescription + "\n" +
       "Accepted VToken" + acceptedVToken + "\n" +
@@ -131,7 +146,7 @@ const PreviewPage = () => {
     })
 
     console.log(response);
-    if(response.status === 200) {
+    if (response.status === 200) {
       alert("Success");
     }
   };

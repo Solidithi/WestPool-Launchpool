@@ -67,17 +67,45 @@ const ProjectDetailPage = () => {
     });
   };
 
+  // const handleToDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const selectedToDate = e.target.value;
+
+  //   if (fromDate && new Date(selectedToDate) <= new Date(fromDate)) {
+  //     alert("The 'To' date must be after the 'From' date.");
+  //     e.target.value = ""; // Reset value
+  //     setToDate("");
+  //   } else {
+  //     setToDate(selectedToDate);
+  //   }
+  // };
+  const handleFromDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFromDate = e.target.value;
+
+    if (new Date(selectedFromDate) < new Date()) {
+      alert("The 'From' date cannot be in the past.");
+      e.target.value = ""; // Reset value
+      setFromDate("");
+    } else {
+      setFromDate(selectedFromDate);
+    }
+  };
+
   const handleToDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedToDate = e.target.value;
 
-    if (fromDate && new Date(selectedToDate) <= new Date(fromDate)) {
+    if (new Date(selectedToDate) < new Date()) {
+      alert("The 'To' date cannot be in the past.");
+      e.target.value = "";
+      setToDate("");
+    } else if (fromDate && new Date(selectedToDate) <= new Date(fromDate)) {
       alert("The 'To' date must be after the 'From' date.");
-      e.target.value = ""; // Reset value
+      e.target.value = "";
       setToDate("");
     } else {
       setToDate(selectedToDate);
     }
   };
+
 
   const handleSubmit = () => {
     //fake data fill
@@ -240,20 +268,21 @@ const ProjectDetailPage = () => {
             {/* From & To Duration DateTime */}
 
             <div className="grid grid-cols-2 gap-16">
-              <div className="">
+              <div>
                 From
-                <div className="">
+                <div>
                   <input
                     type="datetime-local"
                     className="w-full mt-5 px-4 py-4 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none bg-[#f3f3f3]"
-                    onChange={(e) => setFromDate(e.target.value)}
+                    onChange={handleFromDateChange}
+                    value={fromDate || ""}
                   />
                 </div>
               </div>
 
-              <div className="">
+              <div>
                 To
-                <div className="">
+                <div>
                   <input
                     type="datetime-local"
                     className="w-full mt-5 px-4 py-4 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none bg-[#f3f3f3]"
@@ -263,6 +292,7 @@ const ProjectDetailPage = () => {
                 </div>
               </div>
             </div>
+
             {/* Submit button */}
             <div className="flex justify-center mt-10 mb-4">
               <button
