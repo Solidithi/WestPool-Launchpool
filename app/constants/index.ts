@@ -294,7 +294,7 @@ export const buyTable = [
       "https://i.pinimg.com/736x/1b/9f/c2/1b9fc2f3a48868013b251accf905c205.jpg",
     for: 1200,
     tx: "0x9876abcdef1234567890",
-    status: "Pending",
+    status: "CancelledWithdraw",
   },
   {
     icon: "https://i.pinimg.com/736x/c5/9a/22/c59a22c38c4a0e189136f57b4644e7d1.jpg",
@@ -374,7 +374,7 @@ export const sellTable = [
       "https://i.pinimg.com/736x/1b/9f/c2/1b9fc2f3a48868013b251accf905c205.jpg",
     for: 2500,
     tx: "0xfedcba09876543210",
-    status: "Closed",
+    status: "Cancelled",
   },
   {
     icon: "https://i.pinimg.com/736x/39/e9/bd/39e9bd24557a1287fd1d55a1ce3eefc9.jpg",
@@ -385,7 +385,7 @@ export const sellTable = [
       "https://i.pinimg.com/736x/1b/9f/c2/1b9fc2f3a48868013b251accf905c205.jpg",
     for: 5000,
     tx: "0x1234567890abcdef9876",
-    status: "Closed",
+    status: "CancelledWithdraw",
   },
   {
     icon: "https://i.pinimg.com/736x/39/e9/bd/39e9bd24557a1287fd1d55a1ce3eefc9.jpg",

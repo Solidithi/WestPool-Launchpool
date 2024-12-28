@@ -105,15 +105,16 @@ const Dashboard = () => {
                                 "text-[#329A81] bg-[#1B2B30]":
                                   data.status === "Completed",
                                 "text-gray-500 bg-slate-800":
-                                  data.status === "Cancelled",
+                                  data.status === "Cancelled" || data.status === "CancelledWithdraw",
                               }
                             )}
                           >
-                            {data.status}
+                            {data.status === "CancelledWithdraw" ? "Cancelled" : data.status}
                           </div>
                         </td>
+
                         <td>
-                          {data.status === "Completed" ? (
+                          {data.status === "Completed" || data.status === "CancelledWithdraw" ? (
                             <button
                               className="text-[#329A81] py-2 px-4 rounded-md text-[13px] duration-300 hover:scale-105"
                               onClick={() =>
@@ -364,13 +365,13 @@ const Dashboard = () => {
                                 "text-[#329A81] bg-[#1B2B30]":
                                   data.status === "Settled",
                                 "text-gray-500 bg-slate-800":
-                                  data.status === "Closed",
+                                  data.status === "Cancelled" || data.status === "CancelledWithdraw",
                                 "text-[#e3cc1b] bg-[#333b0d]":
                                   data.status === "Pending",
                               }
                             )}
                           >
-                            {data.status}
+                            {data.status === "CancelledWithdraw" ? "Cancelled" : data.status}
                           </div>
                         </td>
                         <td>
@@ -379,7 +380,7 @@ const Dashboard = () => {
                               "rounded-md text-[13px] duration-300 ml-auto py-2 px-4",
                               {
                                 "text-gray-600 cursor-not-allowed ":
-                                  data.status === "Closed",
+                                  data.status === "Cancelled",
 
                                 " text-[#329A81] hover:scale-105":
                                   data.status === "Pending",
@@ -388,7 +389,7 @@ const Dashboard = () => {
                                   data.status === "Open",
 
                                 " text-[#e3cc1b] hover:scale-105":
-                                  data.status === "Settled",
+                                  data.status === "Settled" || data.status === "CancelledWithdraw",
                               }
                             )}
                             onClick={() => {
@@ -400,7 +401,7 @@ const Dashboard = () => {
                                 (
                                   document.getElementById(`close-${data.offerid}`) as HTMLDialogElement
                                 ).showModal();
-                              } else if (data.status === "Settled") {
+                              } else if (data.status === "Settled" || data.status === "CancelledWithdraw") {
                                 (
                                   document.getElementById(`withdraw1-${data.offerid}`) as HTMLDialogElement
                                 ).showModal();
@@ -412,7 +413,7 @@ const Dashboard = () => {
                               ? "Settle"
                               : data.status === "Open"
                                 ? "Close"
-                                : data.status === "Settled"
+                                : data.status === "Settled" || data.status === "CancelledWithdraw"
                                   ? "Withdraw"
                                   : "Close"}
                           </button>
