@@ -56,6 +56,7 @@ model User {
   userAddress String            @unique
   offers      UserOffer[]
   invested    InvestedProject[]
+  ProjectOwner ProjectOwner[]
   // projects    Project[]
   // offerId     String?
   // User        User?     @relation(fields: [userId], references: [id])
@@ -63,8 +64,9 @@ model User {
 
 model ProjectOwner {
   id          String @id @default(uuid())
-  userAddress String @unique
 
+  userAddress String @unique
+  User       User   @relation(fields: [userAddress], references: [userAddress], onDelete: Cascade, onUpdate: Cascade)
   Project Project[]
 }
 
