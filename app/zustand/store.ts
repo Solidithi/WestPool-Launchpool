@@ -1,3 +1,5 @@
+// import { OfferType } from "@/prisma/enum";
+import { OfferType } from "@prisma/client";
 import { create } from "zustand";
 
 type AvailableChainState = {
@@ -67,7 +69,7 @@ type CombinedState = {
   projectLogo: File | null;
 
   // Create Offer State
-  role: string;
+  role: OfferType;
   pricePerToken: number;
   amount: number;
   collateral: number;
@@ -76,7 +78,7 @@ type CombinedState = {
   selectedCollateralToken: string;
 
   //Create Offer Setters
-  setRole: (value: string) => void;
+  setRole: (value: OfferType) => void;
   setPricePerToken: (value: number) => void;
   setAmount: (value: number) => void;
   setCollateral: (value: number) => void;
@@ -173,7 +175,7 @@ const useCombinedStore = create<CombinedState>((set) => ({
   projectImage: null,
   projectLogo: null,
   // Create Offer State
-  role: "buyer",
+  role: OfferType.Buy,
   pricePerToken: 0,
   amount: 0,
   collateral: 0,
@@ -198,7 +200,7 @@ const useCombinedStore = create<CombinedState>((set) => ({
   setProjectImage: (value: File | null) => set({ projectImage: value }),
   setProjectLogo: (value: File | null) => set({ projectLogo: value }),
   // Create Offer Setters
-  setRole: (value: string) => set({ role: value }),
+  setRole: (value: OfferType) => set({ role: value }),
   setPricePerToken: (value: number) => set({ pricePerToken: value }),
   setAmount: (value: number) => set({ amount: value }),
   setCollateral: (value: number) => set({ collateral: value }),
@@ -243,3 +245,4 @@ export type {
   CombinedState,
   CombinedSetters,
 };
+

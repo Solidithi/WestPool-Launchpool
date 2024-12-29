@@ -1,5 +1,9 @@
 "use client";
 import { useCombinedStore } from "@/app/zustand/store";
+import { OfferType } from "@prisma/client";
+// import { OfferType } from "@/prisma/enum";
+import { useAddress } from "@thirdweb-dev/react";
+import axios from "axios";
 import { useRouter } from "next/navigation";
 
 const PreviewOfferPage = () => {
@@ -13,13 +17,15 @@ const PreviewOfferPage = () => {
     selectedCollateralToken,
   } = useCombinedStore();
 
+  const creatorAddress = useAddress();
+
   const router = useRouter();
 
   const handleBack = () => {
     router.back();
   };
 
-  const handleDeposit = () => {
+  const handleDeposit = async () => {
     //Condition to check every field is filled
     if (
       !pricePerToken ||
@@ -32,7 +38,29 @@ const PreviewOfferPage = () => {
       alert("Please fill all the fields");
       return;
     }
-    router.push("/createOffer/preview");
+    try {
+      const response = await axios.post("/api/preMarket/createOffer", {
+        pricePerToken,
+        amount,
+        collateral,
+        selectedToken,
+        selectedCollateralToken,
+        role,
+        creatorAddress,
+        selectedNetwork,
+      });
+      console.log(response.data);
+
+      if (response.data.success) {
+        console.log(response.data);
+      }
+
+
+
+      router.push("/createOffer/preview");
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   return (
@@ -45,7 +73,7 @@ const PreviewOfferPage = () => {
             </div>
 
             <div>
-              {role === "buyer" ? (
+              {role === OfferType.Buy ? (
                 <div className="text-[#2ab84e]">
                   <span>
                     buy {amount} {selectedToken}
@@ -63,7 +91,7 @@ const PreviewOfferPage = () => {
             <div className="">for</div>
 
             <div>
-              {role === "buyer" ? (
+              {role === OfferType.Buy ? (
                 <div className="text-[#2ab84e]">
                   <span>
                     {pricePerToken} {selectedToken}
@@ -110,7 +138,7 @@ const PreviewOfferPage = () => {
             <div className="flex flex-col items-end mr-10 font-bold ">
               <div className="space-y-16">
                 <div className="flex justify-end">
-                  {role === "buyer" ? (
+                  {role === OfferType.Buy ? (
                     <div className="text-[#2ab84e] ">WANT TO BUY</div>
                   ) : (
                     <div className="text-[#b10202] ">WANT TO SELL</div>
