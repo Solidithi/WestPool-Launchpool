@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useCombinedStore, useCreateOfferStore } from "../zustand/store";
+import { OfferType } from "@prisma/client";
+// import { OfferType } from "@/prisma/enum";
+
 
 const SidePick = () => {
     const [isBuyer, setIsBuyer] = useState(true);
@@ -12,12 +15,12 @@ const SidePick = () => {
 
     const handleBuyer = () => {
         setIsBuyer(true);
-        setRole("buyer");
+        setRole(OfferType.Buy);
     };
 
     const handleSeller = () => {
         setIsBuyer(false);
-        setRole("seller");
+        setRole(OfferType.Sell);
     };
 
     return (

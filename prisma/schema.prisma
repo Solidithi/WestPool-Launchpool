@@ -8,28 +8,28 @@ datasource db {
 }
 
 model Project {
-  id                  String       @id @default(uuid())
-  projectName         String
-  projectOwnerAddress String
-  verifiedToken       String
-  projectLogo         String
-  projectImage        String[]
-  shortDescription    String
-  longDescription     String
-  acceptedVToken      String[]
-  minStake            Int
-  maxStake            Int
-  fromDate            DateTime
-  toDate              DateTime
-  txHashCreated       String
-  projectStatus       String
-  chain               Int
-  poolBudget          Int
-  targetStake         Int
-  projectOwner        ProjectOwner @relation(fields: [projectOwnerAddress], references: [userAddress], onDelete: Cascade, onUpdate: Cascade)
-  userId              String?
-  offers              Offer[]
-  invested            InvestedProject[]
+  id                   String            @id @default(uuid())
+  projectName          String
+  projectOwnerAddress  String
+  verifiedTokenAddress String
+  projectLogo          String
+  projectImage         String[]
+  shortDescription     String
+  longDescription      String
+  acceptedVToken       String[]
+  minStake             Int
+  maxStake             Int
+  fromDate             DateTime
+  toDate               DateTime
+  txHashCreated        String
+  projectStatus        String
+  chainName            String
+  poolBudget           Int
+  targetStake          Int
+  projectOwner         ProjectOwner      @relation(fields: [projectOwnerAddress], references: [userAddress], onDelete: Cascade, onUpdate: Cascade)
+  userId               String?
+  offers               Offer[]
+  invested             InvestedProject[]
 }
 
 // model AvailableNetwork {
@@ -52,8 +52,8 @@ model Project {
 // }
 
 model User {
-  id          String      @id @default(uuid())
-  userAddress String      @unique
+  id          String            @id @default(uuid())
+  userAddress String            @unique
   offers      UserOffer[]
   invested    InvestedProject[]
   // projects    Project[]
@@ -72,17 +72,18 @@ model ProjectOwner {
 model Offer {
   id                   String            @id @default(uuid())
   pricePerToken        Decimal
-  Amount               Int
-  Collateral           Int
-  TokenImagePreToken   String
-  TokenImageCollateral String
-  offerType            String
+  amount               Int
+  collateral           Int
+  tokenImagePreToken   String
+  tokenImageCollateral String
+  offerType            OfferType
   startDate            DateTime
-  CreatorStatus        CreateOfferStatus
-  FillerStatus         FillerOfferStatus
-  CreatorAddress       String
+  filledTime           DateTime
+  creatorStatus        CreateOfferStatus
+  fillerStatus         FillerOfferStatus
+  creatorAddress       String
+  fillerAddress        String
   projectId            String
-  FillerAddress        String
   project              Project           @relation(fields: [projectId], references: [id])
   users                UserOffer[]
 }
@@ -122,8 +123,14 @@ enum CreateOfferStatus {
 }
 
 enum FillerOfferStatus {
+  NotYet
   Pending
   Completed
   Canceled
   CanceledWithdraw
+}
+
+enum OfferType {
+  Buy
+  Sell
 }

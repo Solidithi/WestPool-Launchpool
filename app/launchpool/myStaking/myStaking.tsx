@@ -2,8 +2,41 @@
 
 import Image from "next/image";
 import { dataTable } from "../../constants/index";
+import { useEffect, useState } from "react";
+import { useAddress } from "@thirdweb-dev/react";
+import axios from "axios";
 
 const MyStakingPage = () => {
+  const [ projects, setProjects ] = useState([]);
+  const [ pendingProjects, setPendingProjects ] = useState([]);
+  const [ endedProjects, setEndedProjects ] = useState([]);
+  const [ loading, setLoading ] = useState(true);
+  const investorAddress = useAddress();
+
+
+  useEffect(() => {
+    const fetchMyProjects = async () => {
+      try {
+        const response = await axios.post("/api/launchpool/myProject", {
+          investorAddress,
+        });
+        console.log(response.data);
+
+        if(response.data.success) {
+          console.log(response.data.projects);
+        }
+        
+
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    fetchMyProjects(); 
+  }, [investorAddress]);
+
+
+
   return (
     <div>
       <div className="py-10">
