@@ -45,12 +45,16 @@ const PreviewPage = () => {
     const calculateInitialTimeLeft = (from: string, to: string) => {
       const fromTime = new Date(from);
       const toTime = new Date(to);
+      console.log("Time: " + fromTime, toTime);
+
 
       if (fromTime > new Date()) {
         return { days: 0, hours: 0, minutes: 0, seconds: 0 };
       }
 
       const diffInMs = toTime.getTime() - fromTime.getTime();
+      console.log(diffInMs);
+
       if (diffInMs <= 0) {
         return { days: 0, hours: 0, minutes: 0, seconds: 0 };
       }
@@ -287,7 +291,7 @@ const PreviewPage = () => {
             >
               <div className="text-white p-6 rounded-xl">
                 {/* <!-- Main Container --> */}
-                <div className="grid grid-cols-2 gap-y-6 gap-x-12">
+                <div className="lg:grid lg:grid-cols-2 gap-y-6 gap-x-12 md:flex md:flex-col md:gap-6 sm:flex sm:flex-col sm:gap-6">
                   {/* <!-- Row 1 --> */}
                   <div>
                     <p className="text-gray-400 text-lg">
@@ -383,7 +387,7 @@ const PreviewPage = () => {
         )}
 
         <div className="border rounded-xl  bg-[#465377] text-white w-[40%]">
-          <div className="flex-row flex items-stretch justify-between">
+          <div className="xl:flex-row flex items-stretch justify-between md:flex-col md:gap-5 sm:flex-col smL:gap-5">
             <div className="p-8">
               <div className="text-2xl font-bold mb-4 bg-gradient-to-r from-[#82B2FA] to-[#FFFFFF] bg-clip-text text-transparent">
                 Project Progress

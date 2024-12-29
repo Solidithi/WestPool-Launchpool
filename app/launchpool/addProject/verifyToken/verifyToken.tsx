@@ -34,7 +34,7 @@ const VerifyTokenPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center mb-20">
+    <div className="flex flex-col items-center mb-52">
       <div
         className="w-[90%] max-w-4xl p-8 bg-white rounded-3xl 
       shadow-[0px_10px_20px_rgba(109,147,205,0.5),0px_-10px_20px_rgba(109,147,205,0.5),10px_0px_20px_rgba(109,147,205,0.5),-10px_0px_20px_rgba(109,147,205,0.5)]"

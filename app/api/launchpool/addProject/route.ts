@@ -52,13 +52,16 @@ export async function POST(req: NextRequest, res: NextResponse) {
                 projectImage: ["https://via.placeholder.com/150", "https://via.placeholder.com/150"],
                 shortDescription: "Short Description",
                 longDescription: "Long Description",
-                acceptedVToken: 1,
+                acceptedVToken: ["1"],
                 minStake: 1,
                 maxStake: 100,
                 fromDate: new Date(),
                 toDate: new Date(),
                 txHashCreated: "", // Add appropriate value
                 projectStatus: "PENDING", // Add appropriate value
+                chain: 1, // Add appropriate value
+                poolBudget: 1000, // Add appropriate value
+                targetStake: 500, // Add appropriate value
             },
         })
 

@@ -7,15 +7,14 @@ type Status = "upcoming" | "ongoing" | "completed";
 
 const ProjectDetailPage = () => {
   const [timeLeft, setTimeLeft] = useState({
-    days: 15,
-    hours: 10,
-    minutes: 24,
-    seconds: 59,
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0,
   });
   const steps = [{ name: "Debut" }, { name: "Staking" }, { name: "End" }];
   const [currentStep, setCurrentStep] = useState(2); // The active step index (e.g., 0-based)
   const [status, setStatus] = useState<Status>("upcoming");
-  const [activeButton, setActiveButton] = useState("FROST");
 
   const [stakeAmount, setStakeAmount] = useState("");
   const [totalStaked, setTotalStaked] = useState(0);
@@ -33,17 +32,64 @@ const ProjectDetailPage = () => {
 
   const [projectName, setProjectName] = useState<string>("");
   const [projectLogo, setProjectLogo] = useState<File | null>(null);
-  const [projectImage, setProjectImage] = useState<File | null>(null);
+  const [projectImage, setProjectImage] = useState<string[]>([]);
   const [shortDescription, setShortDescription] = useState<string>("");
   const [longDescription, setLongDescription] = useState<string>("");
-  const [acceptedVToken, setAcceptedVToken] = useState<string>("");
+  const [acceptedVToken, setAcceptedVToken] = useState<string[]>(["BNB"]);
   const [minStake, setMinStake] = useState<number | undefined>(undefined);
   const [maxStake, setMaxStake] = useState<number | undefined>(undefined);
-  const [fromDate, setFromDate] = useState<string>("");
-  const [toDate, setToDate] = useState<string>("");
+
+  const [fromDate, setFromDate] = useState<string>("2024-12-29T10:45");
+  const [toDate, setToDate] = useState<string>("2024-12-30T10:44");
+
+  const [chain, setChain] = useState<string>("Ethereum");
+  const [poolBudget, setPoolBudget] = useState<number>(10);
+  const [targetStake, setTargetStake] = useState<number>(100);
+
+  const [activeButton, setActiveButton] = useState(acceptedVToken[0]);
+
 
   // Countdown logic
   useEffect(() => {
+    const calculateInitialTimeLeft = (from: string, to: string) => {
+      const fromTime = new Date(from);
+      const toTime = new Date(to);
+      console.log("Time: " + fromTime, toTime);
+      if (fromTime > new Date()) {
+        return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+      }
+
+      const diffInMs = toTime.getTime() - fromTime.getTime();
+      if (diffInMs <= 0) {
+        return { days: 0, hours: 0, minutes: 0, seconds: 0 };
+      }
+
+      const days = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diffInMs / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diffInMs / (1000 * 60)) % 60);
+      const seconds = Math.floor((diffInMs / 1000) % 60);
+
+      return { days, hours, minutes, seconds };
+    };
+
+    const initialTimeLeft = calculateInitialTimeLeft(fromDate, toDate);
+    setTimeLeft(initialTimeLeft);
+  }, [fromDate, toDate]);
+
+
+
+
+  // Countdown logic
+  useEffect(() => {
+    if (
+      timeLeft.days === 0 &&
+      timeLeft.hours === 0 &&
+      timeLeft.minutes === 0 &&
+      timeLeft.seconds === 0
+    ) {
+      return;
+    }
+
     const timer = setInterval(() => {
       setTimeLeft((prevTime) => {
         let { days, hours, minutes, seconds } = prevTime;
@@ -63,7 +109,8 @@ const ProjectDetailPage = () => {
               if (days > 0) {
                 days--;
               } else {
-                clearInterval(timer); // Stop timer when countdown ends
+                clearInterval(timer); // Dừng khi hết thời gian
+                return { days: 0, hours: 0, minutes: 0, seconds: 0 };
               }
             }
           }
@@ -73,8 +120,8 @@ const ProjectDetailPage = () => {
       });
     }, 1000);
 
-    return () => clearInterval(timer); // Cleanup on unmount
-  }, []);
+    return () => clearInterval(timer); // Dọn dẹp interval khi unmount
+  }, [timeLeft]);
 
   const handleStake = () => {
     const amount = parseFloat(stakeAmount);
@@ -177,23 +224,25 @@ const ProjectDetailPage = () => {
 
         {/* Pool Button */}
         <div className="mt-24 flex gap-5 px-8">
-          <button
-            className={`btn btn-ghost rounded-3xl px-8 py-2 text-white transition-colors duration-300 ${
-              activeButton === "FROST" ? "bg-[#6D93CD]" : "bg-transparent"
-            }`}
-            onClick={() => setActiveButton("FROST")}
-          >
-            FROST Pool
-          </button>
+          {acceptedVToken.map((token, index) => (
+            <button
+              key={index}
+              className={`btn btn-ghost rounded-3xl px-8 py-2 text-white transition-colors duration-300 ${activeButton === token ? "bg-[#6D93CD]" : "bg-transparent"
+                }`}
+              onClick={() => setActiveButton(token)}
+            >
+              {token} Pool
+            </button>
+          ))}
 
-          <button
-            className={`btn btn-ghost rounded-3xl px-8 py-2 text-white transition-colors duration-300 ${
-              activeButton === "VToken" ? "bg-[#6D93CD]" : "bg-transparent"
-            }`}
+
+          {/* <button
+            className={`btn btn-ghost rounded-3xl px-8 py-2 text-white transition-colors duration-300 ${activeButton === "VToken" ? "bg-[#6D93CD]" : "bg-transparent"
+              }`}
             onClick={() => setActiveButton("VToken")}
           >
             VToken Pool
-          </button>
+          </button> */}
 
           <button
             className="btn btn-ghost rounded-lg px-8 py-2 bg-[#2A5697] text-white"
@@ -283,11 +332,11 @@ const ProjectDetailPage = () => {
 
                 <button
                   className=" bg-[#2A5697] text-white rounded-md px-2 py-2 text-[13px] flex justify-center w-[100px] hover:scale-105 duration-300"
-                  // onClick={() =>
-                  //   (
-                  //     document.getElementById("unlock") as HTMLDialogElement
-                  //   ).showModal()
-                  // }
+                // onClick={() =>
+                //   (
+                //     document.getElementById("unlock") as HTMLDialogElement
+                //   ).showModal()
+                // }
                 >
                   Unlock
                 </button>
@@ -351,131 +400,103 @@ const ProjectDetailPage = () => {
 
       {/* Similar to Binance */}
       <div className="flex mt-10 w-full p-8 h-auto">
-        {activeButton === "FROST" && (
-          <div className=" ml-16 mr-16 border  rounded-xl w-[60%]">
-            <div className=" text-white p-6 rounded-xl">
-              {/* <!-- Main Container --> */}
-              <div className="lg:grid lg:grid-cols-2 gap-y-6 gap-x-12 md:flex md:flex-col md:gap-6 sm:flex sm:flex-col sm:gap-6">
-                {/* <!-- Row 1 --> */}
-                <div>
-                  <p className="text-gray-400 text-lg">
-                    Total FDUSD tokens airdropped in the pool
-                  </p>
-                  <p className="text-lg font-bold text-white">
-                    720,000.0000 VANA
-                  </p>
-                </div>
-                <div>
-                  <p className="text-gray-400 text-lg">Locked token</p>
-                  <p className="text-lg font-bold text-green-500">● FDUSD</p>
-                </div>
+        {acceptedVToken.map((token, index) => (
+          activeButton === token && (
+            <div
+              key={index}
+              className="ml-16 mr-16 border rounded-xl w-[60%]"
+            >
+              <div className="text-white p-6 rounded-xl">
+                {/* <!-- Main Container --> */}
+                <div className="lg:grid lg:grid-cols-2 gap-y-6 gap-x-12 md:flex md:flex-col md:gap-6 sm:flex sm:flex-col sm:gap-6">
+                  {/* <!-- Row 1 --> */}
+                  <div>
+                    <p className="text-gray-400 text-lg">
+                      Total FDUSD tokens airdropped in the pool
+                    </p>
+                    <p className="text-lg font-bold text-white">
+                      720,000.0000 VANA
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-lg">Locked token</p>
+                    <p className="text-lg font-bold text-green-500">
+                      ● {activeButton}
+                    </p>
+                  </div>
 
-                {/* <!-- Row 2 --> */}
-                <div>
-                  <p className="text-gray-400 text-lg">
-                    Number of VANA tokens airdropped in the pool today
-                  </p>
-                  <p className="text-lg font-bold text-white">
-                    360,000.0000 VANA
-                  </p>
-                </div>
-                <div>
-                  <p className="text-gray-400 text-lg">
-                    Total FDUSD tokens locked
-                  </p>
-                  <p className="text-lg font-bold text-white">
-                    1,213,004,343.2789 FDUSD
-                  </p>
-                </div>
+                  {/* <!-- Row 2 --> */}
+                  {/* <div>
+                    <p className="text-gray-400 text-lg">
+                      Number of VANA tokens airdropped in the pool today
+                    </p>
+                    <p className="text-lg font-bold text-white">
+                      360,000.0000 VANA
+                    </p>
+                  </div> */}
+                  <div>
+                    <p className="text-gray-400 text-lg">
+                      Total FDUSD tokens locked
+                    </p>
+                    <p className="text-lg font-bold text-white">
+                      1,213,004,343.2789 {activeButton}
+                    </p>
+                  </div>
 
-                {/* <!-- Row 3 --> */}
-                <div>
-                  <p className="text-gray-400 text-lg ">Project duration</p>
-                  <p className="text-lg font-bold text-white">2 Days</p>
-                </div>
-                <div>
-                  <p className="text-gray-400 text-lg">Participants</p>
-                  <p className="text-lg font-bold text-white">76,382</p>
-                </div>
+                  {/* <!-- Row 3 --> */}
+                  <div>
+                    <p className="text-gray-400 text-lg ">Project duration</p>
+                    <p className="text-lg font-bold text-white">2 Days</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-lg">Participants</p>
+                    <p className="text-lg font-bold text-white">76,382</p>
+                  </div>
 
-                {/* <!-- Row 4 --> */}
-                <div>
-                  <p className="text-gray-400 text-lg ">
-                    Maximum hourly airdrop amount
-                  </p>
-                  <p className="text-lg font-bold text-white">
-                    1,500.0000 VANA
-                  </p>
+                  {/* <!-- Row 4 --> */}
+                  <div>
+                    <p className="text-gray-400 text-lg ">
+                      Maximum hourly airdrop amount
+                    </p>
+                    <p className="text-lg font-bold text-white">
+                      1,500.0000 VANA
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        )}
+          )
+        ))}
 
-        {activeButton === "VToken" && (
-          <div className=" ml-16 mr-16 border  rounded-xl w-[60%]">
-            <div className=" text-white p-6 rounded-xl">
-              {/* <!-- Main Container --> */}
-              <div className="lg:grid lg:grid-cols-2 gap-y-6 gap-x-12 md:flex md:flex-col md:gap-6 sm:flex sm:flex-col sm:gap-6">
-                {/* <!-- Row 1 --> */}
-                <div>
-                  <p className="text-gray-400 text-lg">
-                    Total ABC tokens airdropped in the pool
-                  </p>
-                  <p className="text-lg font-bold text-white">
-                    1,000,000.0000 ABC
-                  </p>
-                </div>
-                <div>
-                  <p className="text-gray-400 text-lg">Locked token</p>
-                  <p className="text-lg font-bold text-red-600">● XYZ</p>
-                </div>
 
-                {/* <!-- Row 2 --> */}
-                <div>
-                  <p className="text-gray-400 text-lg">
-                    Number of ABC tokens airdropped in the pool today
-                  </p>
-                  <p className="text-lg font-bold text-white">
-                    500,000.0000 ABC
-                  </p>
-                </div>
-                <div>
-                  <p className="text-gray-400 text-lg">
-                    Total XYZ tokens locked
-                  </p>
-                  <p className="text-lg font-bold text-white">
-                    2,000,000,000.0000 XYZ
-                  </p>
-                </div>
 
-                {/* <!-- Row 3 --> */}
-                <div>
-                  <p className="text-gray-400 text-lg ">Project duration</p>
-                  <p className="text-lg font-bold text-white">5 Days</p>
-                </div>
-                <div>
-                  <p className="text-gray-400 text-lg">Participants</p>
-                  <p className="text-lg font-bold text-white">123,456</p>
-                </div>
 
-                {/* <!-- Row 4 --> */}
-                <div>
-                  <p className="text-gray-400 text-lg ">
-                    Maximum hourly airdrop amount
-                  </p>
-                  <p className="text-lg font-bold text-white">3,000.0000 ABC</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
 
         {activeButton === "MoreDetail" && (
           <div className=" ml-16 mr-16 border  rounded-xl w-[60%]">
-            <div className=" text-white p-6 rounded-xl">
+            <div className="flex flex-col gap-5 text-white p-6 rounded-xl">
               {/* <!-- Main Container --> */}
-              <div className="lg:grid lg:grid-cols-2 gap-y-6 gap-x-12 md:flex md:flex-col md:gap-6 sm:flex sm:flex-col sm:gap-6">
+              <div className="flex flex-row flex-wrap gap-5">
+                {projectImage.map((image, index) => (
+                  <Image
+                    key={index}
+                    src={image}
+                    alt="Project Logo"
+                    width={300}
+                    height={200}
+                    className="rounded-lg object-cover w-64 h-32"
+                  />
+                ))}
+              </div>
+
+              <div className="flex justify-between">
+                <span className="text-[20px] font-light">Chain: <span className="text-[20px] font-bold">{chain}</span></span>
+                <span className="text-[20px] font-light">Pool Budget: <span className="text-[20px] font-bold">{poolBudget}</span></span>
+                <span className="text-[20px] font-light">Target Stake: <span className="text-[20px] font-bold">{targetStake}</span></span>
+              </div>
+
+
+              <div className="grid grid-cols-2 gap-y-6 gap-x-12 ">
                 {longDescription}
               </div>
             </div>
@@ -507,7 +528,7 @@ const ProjectDetailPage = () => {
             </div>
             {/* <div className="border-l border-gray-400 self-stretch mx-8"></div> */}
             <div className="p-8">
-              <VerticalProgressBar steps={steps} currentStep={1} />
+              <VerticalProgressBar steps={steps} currentStep={0} />
             </div>
           </div>
         </div>

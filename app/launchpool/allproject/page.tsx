@@ -129,8 +129,8 @@ const AllProject = () => {
                   <tr className="text-[#82B2FA] text-center text-[20px] font-extralight border-b-[#E0E0E0]">
                     <th className="py-12"></th>
                     <th>Title</th>
-                    <th>Earned</th>
-                    <th>Token</th>
+                    {/* <th>Earned</th>
+                    <th>Token</th> */}
                     <th>Total Staked</th>
                     <th>APR</th>
                     <th>Ends in</th>
@@ -165,8 +165,8 @@ const AllProject = () => {
                               </div>
                             </div>
                           </td>
-                          <td>{data.earned}</td>
-                          <td>{data.token}</td>
+                          {/* <td>{data.earned}</td>
+                          <td>{data.token}</td> */}
                           <td>{data.totalStaked}</td>
                           <td>{data.apr}</td>
                           <td>{data.endsIn}</td>
@@ -267,8 +267,8 @@ const AllProject = () => {
                   <tr className="text-[#82B2FA] text-center text-[20px] font-extralight border-b-[#E0E0E0]">
                     <th className="py-12"></th>
                     <th>Title</th>
-                    <th>Earned</th>
-                    <th>Token</th>
+                    {/* <th>Earned</th>
+                    <th>Token</th> */}
                     <th>Total Staked</th>
                     <th>APR</th>
                     <th>Ends in</th>
@@ -303,8 +303,8 @@ const AllProject = () => {
                               </div>
                             </div>
                           </td>
-                          <td>{data.earned}</td>
-                          <td>{data.token}</td>
+                          {/* <td>{data.earned}</td>
+                          <td>{data.token}</td> */}
                           <td>{data.totalStaked}</td>
                           <td>{data.apr}</td>
                           <td>{data.endsIn}</td>
