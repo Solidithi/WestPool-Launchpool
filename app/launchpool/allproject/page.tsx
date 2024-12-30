@@ -6,12 +6,15 @@ import { useRouter } from "next/navigation";
 
 import { banners } from "../../constants/index";
 import { dataTable } from "../../constants/index";
+import { Project } from "../../interface/interface"
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const AllProject = () => {
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
   const [activeId, setActiveId] = useState(banners[0].id);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
 
   //  ------------Xử lí khi mở nhiều row--------------
   const toggleRow = (index: number) => {
@@ -35,6 +38,30 @@ const AllProject = () => {
   // const handleBannerClick = (event, id) => {
   //   event.preventDefault();
   // };
+
+  //  ------------Gọi API--------------
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const res = await fetch("/api/launchpool/allProject");
+        const data = await res.json();
+
+        if (data.success) {
+          setProjects(data.data);
+        } else {
+          console.error("Failed to fetch projects:", data.error);
+        }
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  if (loading) return <p>Loading...</p>;
 
   return (
     <div className="flex flex-col items-center space-y-6 px-[5%] pb-12 xl:space-y-12 xl:px-12 mt-10 ">
@@ -137,8 +164,8 @@ const AllProject = () => {
                   </tr>
                 </thead>
                 <tbody className="text-center ">
-                  {dataTable
-                    .filter((data) => data.endsIn !== "--")
+                  {projects
+                    // .filter((data) => data.endsIn !== "--")
                     .map((data, index) => (
                       <>
                         <tr
@@ -149,7 +176,7 @@ const AllProject = () => {
                           <td>
                             <div className="flex items-center gap-4 justify-center">
                               <Image
-                                src={data.image}
+                                src={data.projectLogo}
                                 width={50}
                                 height={50}
                                 alt="icon"
@@ -157,19 +184,21 @@ const AllProject = () => {
                               />
                               <div className="flex flex-col text-left gap-1">
                                 <span className="text-[17px] font-bold">
-                                  {data.title}
+                                  {data.projectName}
                                 </span>
                                 <span className="text-[12px] font-light text-[#DDDDDD]">
-                                  {data.short_description}
+                                  {data.shortDescription}
                                 </span>
                               </div>
                             </div>
                           </td>
                           {/* <td>{data.earned}</td>
                           <td>{data.token}</td> */}
-                          <td>{data.totalStaked}</td>
-                          <td>{data.apr}</td>
-                          <td>{data.endsIn}</td>
+                          <td>
+                            {/* {data.invested} */}
+                          </td>
+                          <td>3.13%</td>
+                          <td>{data.toDate.toString()}</td>
                         </tr>
 
                         {expandedRows.includes(index) && (
@@ -179,11 +208,11 @@ const AllProject = () => {
                                 <div className="w-[600px] ">
                                   <div className="flex justify-between mb-4">
                                     <span>APR:</span>
-                                    <span>{data.apr}</span>
+                                    {/* <span>{data.apr}</span> */}
                                   </div>
                                   <div className="flex justify-between mb-4">
                                     <span>Ends in:</span>
-                                    <span>{data.endsIn}</span>
+                                    <span>{data.toDate.toString()}</span>
                                   </div>
                                   <div className="flex justify-start items-center gap-2">
                                     <Link

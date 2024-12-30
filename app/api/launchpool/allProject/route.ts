@@ -5,8 +5,6 @@ export async function GET(req: NextRequest, res: NextResponse) {
   try {
     const launchpoolData = await prismaClient.project.findMany();
 
-    
-
     return NextResponse.json(
       { success: true, data: launchpoolData },
       { status: 200 }
