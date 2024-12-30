@@ -5,7 +5,7 @@ export const navItems = [
   // { label: "My Project", path: "/myProject" },
   { label: "My Staking", path: "/launchpool/myStaking" },
   { label: "Launchpool", path: "/launchpool/allproject" },
-  { label: "Pre-market", path: "/market/preMarket" },
+  { label: "Pre-market", path: "/preMarket/preMarket" },
   { label: "Dashboard", path: "/market/dashboard" },
 ];
 

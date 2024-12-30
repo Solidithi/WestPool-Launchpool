@@ -9,6 +9,7 @@ import {
 } from "@/app/zustand/store";
 import StatusDisplay from "@/app/components/Status";
 import axios from "axios";
+import { useRouter } from "next/navigation";
 const PreviewPage = () => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -38,6 +39,8 @@ const PreviewPage = () => {
   const [activeButton, setActiveButton] = useState(acceptedVToken[0]);
 
   const { chain, poolBudget, targetStake } = useProjectBasisStore();
+  
+  const router = useRouter();
 
 
 
@@ -155,6 +158,7 @@ const PreviewPage = () => {
     console.log(response);
     if (response.status === 200) {
       alert("Success");
+      router.push("/launchpool/myProject");
     }
   };
 
