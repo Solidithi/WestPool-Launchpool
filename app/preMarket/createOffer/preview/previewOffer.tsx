@@ -39,25 +39,27 @@ const PreviewOfferPage = () => {
       return;
     }
     try {
-      const response = await axios.post("/api/preMarket/createOffer", {
+      const response = await axios.post("/api/preMarket/preview", {
+        role,
         pricePerToken,
         amount,
-        collateral,
-        selectedToken,
-        selectedCollateralToken,
-        role,
-        creatorAddress,
         selectedNetwork,
+        selectedToken,
+        collateral,
+        selectedCollateralToken,
+        creatorAddress,
       });
       console.log(response.data);
 
-      if (response.data.success) {
+      if (response.data.success ) {
         console.log(response.data);
       }
 
+      const projectId = response.data.project.projectId;
 
 
-      router.push("/createOffer/preview");
+      router.push(`/preMarket/tokenOffer/${projectId}`);
+      
     } catch (error) {
       console.log(error);
     }

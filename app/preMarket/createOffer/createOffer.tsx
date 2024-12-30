@@ -39,7 +39,8 @@ const CreateOfferPage = () => {
       alert("Please fill all the fields");
       return;
     }
-    router.push("/market/createOffer/preview");
+    
+    router.push("/preMarket/createOffer/preview");
   };
 
   // const handleCollateral = () => {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient, ProjectStatus } from "@prisma/client";
+
 import prismaClient from "@/prisma";
 
 export async function POST(req: NextRequest, res: NextResponse) {
@@ -43,19 +44,50 @@ export async function POST(req: NextRequest, res: NextResponse) {
     //     },
     // })
     //insert some random data to test
-    const user = await prismaClient.user.create({
-      data: {
-        id: "unique-user-id", // Optional, will auto-generate if not provided
-        userAddress: "0x123456",
+    let user = await prismaClient.user.findFirst({
+      where: {
+        userAddress:
+          "0x123456",
       },
     });
 
-    const projectOwner = await prismaClient.projectOwner.create({
-      data: {
-        userAddress: "0x123456",
+    if (user === null) {
+      user = await prismaClient.user.create({
+        data: {
+          id: "unique-user-id", // Optional, will auto-generate if not provided
+          userAddress: "0x123456",
+        },
+      });
+
+    }
+
+    let projectOwner = await prismaClient.projectOwner.findFirst({
+      where: {
+        userAddress:
+          "0x123456",
       },
     });
 
+    if (projectOwner === null) {
+      projectOwner = await prismaClient.projectOwner.create({
+        data: {
+          userAddress: "0x123456",
+        },
+      });
+    }
+
+    const isProjectExisted = await prismaClient.project.findFirst({
+      where: {
+        verifiedTokenAddress: "0x",
+      },
+    });
+
+    if (isProjectExisted) {
+      return NextResponse.json(
+        { success: false, message: "Project already exists" },
+        { status: 400 }
+      );
+    }
 
     const project = await prismaClient.project.create({
       data: {

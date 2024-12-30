@@ -11,7 +11,7 @@ model Project {
   id                   String            @id @default(uuid())
   projectName          String
   projectOwnerAddress  String
-  verifiedTokenAddress String
+  verifiedTokenAddress String            @unique
   projectLogo          String
   projectImage         String[]
   shortDescription     String
@@ -37,25 +37,25 @@ model Project {
 //   networkName String
 //   chainId     Int          @unique
 //   networkLogo String
-//   // vTokenData  VTokenData[]
+//   TokenData  TokenData[]
 // }
 
-// model VTokenData {
+// model TokenData {
 //   id               String           @id @default(uuid())
-//   vTokenName       String
-//   vTokenSymbol     String
-//   vTokenDecimals   Int
-//   vTokenLogo       String
-//   vTokenAddress    String
+//   TokenName       String
+//   TokenSymbol     String
+//   TokenDecimals   Int
+//   TokenLogo       String
+//   TokenAddress    String
 //   chainId          Int
 //   availableNetwork AvailableNetwork @relation(fields: [chainId], references: [chainId], onDelete: Cascade, onUpdate: Cascade) // Relation to AvailableNetwork
 // }
 
 model User {
-  id          String            @id @default(uuid())
-  userAddress String            @unique
-  offers      UserOffer[]
-  invested    InvestedProject[]
+  id           String            @id @default(uuid())
+  userAddress  String            @unique
+  offers       UserOffer[]
+  invested     InvestedProject[]
   ProjectOwner ProjectOwner[]
   // projects    Project[]
   // offerId     String?
@@ -63,11 +63,11 @@ model User {
 }
 
 model ProjectOwner {
-  id          String @id @default(uuid())
+  id String @id @default(uuid())
 
-  userAddress String @unique
-  User       User   @relation(fields: [userAddress], references: [userAddress], onDelete: Cascade, onUpdate: Cascade)
-  Project Project[]
+  userAddress String    @unique
+  User        User      @relation(fields: [userAddress], references: [userAddress], onDelete: Cascade, onUpdate: Cascade)
+  Project     Project[]
 }
 
 //Offer model buy sell like premarket

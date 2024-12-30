@@ -25,6 +25,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
         });
 
         const projectId = getProject?.id;
+        console.log("ProjectId: "+projectId);
 
         if (!projectId) {
             return NextResponse.json({ success: false, error: "Project not found" }, { status: 404 })
@@ -52,7 +53,13 @@ export async function POST(req: NextRequest, res: NextResponse) {
             }            
         });
 
-        return NextResponse.json({ success: true, offer: offer }, { status: 200})
+        const project = await prismaClient.project.findUnique({
+            where: {
+                id: projectId,
+            }
+        })
+
+        return NextResponse.json({ success: true, offer: offer, project: project }, { status: 200})
 
     } catch (error) {
         console.log(error);
