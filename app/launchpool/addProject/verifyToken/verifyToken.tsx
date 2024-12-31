@@ -14,15 +14,15 @@ const VerifyTokenPage = () => {
   const router = useRouter();
 
   const handleSubmit = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    if (!signedMessage) {
-      const signer = provider.getSigner();
-      const signature = await signer.signMessage(
-        `Guarantee this is your token address: ${tokenAddress}`
-      );
-      setSignedMessage(true);
-      console.log(signature);
-    }
+    // const provider = new ethers.providers.Web3Provider(window.ethereum);
+    // if (!signedMessage) {
+    //   const signer = provider.getSigner();
+    //   const signature = await signer.signMessage(
+    //     `Guarantee this is your token address: ${tokenAddress}`
+    //   );
+    //   setSignedMessage(true);
+    //   console.log(signature);
+    // }
 
     if(tokenAddress === "") {
       alert("Please enter your token address");

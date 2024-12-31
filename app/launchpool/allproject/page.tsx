@@ -9,6 +9,7 @@ import { dataTable } from "../../constants/index";
 import { Project } from "../../interface/interface"
 
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 const AllProject = () => {
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
@@ -39,12 +40,24 @@ const AllProject = () => {
   //   event.preventDefault();
   // };
 
+  // Phân loại dự án
+  const liveProjects = projects.filter((data) => {
+    const daysLeft = Math.floor((new Date(data.toDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24));
+    return data.toDate && daysLeft > 0;
+  });
+
+  const expiredProjects = projects.filter((data) => {
+    const daysLeft = Math.floor((new Date(data.toDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24));
+    return !data.toDate || daysLeft <= 0;
+  });
+
+
   //  ------------Gọi API--------------
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const res = await fetch("/api/launchpool/allProject");
-        const data = await res.json();
+        const res = await axios.get("/api/launchpool/allProject");
+        const data = res.data;
 
         if (data.success) {
           setProjects(data.data);
@@ -61,7 +74,9 @@ const AllProject = () => {
     fetchProjects();
   }, []);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <div className="flex justify-center items-center h-[80vh]">
+    <span className="loading loading-dots loading-lg "></span>
+  </div>;
 
   return (
     <div className="flex flex-col items-center space-y-6 px-[5%] pb-12 xl:space-y-12 xl:px-12 mt-10 ">
@@ -164,7 +179,7 @@ const AllProject = () => {
                   </tr>
                 </thead>
                 <tbody className="text-center ">
-                  {projects
+                  {liveProjects
                     // .filter((data) => data.endsIn !== "--")
                     .map((data, index) => (
                       <>
@@ -198,7 +213,15 @@ const AllProject = () => {
                             {/* {data.invested} */}
                           </td>
                           <td>3.13%</td>
-                          <td>{data.toDate.toString()}</td>
+                          <td>
+                            {data.toDate
+                              ? (() => {
+                                const daysLeft = Math.floor((new Date(data.toDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24));
+                                return daysLeft > 0 ? `${daysLeft} days left` : "Expired";
+                              })()
+                              : "--"}
+                          </td>
+
                         </tr>
 
                         {expandedRows.includes(index) && (
@@ -212,12 +235,17 @@ const AllProject = () => {
                                   </div>
                                   <div className="flex justify-between mb-4">
                                     <span>Ends in:</span>
-                                    <span>{data.toDate.toString()}</span>
+                                    <span>{data.toDate
+                                      ? (() => {
+                                        const daysLeft = Math.floor((new Date(data.toDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24));
+                                        return daysLeft > 0 ? `${daysLeft} days left` : "Expired";
+                                      })()
+                                      : "--"}</span>
                                   </div>
                                   <div className="flex justify-start items-center gap-2">
                                     <Link
                                       key={index}
-                                      href={`/launchpool/projectDetail/${index + 1}`}
+                                      href={`/launchpool/projectDetail/${data.id}`}
                                       className="flex items-center flex-row gap-3"
                                     >
                                       <span className="text-[#7BA9EF]">
@@ -304,55 +332,73 @@ const AllProject = () => {
                   </tr>
                 </thead>
                 <tbody className="text-center ">
-                  {dataTable
-                    .filter((data) => data.endsIn == "--")
-                    .map((data, index) => (
-                      <>
-                        <tr
-                          onClick={() => toggleRow(index)}
-                          className="cursor-pointer hover:bg-[#1A2E4A] text-white border-b border-[#E0E0E0] last:border-b-0"
-                        >
-                          <th>{index + 1}</th>
-                          <td>
-                            <div className="flex items-center gap-4 justify-center">
-                              <Image
-                                src={data.image}
-                                width={50}
-                                height={50}
-                                alt="icon"
-                                className="rounded-full"
-                              />
-                              <div className="flex flex-col text-left gap-1">
-                                <span className="text-[17px] font-bold">
-                                  {data.title}
-                                </span>
-                                <span className="text-[12px] font-light text-[#DDDDDD]">
-                                  {data.short_description}
-                                </span>
-                              </div>
+                  {expiredProjects.map((data, index) => (
+                    <>
+                      <tr
+                        onClick={() => toggleRow(index)}
+                        className="cursor-pointer hover:bg-[#1A2E4A] text-white border-b border-[#E0E0E0] last:border-b-0 "
+                      >
+                        <th>{index + 1}</th>
+                        <td>
+                          <div className="flex items-center gap-4 justify-center">
+                            <Image
+                              src={data.projectLogo}
+                              width={50}
+                              height={50}
+                              alt="icon"
+                              className="rounded-full"
+                            />
+                            <div className="flex flex-col text-left gap-1">
+                              <span className="text-[17px] font-bold">
+                                {data.projectName}
+                              </span>
+                              <span className="text-[12px] font-light text-[#DDDDDD]">
+                                {data.shortDescription}
+                              </span>
                             </div>
-                          </td>
-                          {/* <td>{data.earned}</td>
+                          </div>
+                        </td>
+                        {/* <td>{data.earned}</td>
                           <td>{data.token}</td> */}
-                          <td>{data.totalStaked}</td>
-                          <td>{data.apr}</td>
-                          <td>{data.endsIn}</td>
-                        </tr>
+                        <td>
+                          {/* {data.invested} */}
+                        </td>
+                        <td>3.13%</td>
+                        <td>
+                          {data.toDate
+                            ? (() => {
+                              const daysLeft = Math.floor((new Date(data.toDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24));
+                              return daysLeft > 0 ? `${daysLeft} days left` : "Expired";
+                            })()
+                            : "--"}
+                        </td>
 
-                        {expandedRows.includes(index) && (
-                          <tr className="bg-[#0D1C33] text-white ">
-                            <td colSpan={7} className="p-4">
-                              <div className="flex justify-between items-center p-2 gap-6">
-                                <div className="w-[600px] ">
-                                  <div className="flex justify-between mb-4">
-                                    <span>APR:</span>
-                                    <span>{data.apr}</span>
-                                  </div>
-                                  <div className="flex justify-between mb-4">
-                                    <span>Ends in:</span>
-                                    <span>{data.endsIn}</span>
-                                  </div>
-                                  <div className="flex justify-start items-center gap-2">
+                      </tr>
+
+                      {expandedRows.includes(index) && (
+                        <tr className="bg-[#0D1C33] text-white ">
+                          <td colSpan={7} className="p-4">
+                            <div className="flex justify-between items-center p-2 gap-6">
+                              <div className="w-[600px] ">
+                                <div className="flex justify-between mb-4">
+                                  <span>APR:</span>
+                                  {/* <span>{data.apr}</span> */}
+                                </div>
+                                <div className="flex justify-between mb-4">
+                                  <span>Ends in:</span>
+                                  <span>{data.toDate
+                                    ? (() => {
+                                      const daysLeft = Math.floor((new Date(data.toDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24));
+                                      return daysLeft > 0 ? `${daysLeft} days left` : "Expired";
+                                    })()
+                                    : "--"}</span>
+                                </div>
+                                <div className="flex justify-start items-center gap-2">
+                                  <Link
+                                    key={index}
+                                    href={`/launchpool/projectDetail/${data.id}`}
+                                    className="flex items-center flex-row gap-3"
+                                  >
                                     <span className="text-[#7BA9EF]">
                                       View Project Detail
                                     </span>
@@ -373,37 +419,38 @@ const AllProject = () => {
                                         stroke-width="2"
                                       />
                                     </svg>
-                                  </div>
+                                  </Link>
                                 </div>
-                                <div className="flex flex-col border border-[#7BA9EF] rounded-2xl p-4 w-full h-[100px] justify-between ">
-                                  <div className="flex flex-row ">
-                                    <span className="font-bold">EARNED</span>
-                                  </div>
-                                  <div className="flex justify-between items-center">
-                                    <input
-                                      type="text"
-                                      value={0}
-                                      className="bg-transparent"
-                                    />
-                                    <button className="bg-gray-500 text-white py-1 px-4 rounded-3xl h-[35px]">
-                                      Harvest
-                                    </button>
-                                  </div>
+                              </div>
+                              <div className="flex flex-col border border-[#7BA9EF] rounded-2xl p-4 w-full h-[100px] justify-between ">
+                                <div className="flex flex-row ">
+                                  <span className="font-bold">EARNED</span>
                                 </div>
-                                <div className="flex flex-col border border-[#7BA9EF] rounded-2xl p-4 w-full h-[100px] justify-between items-start gap-3">
-                                  <span className="font-bold">
-                                    START STAKING
-                                  </span>
-                                  <button className="ml-2 bg-[#6D93CD] text-white py-1 px-4 rounded-3xl w-full h-[40px]">
-                                    Connect Wallet
+                                <div className="flex justify-between items-center">
+                                  <input
+                                    type="text"
+                                    value={0}
+                                    className="bg-transparent"
+                                  />
+                                  <button className="bg-gray-500 text-white py-1 px-4 rounded-3xl h-[35px]">
+                                    Harvest
                                   </button>
                                 </div>
                               </div>
-                            </td>
-                          </tr>
-                        )}
-                      </>
-                    ))}
+                              <div className="flex flex-col border border-[#7BA9EF] rounded-2xl p-4 w-full h-[100px] justify-between items-start gap-3">
+                                <span className="font-bold">
+                                  START STAKING
+                                </span>
+                                <button className="ml-2 bg-[#6D93CD] text-white py-1 px-4 rounded-3xl w-full h-[40px]">
+                                  Connect Wallet
+                                </button>
+                              </div>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </>
+                  ))}
                 </tbody>
               </table>
             </div>

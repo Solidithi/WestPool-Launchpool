@@ -3,6 +3,11 @@ import VerticalProgressBar from "@/app/components/Progress";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import StatusDisplay from "@/app/components/Status";
+import { useParams } from "next/navigation";
+import axios from "axios";
+import { Project } from "@/app/interface/interface";
+
+
 type Status = "upcoming" | "ongoing" | "completed";
 
 const ProjectDetailPage = () => {
@@ -12,12 +17,19 @@ const ProjectDetailPage = () => {
     minutes: 0,
     seconds: 0,
   });
-  const steps = [{ name: "Debut" }, { name: "Staking" }, { name: "End" }];
+  const steps = [{ name: "Up coming" }, { name: "On going" }, { name: "Completed" }];
   const [currentStep, setCurrentStep] = useState(2); // The active step index (e.g., 0-based)
   const [status, setStatus] = useState<Status>("upcoming");
+  const [step, setStep] = useState<number>(0);
 
   const [stakeAmount, setStakeAmount] = useState("");
   const [totalStaked, setTotalStaked] = useState(0);
+
+  const [projectDetails, setProjectDetails] = useState<Project[]>([]);
+
+
+  const [loading, setLoading] = useState(true);
+
 
   //Create these state var acceptedVToken,
   // minStake,
@@ -48,10 +60,12 @@ const ProjectDetailPage = () => {
 
   const [activeButton, setActiveButton] = useState(acceptedVToken[0]);
 
+  const pageParam = useParams();
+
 
   // Countdown logic
   useEffect(() => {
-    const calculateInitialTimeLeft = (from: string, to: string) => {
+    const calculateInitialTimeLeft = (from: Date, to: Date) => {
       const fromTime = new Date(from);
       const toTime = new Date(to);
       console.log("Time: " + fromTime, toTime);
@@ -72,9 +86,9 @@ const ProjectDetailPage = () => {
       return { days, hours, minutes, seconds };
     };
 
-    const initialTimeLeft = calculateInitialTimeLeft(fromDate, toDate);
+    const initialTimeLeft = calculateInitialTimeLeft(projectDetails[0]?.fromDate, projectDetails[0]?.toDate);
     setTimeLeft(initialTimeLeft);
-  }, [fromDate, toDate]);
+  }, [projectDetails]);
 
 
 
@@ -123,6 +137,59 @@ const ProjectDetailPage = () => {
     return () => clearInterval(timer); // Dọn dẹp interval khi unmount
   }, [timeLeft]);
 
+  //  ------------Gọi API--------------
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const { projectId } = pageParam;
+        console.log("Project id: " + projectId);
+
+        const res = await axios.post("/api/launchpool/projectDetail", { projectId });
+        console.log("Respnse data: " + res.data);
+        const data = res.data;
+
+        if (data.success) {
+          setProjectDetails(data.data);
+        } else {
+          console.error("Failed to fetch projects:", data.error);
+        }
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, [pageParam]);
+
+
+  useEffect(() => {
+    console.log("Project details:", projectDetails);
+    console.log("fromDate: ", projectDetails[0]?.longDescription);
+    const currentDate = new Date();
+    if (projectDetails[0]?.fromDate && projectDetails[0]?.toDate) {
+      const from = new Date(projectDetails[0]?.fromDate);
+      const to = new Date(projectDetails[0]?.toDate);
+
+      console.log("from: " + from);
+      console.log("to: " + to);
+
+      if (currentDate < from) {
+        setStatus("upcoming");
+        setStep(0);
+      } else if (currentDate >= from && currentDate <= to) {
+        setStatus("ongoing");
+        setStep(1);
+      } else if (currentDate > to) {
+        setStatus("completed");
+        setStep(2);
+      }
+    } else {
+      console.log("-.-");
+    }
+  }, [projectDetails]);
+
   const handleStake = () => {
     const amount = parseFloat(stakeAmount);
     if (amount > 0 && amount != null) {
@@ -130,6 +197,12 @@ const ProjectDetailPage = () => {
       setStakeAmount("");
     }
   };
+
+
+
+  if (loading) return <div className="flex justify-center items-center h-[80vh]">
+    <span className="loading loading-dots loading-lg "></span>
+  </div>;
 
   return (
     <div>
@@ -139,7 +212,7 @@ const ProjectDetailPage = () => {
             <div className="basis-1/4">
               {/* <div className="rounded-lg w-64 h-32 object-cover border overflow-hidden"> */}
               <Image
-                src="https://i.pinimg.com/736x/8d/9f/09/8d9f095f1c59bba933ce67c7cf7fe508.jpg"
+                src={projectDetails[0]?.projectLogo}
                 alt="Project Logo"
                 width={400}
                 height={300}
@@ -152,7 +225,7 @@ const ProjectDetailPage = () => {
             <div className="basis-3/5">
               <div className="flex">
                 <div className="text-2xl font-bold bg-gradient-to-r from-[#82B2FA] to-[#FFFFFF] bg-clip-text text-transparent">
-                  {projectName}
+                  {projectDetails[0]?.projectName}
                 </div>
 
                 <StatusDisplay status={status} />
@@ -162,7 +235,7 @@ const ProjectDetailPage = () => {
               </div>
 
               <div className="mt-2 text-sm">
-                <span>{shortDescription}</span>
+                <span>{projectDetails[0]?.shortDescription}</span>
               </div>
             </div>
           </div>
@@ -528,7 +601,7 @@ const ProjectDetailPage = () => {
             </div>
             {/* <div className="border-l border-gray-400 self-stretch mx-8"></div> */}
             <div className="p-8">
-              <VerticalProgressBar steps={steps} currentStep={0} />
+              <VerticalProgressBar steps={steps} currentStep={step} />
             </div>
           </div>
         </div>
