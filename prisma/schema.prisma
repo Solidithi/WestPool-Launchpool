@@ -17,15 +17,15 @@ model Project {
   shortDescription     String
   longDescription      String
   acceptedVToken       String[]
-  minStake             Int
-  maxStake             Int
+  minStake             Decimal
+  maxStake             Decimal
   fromDate             DateTime
   toDate               DateTime
   txHashCreated        String
-  projectStatus        String
+  projectStatus        ProjectStatus
   chainName            String
-  poolBudget           Int
-  targetStake          Int
+  poolBudget           Decimal
+  targetStake          Decimal
   projectOwner         ProjectOwner      @relation(fields: [projectOwnerAddress], references: [userAddress], onDelete: Cascade, onUpdate: Cascade)
   userId               String?
   offers               Offer[]
@@ -33,23 +33,30 @@ model Project {
 }
 
 // model AvailableNetwork {
-//   id          String       @id @default(uuid())
+//   id          String      @id @default(uuid())
 //   networkName String
-//   chainId     Int          @unique
+//   chainId     Int         @unique
 //   networkLogo String
-//   TokenData  TokenData[]
+//   TokenData   TokenData[]
 // }
 
 // model TokenData {
 //   id               String           @id @default(uuid())
-//   TokenName       String
-//   TokenSymbol     String
-//   TokenDecimals   Int
-//   TokenLogo       String
-//   TokenAddress    String
+//   tokenName        String
+//   tokenSymbol      String
+//   tokenDecimals    Int
+//   tokenLogo        String
+//   tokenAddress     String
 //   chainId          Int
 //   availableNetwork AvailableNetwork @relation(fields: [chainId], references: [chainId], onDelete: Cascade, onUpdate: Cascade) // Relation to AvailableNetwork
 // }
+
+model LaunchPool {
+  id                 String @id @default(uuid())
+  totalProject       Int
+  uniqueParticipants Int
+  totalTx            Int
+}
 
 model User {
   id           String            @id @default(uuid())
@@ -72,22 +79,22 @@ model ProjectOwner {
 
 //Offer model buy sell like premarket
 model Offer {
-  id                   String            @id @default(uuid())
-  pricePerToken        Decimal
-  amount               Int
-  collateral           Int
-  tokenImagePreToken   String
-  tokenImageCollateral String
-  offerType            OfferType
-  startDate            DateTime
-  filledTime           DateTime
-  creatorStatus        CreateOfferStatus
-  fillerStatus         FillerOfferStatus
-  creatorAddress       String
-  fillerAddress        String
-  projectId            String
-  project              Project           @relation(fields: [projectId], references: [id])
-  users                UserOffer[]
+  id                     String            @id @default(uuid())
+  pricePerToken          Decimal
+  amount                 Decimal
+  collateral             Decimal
+  tokenPreTokenAddress   String
+  tokenCollateralAddress String
+  offerType              OfferType
+  startDate              DateTime
+  filledTime             DateTime
+  creatorStatus          CreateOfferStatus
+  fillerStatus           FillerOfferStatus
+  creatorAddress         String
+  fillerAddress          String
+  projectId              String
+  project                Project           @relation(fields: [projectId], references: [id])
+  users                  UserOffer[]
 }
 
 model UserOffer {

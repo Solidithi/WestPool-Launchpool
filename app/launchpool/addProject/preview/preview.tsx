@@ -10,6 +10,7 @@ import {
 import StatusDisplay from "@/app/components/Status";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useAddress } from "@thirdweb-dev/react";
 const PreviewPage = () => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -18,6 +19,7 @@ const PreviewPage = () => {
     seconds: 0,
   });
   const [projectStatus, setProjectStatus] = useState("upcoming");
+  const projectOwnerAddress = useAddress();
 
   const {
     acceptedVToken,
@@ -153,6 +155,7 @@ const PreviewPage = () => {
       chain,
       poolBudget,
       targetStake,
+      projectOwnerAddress,
     })
 
     console.log(response);

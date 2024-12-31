@@ -4,25 +4,26 @@ import { PrismaClient, ProjectStatus } from "@prisma/client";
 import prismaClient from "@/prisma";
 
 export async function POST(req: NextRequest, res: NextResponse) {
-  // const body = await req.json();
-  // console.log(body);
-  // const {
-  //     projectName,
-  //     verifiedToken,
-  //     projectLogo,
-  //     projectImage,
-  //     shortDescription,
-  //     longDescription,
-  //     acceptedVToken,
-  //     minStake,
-  //     maxStake,
-  //     fromDate,
-  //     toDate,
-  //     projectStatus
-  //     chain,
-  //     poolBudget,
-  //     targetStake,
-  // } = body;
+  const body = await req.json();
+  console.log(body);
+  const {
+      projectName,
+      verifiedToken,
+      projectLogo,
+      projectImage,
+      shortDescription,
+      longDescription,
+      acceptedVToken,
+      minStake,
+      maxStake,
+      fromDate,
+      toDate,
+      // projectStatus,
+      chain,
+      poolBudget,
+      targetStake,
+      projectOwnerAddress,
+  } = body;
 
   try {
     // const project = await prismaClient.project.create({
@@ -47,15 +48,14 @@ export async function POST(req: NextRequest, res: NextResponse) {
     let user = await prismaClient.user.findFirst({
       where: {
         userAddress:
-          "0x123456",
+          projectOwnerAddress,
       },
     });
 
     if (user === null) {
       user = await prismaClient.user.create({
         data: {
-          id: "unique-user-id", // Optional, will auto-generate if not provided
-          userAddress: "0x123456",
+          userAddress: projectOwnerAddress,
         },
       });
 
@@ -64,21 +64,21 @@ export async function POST(req: NextRequest, res: NextResponse) {
     let projectOwner = await prismaClient.projectOwner.findFirst({
       where: {
         userAddress:
-          "0x123456",
+          projectOwnerAddress,
       },
     });
 
     if (projectOwner === null) {
       projectOwner = await prismaClient.projectOwner.create({
         data: {
-          userAddress: "0x123456",
+          userAddress: projectOwnerAddress,
         },
       });
     }
 
     const isProjectExisted = await prismaClient.project.findFirst({
       where: {
-        verifiedTokenAddress: "0x",
+        verifiedTokenAddress: verifiedToken,
       },
     });
 
@@ -91,23 +91,42 @@ export async function POST(req: NextRequest, res: NextResponse) {
 
     const project = await prismaClient.project.create({
       data: {
-        projectName: "Test Project",
-        projectOwnerAddress: "0x123456",
-        verifiedTokenAddress: "0x",
-        projectLogo: "https://via.placeholder.com/150",
-        projectImage: ["https://via.placeholder.com/150"],
-        shortDescription: "This is a test project",
-        longDescription: "This is a test project",
-        acceptedVToken: ["Moonbeam", "Ethereum"],
-        minStake: 100,
-        maxStake: 1000,
+        // projectName: "Test Project",
+        // projectOwnerAddress: "0x123456",
+        // verifiedTokenAddress: "0x",
+        // projectLogo: "https://via.placeholder.com/150",
+        // projectImage: ["https://via.placeholder.com/150"],
+        // shortDescription: "This is a test project",
+        // longDescription: "This is a test project",
+        // acceptedVToken: ["Moonbeam", "Ethereum"],
+        // minStake: 100,
+        // maxStake: 1000,
+        // fromDate: new Date(),
+        // toDate: new Date(),
+        // txHashCreated: "", // Add appropriate value
+        // projectStatus: ProjectStatus.Upcoming, // Add appropriate value
+        // chainName: "Ethereum", // Add appropriate value
+        // poolBudget: 100000, // Add appropriate value
+        // targetStake: 50000, // Add appropriate value
+
+        projectName: projectName,
+        projectOwnerAddress: projectOwnerAddress,
+        verifiedTokenAddress: verifiedToken,
+        projectLogo: projectLogo,
+        projectImage: projectImage,
+        shortDescription: shortDescription,
+        longDescription: longDescription,
+        acceptedVToken: acceptedVToken,
+        minStake: minStake,
+        maxStake: maxStake,
         fromDate: new Date(),
         toDate: new Date(),
-        txHashCreated: "", // Add appropriate value
+        txHashCreated: "0xsgrgrg2234", // Add appropriate value
         projectStatus: ProjectStatus.Upcoming, // Add appropriate value
-        chainName: "Ethereum", // Add appropriate value
-        poolBudget: 100000, // Add appropriate value
-        targetStake: 50000, // Add appropriate value
+        chainName: chain, // Add appropriate value
+        poolBudget: poolBudget, // Add appropriate value
+        targetStake: targetStake, // Add appropriate value
+        userId: user.id,
       },
     });
 

@@ -5,12 +5,18 @@ import { dataTable } from "../../constants/index";
 import { use, useEffect, useState } from "react";
 import axios from "axios";
 import { useAddress } from "@thirdweb-dev/react";
+import { ProjectStatus } from "@prisma/client";
 
 const MyProjectPage = () => {
-  const [projects, setProjects] = useState([]);
-  const [pendingProjects, setPendingProjects] = useState([]);
-  const [endedProjects, setEndedProjects] = useState([]);
+  // const [projects, setProjects] = useState<any[]>([]);
+  const [pendingProjects, setPendingProjects] = useState<any[]>([]);
+  const [endedProjects, setEndedProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [ projectName, setProjectName ] = useState("");
+  const [ shortDescription, setShortDescription ] = useState("");
+  const [ longDescription, setLongDescription ] = useState("");
+
+
   const projectOwnerAddress = useAddress();
 
 
@@ -20,12 +26,21 @@ const MyProjectPage = () => {
         const response = await axios.post("/api/launchpool/myProject", {
           projectOwnerAddress,
         });
-        console.log(response.data);
+        console.log("This : " + response.data);
 
         if(response.data.success) {
           console.log(response.data.projects);
         }
-        
+
+        for (let i = 0; i < response.data.projects.length; i++) {
+          if(response.data.projects[i].status === ProjectStatus.Upcoming) {
+            setPendingProjects((prev) => [...prev, response.data.projects[i]]);
+          } else {
+            setEndedProjects((prev) => [...prev, response.data.projects[i]]);
+          }
+        }
+
+  console.log("Pending Projects: " + pendingProjects);        
 
 
       } catch (error) {
