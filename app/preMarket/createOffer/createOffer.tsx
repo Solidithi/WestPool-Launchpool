@@ -39,7 +39,7 @@ const CreateOfferPage = () => {
       alert("Please fill all the fields");
       return;
     }
-    
+
     router.push("/preMarket/createOffer/preview");
   };
 

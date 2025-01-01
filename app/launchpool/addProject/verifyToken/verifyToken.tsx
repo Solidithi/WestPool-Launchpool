@@ -9,7 +9,7 @@ const VerifyTokenPage = () => {
   const setVerifiedToken = useVerifiedToken(
     (state) => (state as VerifiedTokenState).setVerifiedToken
   );
-  const [tokenAddress, setTokenAddress] = useState<string>("0xabc90ciso29");
+  const [tokenAddress, setTokenAddress] = useState<string>("");
   const [signedMessage, setSignedMessage] = useState<boolean>(false);
   const router = useRouter();
 
@@ -23,6 +23,11 @@ const VerifyTokenPage = () => {
     //   setSignedMessage(true);
     //   console.log(signature);
     // }
+
+    if(tokenAddress === "") {
+      alert("Please enter your token address");
+      return;
+    }
 
     try {
       console.log("Token verified");

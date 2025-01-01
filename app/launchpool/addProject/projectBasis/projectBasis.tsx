@@ -22,11 +22,11 @@ const ProjectBasisPage = () => {
 
   const handleSubmit = () => {
     //fake fill data
-    setChain("Moonbeam");
-    setIsTrading("Yes");
-    setPoolBudget(5000000);
-    setTargetStake(500000);
-    setTargetAudience("Crypto Enthusiasts");
+    // setChain("Moonbeam");
+    // setIsTrading("Yes");
+    // setPoolBudget(5000000);
+    // setTargetStake(500000);
+    // setTargetAudience("Crypto Enthusiasts");
 
     console.log(chain);
     console.log(chain, isTrading, poolBudget, targetStake, targetAudience);
