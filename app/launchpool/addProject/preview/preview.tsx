@@ -18,7 +18,7 @@ const PreviewPage = () => {
     minutes: 0,
     seconds: 0,
   });
-  const [projectStatus, setProjectStatus] = useState("upcoming");
+  const [projectStatus, setProjectStatus] = useState("Upcoming");
   const projectOwnerAddress = useAddress();
 
   const {
@@ -36,12 +36,13 @@ const PreviewPage = () => {
 
   const { verifiedToken } = useVerifiedToken() as { verifiedToken: string };
 
-  const steps = [{ name: "Debut" }, { name: "Staking" }, { name: "End" }];
+  const steps = [{ name: "Up coming" }, { name: "On going" }, { name: "Completed" }];
   const [currentStep, setCurrentStep] = useState(2); // The active step index (e.g., 0-based)
   const [activeButton, setActiveButton] = useState(acceptedVToken[0]);
 
   const { chain, poolBudget, targetStake } = useProjectBasisStore();
-  
+  const [step, setStep] = useState<number>(0);
+
   const router = useRouter();
 
 
@@ -165,6 +166,31 @@ const PreviewPage = () => {
     }
   };
 
+  useEffect(() => {
+
+    const currentDate = new Date();
+    if (fromDate && toDate) {
+      const from = new Date(fromDate);
+      const to = new Date(toDate);
+
+      console.log("from: " + from);
+      console.log("to: " + to);
+
+      if (currentDate < from) {
+        setProjectStatus("Upcoming");
+        setStep(0);
+      } else if (currentDate >= from && currentDate <= to) {
+        setProjectStatus("Ongoing");
+        setStep(1);
+      } else if (currentDate > to) {
+        setProjectStatus("Completed");
+        setStep(2);
+      }
+    } else {
+      console.log("-.-");
+    }
+  }, [fromDate, toDate]);
+
   return (
     <div>
       <div className="ml-20">
@@ -190,7 +216,7 @@ const PreviewPage = () => {
                 </div>
 
                 {/* if the status is ongoing then show the following div else if the status is completed then show the following div but with red color else if the status is upcoming then show the following div but with yellow color */}
-                <StatusDisplay status="upcoming" />
+                <StatusDisplay status={projectStatus} />
                 {/* <div className="ml-5 rounded-xl px-5 flex items-center justify-center bg-[#102821] text-[#0E9A36]">
                   On going
                 </div> */}
@@ -418,7 +444,7 @@ const PreviewPage = () => {
             </div>
             {/* <div className="border-l border-gray-400 self-stretch mx-8"></div> */}
             <div className="p-8">
-              <VerticalProgressBar steps={steps} currentStep={0} />
+              <VerticalProgressBar steps={steps} currentStep={step} />
             </div>
           </div>
         </div>

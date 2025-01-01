@@ -23,6 +23,7 @@ const ProjectDetailPage = () => {
   const [step, setStep] = useState<number>(0);
 
   const [stakeAmount, setStakeAmount] = useState("");
+  const [unStakeAmount, setUnStakeAmount] = useState("");
   const [totalStaked, setTotalStaked] = useState(0);
 
   const [projectDetails, setProjectDetails] = useState<Project[]>([]);
@@ -42,23 +43,23 @@ const ProjectDetailPage = () => {
   // fromDate,
   // toDate
 
-  const [projectName, setProjectName] = useState<string>("");
-  const [projectLogo, setProjectLogo] = useState<File | null>(null);
-  const [projectImage, setProjectImage] = useState<string[]>([]);
-  const [shortDescription, setShortDescription] = useState<string>("");
-  const [longDescription, setLongDescription] = useState<string>("");
-  const [acceptedVToken, setAcceptedVToken] = useState<string[]>(["BNB"]);
-  const [minStake, setMinStake] = useState<number | undefined>(undefined);
-  const [maxStake, setMaxStake] = useState<number | undefined>(undefined);
+  // const [projectName, setProjectName] = useState<string>("");
+  // const [projectLogo, setProjectLogo] = useState<File | null>(null);
+  // const [projectImage, setProjectImage] = useState<string[]>([]);
+  // const [shortDescription, setShortDescription] = useState<string>("");
+  // const [longDescription, setLongDescription] = useState<string>("");
+  // const [acceptedVToken, setAcceptedVToken] = useState<string[]>(["BNB"]);
+  // const [minStake, setMinStake] = useState<number | undefined>(undefined);
+  // const [maxStake, setMaxStake] = useState<number | undefined>(undefined);
 
-  const [fromDate, setFromDate] = useState<string>("2024-12-29T10:45");
-  const [toDate, setToDate] = useState<string>("2024-12-30T10:44");
+  // const [fromDate, setFromDate] = useState<string>("2024-12-29T10:45");
+  // const [toDate, setToDate] = useState<string>("2024-12-30T10:44");
 
-  const [chain, setChain] = useState<string>("Ethereum");
-  const [poolBudget, setPoolBudget] = useState<number>(10);
-  const [targetStake, setTargetStake] = useState<number>(100);
+  // const [chain, setChain] = useState<string>("Ethereum");
+  // const [poolBudget, setPoolBudget] = useState<number>(10);
+  // const [targetStake, setTargetStake] = useState<number>(100);
 
-  const [activeButton, setActiveButton] = useState(acceptedVToken[0]);
+  const [activeButton, setActiveButton] = useState(projectDetails[0]?.acceptedVToken[0]);
 
   const pageParam = useParams();
 
@@ -320,7 +321,7 @@ const ProjectDetailPage = () => {
 
         {/* Pool Button */}
         <div className="mt-24 flex gap-5 px-8">
-          {acceptedVToken.map((token, index) => (
+          {projectDetails[0]?.acceptedVToken.map((token, index) => (
             <button
               key={index}
               className={`btn btn-ghost rounded-3xl px-8 py-2 text-white transition-colors duration-300 ${activeButton === token ? "bg-[#6D93CD]" : "bg-transparent"
@@ -428,14 +429,49 @@ const ProjectDetailPage = () => {
 
                 <button
                   className=" bg-[#2A5697] text-white rounded-md px-2 py-2 text-[13px] flex justify-center w-[100px] hover:scale-105 duration-300"
-                // onClick={() =>
-                //   (
-                //     document.getElementById("unlock") as HTMLDialogElement
-                //   ).showModal()
-                // }
+                  onClick={() =>
+                    (
+                      document.getElementById("unlock") as HTMLDialogElement
+                    ).showModal()
+                  }
                 >
                   Unlock
                 </button>
+                <dialog id="unlock" className="modal">
+                  <div className="modal-box bg-[#2D468D]">
+                    <h3 className="font-bold text-lg mb-4 text-white">
+                      Please enter how many token you want to unstake
+                    </h3>
+
+                    <div className="bg-[#5A78B8] rounded-lg p-4 mb-4 relative">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="text-[#abcaf7] font-bold text-sm">
+                          Unstaking
+                        </span>
+                      </div>
+                      <div className="flex justify-between items-center mb-2">
+                        <input
+                          type="number"
+                          className="text-3xl font-bold text-white bg-transparent w-2/3 outline-none 
+                          [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-moz-appearance:textfield]"
+                          placeholder="enter"
+                          value={stakeAmount}
+                          onChange={(e) => setUnStakeAmount(e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={handleStake}
+                      className="btn bg-white text-[#7BA9EF] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#2C3E6F]"
+                    >
+                      Unstake
+                    </button>
+                  </div>
+                  <form method="dialog" className="modal-backdrop">
+                    <button>close</button>
+                  </form>
+                </dialog>
               </div>
             </div>
           </div>
@@ -496,7 +532,7 @@ const ProjectDetailPage = () => {
 
       {/* Similar to Binance */}
       <div className="flex mt-10 w-full p-8 h-auto">
-        {acceptedVToken.map((token, index) => (
+        {projectDetails[0]?.acceptedVToken.map((token, index) => (
           activeButton === token && (
             <div
               key={index}
@@ -573,7 +609,7 @@ const ProjectDetailPage = () => {
             <div className="flex flex-col gap-5 text-white p-6 rounded-xl">
               {/* <!-- Main Container --> */}
               <div className="flex flex-row flex-wrap gap-5">
-                {projectImage.map((image, index) => (
+                {projectDetails[0]?.projectImage.map((image, index) => (
                   <Image
                     key={index}
                     src={image}
@@ -585,15 +621,17 @@ const ProjectDetailPage = () => {
                 ))}
               </div>
 
-              <div className="flex justify-between">
-                <span className="text-[20px] font-light">Chain: <span className="text-[20px] font-bold">{chain}</span></span>
-                <span className="text-[20px] font-light">Pool Budget: <span className="text-[20px] font-bold">{poolBudget}</span></span>
-                <span className="text-[20px] font-light">Target Stake: <span className="text-[20px] font-bold">{targetStake}</span></span>
+              <div className="flex justify-between flex-wrap gap-5">
+                <span className="text-[20px] font-light">Chain: <span className="text-[20px] font-bold">{projectDetails[0]?.chainName}</span></span>
+                <span className="text-[20px] font-light">Pool Budget: <span className="text-[20px] font-bold">{projectDetails[0]?.poolBudget}</span></span>
+                <span className="text-[20px] font-light">Target Stake: <span className="text-[20px] font-bold">{projectDetails[0]?.targetStake}</span></span>
+                <span className="text-[20px] font-light">Min Stake: <span className="text-[20px] font-bold">{projectDetails[0]?.minStake}</span></span>
+                <span className="text-[20px] font-light">Max Stake: <span className="text-[20px] font-bold">{projectDetails[0]?.maxStake}</span></span>
               </div>
 
 
               <div className="grid grid-cols-2 gap-y-6 gap-x-12 ">
-                {longDescription}
+                {projectDetails[0]?.longDescription}
               </div>
             </div>
           </div>
