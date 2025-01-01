@@ -1,9 +1,40 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { buyTable, sellTable } from "../../constants/index";
 import clsx from "clsx";
+import axios from "axios";
+import { Project } from "@/app/interface/interface";
 const Dashboard = () => {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  //  ------------Gọi API--------------
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const res = await axios.get("/api/preMarket/dashboard");
+        const data = res.data;
+
+        if (data.success) {
+          setProjects(data.data);
+        } else {
+          console.error("Failed to fetch projects:", data.error);
+        }
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  if (loading) return <div className="flex justify-center items-center h-[80vh]">
+    <span className="loading loading-dots loading-lg "></span>
+  </div>;
+
   return (
     <div className="flex flex-col items-center space-y-6 px-[5%] pb-12 xl:space-y-12 xl:px-12 mt-10 ">
       <div className="w-full space-y-4 flex justify-center flex-col items-center gap-4">

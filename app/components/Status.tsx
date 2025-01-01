@@ -1,24 +1,24 @@
-type Status = "ongoing" | "completed" | "upcoming" | "unknown";
+// type Status = "ongoing" | "completed" | "upcoming" | "unknown";
 
 interface StatusDisplayProps {
-    status: Status;
+    status: string;
 }
 
 const StatusDisplay = ({ status }: StatusDisplayProps) => {
     let bgColor, textColor, statusText;
 
     switch (status) {
-        case "ongoing":
+        case "Ongoing":
             bgColor = "bg-[#102821]";
             textColor = "text-[#0E9A36]";
             statusText = "On going";
             break;
-        case "completed":
+        case "Completed":
             bgColor = "bg-red-500"; // Adjust the red color as needed
             textColor = "text-white"; // Adjust text color for better contrast
             statusText = "Completed";
             break;
-        case "upcoming":
+        case "Upcoming":
             bgColor = "bg-yellow-500"; // Adjust the yellow color as needed
             textColor = "text-black"; // Adjust text color for better contrast
             statusText = "Upcoming";
