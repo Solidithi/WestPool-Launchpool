@@ -5,38 +5,61 @@ import { dataTable } from "../../constants/index";
 import { useEffect, useState } from "react";
 import { useAddress } from "@thirdweb-dev/react";
 import axios from "axios";
+import { debounce } from "@/app/utils/helper";
 
 const MyStakingPage = () => {
-  const [ projects, setProjects ] = useState([]);
-  const [ pendingProjects, setPendingProjects ] = useState([]);
-  const [ endedProjects, setEndedProjects ] = useState([]);
-  const [ loading, setLoading ] = useState(true);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [pendingProjects, setPendingProjects] = useState<any[]>([]);
+  const [endedProjects, setEndedProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const investorAddress = useAddress();
 
 
-  useEffect(() => {
-    const fetchMyProjects = async () => {
-      try {
+  const fetchMyProjects = async () => {
+    try {
         const response = await axios.post("/api/launchpool/myProject", {
           investorAddress,
         });
         console.log(response.data);
-
-        if(response.data.success) {
+        
+        if (response.data.success) {
           console.log(response.data.projects);
         }
+
+        const projects = response.data.projects;
+        const pending = [];
+        const ended = [];
         
+        for (let i = 0; i < projects.length; i++) {
+          if (projects[i].projectStatus !== "Upcoming") {
+            console.log("Pending Projects: " + projects[i]);
+            console.log("Pending Projects: " + projects[i].projectName);
+            pending.push(projects[i]);
+          } else {
+            ended.push(projects[i]);
+          }
+        }
+
+        // Set state after loop
+        setPendingProjects(pending);
+        setEndedProjects(ended);
+        console.log("Pending Projects: " + pendingProjects);
+        for (let project in pendingProjects) {
+          console.log("Pending Projects: " + project);
+        }
 
       } catch (error) {
         console.log(error);
       }
     }
 
-    fetchMyProjects(); 
+    const fetchProjectWithDebounce = debounce(fetchMyProjects, 1000);
+    useEffect(() => {
+      fetchProjectWithDebounce();
   }, [investorAddress]);
 
-
-
+  
+  
   return (
     <div>
       <div className="py-10">
@@ -108,11 +131,11 @@ const MyStakingPage = () => {
           </div>
           <div className="flex flex-col justify-center items-center gap-5 ">
             <>
-              {dataTable
+              {pendingProjects
                 .filter((data) => data.endsIn !== "--")
                 .map((data) => (
                   <div
-                    key={data.title}
+                    key={data.projectName}
                     className="bg-base-200 collapse w-10/12 border-2 border-[#A1C6FF] transition duration-500 ease-in-out transform hover:scale-105"
                   >
                     <input type="checkbox" className="peer" />
@@ -120,13 +143,13 @@ const MyStakingPage = () => {
                     <div className="collapse-title bg-gradient-to-r from-[#204275] to-[#4D75B3] text-white peer-checked:bg-[#3D69AC] peer-checked:text-white flex items-center">
                       <Image
                         className="rounded-full bg-gray-500"
-                        src={data.image}
+                        src={data.projectImage}
                         alt="logo"
                         width={50}
                         height={50}
                       />
                       <div className="flex flex-col ml-5">
-                        <span className=" text-lg">{data.title}</span>
+                        <span className=" text-lg">{data.shortDescription}</span>
                         <span className="text-sm">
                           {data.short_description}
                         </span>
@@ -139,7 +162,7 @@ const MyStakingPage = () => {
                     >
                       <div className="flex items-center">
                         <div className="">
-                          <p className="">hello</p>
+                          <p className="">{data.longDescription}</p>
                         </div>
                         <div className="ml-auto mb-4 mr-5   ">
                           <button

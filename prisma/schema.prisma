@@ -28,7 +28,7 @@ model Project {
   poolBudget           Decimal
   targetStake          Decimal
   projectOwner         ProjectOwner      @relation(fields: [projectOwnerAddress], references: [userAddress], onDelete: Cascade, onUpdate: Cascade)
-  userId               String?
+  // userId               String?
   offers               Offer[]
   invested             InvestedProject[]
 }
