@@ -4,21 +4,35 @@ import { Menu, X } from "lucide-react";
 
 import Image from "next/image";
 import Link from "next/link";
-import { ConnectWallet } from "@thirdweb-dev/react";
+import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
 
 import logo from "@/public/Logo/DL_Logo.png";
 import { navItems } from "@/app/constants";
 
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 const Navbar = () => {
   const [toggle, setToggle] = useState(false);
   const toggleNavbar = () => setToggle(!toggle);
   const [NAV_MENU, SET_NAV_MENU] = useState(navItems);
 
+  const user = useAddress();
+
   useEffect(() => {
     const checkProjectOwner = async () => {
-      const owner = true; // Replace with actual API call
+      const response = await axios.post("/api/launchpool/navbar", {
+        userAddress: user,
+      })
+
+      if (!response.data.success) {
+        console.log(response.data.message);
+        return;
+      }
+      console.log(response.data);
+      const isOwner = response.data.isOwner;
+
+      const owner = isOwner; // Replace with actual API call
       if (owner) {
         SET_NAV_MENU((prevMenu) => {
           const isMyProjectAdded = prevMenu.some(
@@ -38,7 +52,7 @@ const Navbar = () => {
       }
     };
     checkProjectOwner();
-  }, []);
+  }, [user]);
 
   return (
     <nav className="sticky top-0 z-50 py-3 backdrop-blur-lg border-b-[1px] border-[#60799e] text-white">

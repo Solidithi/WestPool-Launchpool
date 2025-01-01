@@ -12,6 +12,7 @@ model Project {
   projectName          String
   projectOwnerAddress  String
   verifiedTokenAddress String            @unique
+  tokenSymbol          String
   projectLogo          String
   projectImage         String[]
   shortDescription     String
@@ -52,7 +53,7 @@ model Project {
 // }
 
 model LaunchPool {
-  id                 String @id @default(uuid())
+  id                 String @id @default(dbgenerated("1"))
   totalProject       Int
   uniqueParticipants Int
   totalTx            Int
@@ -80,6 +81,7 @@ model ProjectOwner {
 //Offer model buy sell like premarket
 model Offer {
   id                     String            @id @default(uuid())
+  index                  Int               @default(autoincrement())
   pricePerToken          Decimal
   amount                 Decimal
   collateral             Decimal
@@ -97,7 +99,7 @@ model Offer {
   users                  UserOffer[]
 }
 
-model UserOffer {
+model UserOffer { // many-many User and Offer
   userId  String
   offerId String
 
@@ -107,15 +109,26 @@ model UserOffer {
   @@id([userId, offerId])
 }
 
-model InvestedProject {
-  userId    String
-  projectId String
-
-  User    User    @relation(fields: [userId], references: [id])
-  Project Project @relation(fields: [projectId], references: [id])
-
-  @@id([userId, projectId])
+model InvestedProject { // many-many Project and User
+  id           String  @id @default(uuid())
+  userAddress  String
+  projectId    String
+  stakeType    StakeType
+  txHash       String
+  createdAt    DateTime @default(now())
+  project      Project @relation(fields: [projectId], references: [id])
+  user         User    @relation(fields: [userAddress], references: [userAddress])
 }
+
+// model InvestedProject {
+//   userId    String
+//   projectId String
+
+//   User    User    @relation(fields: [userId], references: [id])
+//   Project Project @relation(fields: [projectId], references: [id])
+
+//   @@id([userId, projectId])
+// }
 
 enum ProjectStatus {
   Upcoming
@@ -142,4 +155,9 @@ enum FillerOfferStatus {
 enum OfferType {
   Buy
   Sell
+}
+
+enum StakeType {
+  Stake
+  Unstake
 }

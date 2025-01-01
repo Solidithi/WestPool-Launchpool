@@ -6,6 +6,7 @@ import StatusDisplay from "@/app/components/Status";
 import { useParams } from "next/navigation";
 import axios from "axios";
 import { Project } from "@/app/interface/interface";
+import { useAddress } from "@thirdweb-dev/react";
 
 
 type Status = "upcoming" | "ongoing" | "completed";
@@ -30,7 +31,7 @@ const ProjectDetailPage = () => {
 
 
   const [loading, setLoading] = useState(true);
-
+  const userAddress = useAddress();
 
   //Create these state var acceptedVToken,
   // minStake,
@@ -214,13 +215,59 @@ const ProjectDetailPage = () => {
     }
   }, [projectDetails]);
 
-  const handleStake = () => {
+  const handleStake = async () => {
+    /***
+     * TODO: Take the onchain total staked amount to assign it to totalStaked
+     */
     const amount = parseFloat(stakeAmount);
+    console.log("Page Param: " + pageParam);
+    const response = await axios.post("/api/launchpool/projectDetail/stake", {
+      userAddress: userAddress,
+      projectId: pageParam,
+      txHash: "0x123456",
+    })
+
+    if (response.data.success) {
+      console.log("Stake successful");
+    } else {
+      console.error("Failed to stake:", response.data.error);
+      return;
+    }
+
+
+
+
     if (amount > 0 && amount != null) {
       setTotalStaked((prevTotal) => prevTotal + amount);
       setStakeAmount("");
     }
   };
+
+  const handleUnstake = async () => {
+    /***
+     * TODO: Take the onchain total staked amount to assign it to totalStaked
+     *  
+     *  */
+    // const amount = parseFloat(stakeAmount);
+    console.log("Page Param: " + pageParam);
+    const response = await axios.post("/api/launchpool/projectDetail/unstake", {
+      userAddress: userAddress,
+      projectId: pageParam,
+      txHash: "0x123456",
+    })
+
+    if (response.data.success) {
+      console.log("Unstake successful");
+    } else {
+      console.error("Failed to unstake:", response.data.error);
+      return;
+    }
+
+    // if (amount > 0 && amount != null) {
+    //   setTotalStaked((prevTotal) => prevTotal - amount);
+    //   setStakeAmount("");
+    // }
+  }
 
 
 

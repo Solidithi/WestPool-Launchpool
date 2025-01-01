@@ -25,7 +25,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
       data: {
         projectId: realProjectId,
         userAddress: userAddress,
-        stakeType: StakeType.Stake,
+        stakeType: StakeType.Unstake,
         txHash
       },
     });

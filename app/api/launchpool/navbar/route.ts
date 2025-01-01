@@ -7,20 +7,19 @@ export async function POST(req: NextRequest, res: NextResponse) {
     const {
         userAddress
     } = body;
+
     try {
         const project = await prismaClient.project.findMany({
             where: {
-                invested: {
-                    some: {
-                        user: {
-                            userAddress: userAddress,
-                        }
-                    }
-                }
+                projectOwnerAddress: userAddress
             }
         });
+        console.log(project);
+        if (project.length === 0) {
+            return NextResponse.json({ success: true, isOwner: false }, { status: 200 })
+        }
 
-        return NextResponse.json({ success: true, projects: project }, { status: 200 })
+        return NextResponse.json({ success: true, isOwner: true }, { status: 200 })
 
     } catch (error) {
         console.log(error);

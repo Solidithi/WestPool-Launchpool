@@ -9,6 +9,8 @@ const ProjectDetailPage = () => {
   const {
     projectName,
     setProjectName,
+    tokenSymbol,
+    setTokenSymbol,
     shortDescription,
     setShortDescription,
     longDescription,
@@ -134,6 +136,7 @@ const ProjectDetailPage = () => {
     );
     if (
       projectName === "" ||
+      tokenSymbol === "" ||
       shortDescription === "" ||
       longDescription === "" ||
       maxStake === undefined ||
@@ -170,6 +173,19 @@ const ProjectDetailPage = () => {
                 />
               </div>
             </div>
+
+            <div className="">
+              Token Symbol
+              <div className="">
+                <input
+                  type="text"
+                  className="w-full mt-5 px-4 py-4 border border-gray-300 rounded-3xl focus:ring-2 focus:ring-[#2a5697] focus:outline-none bg-[#f3f3f3]"
+                  placeholder="Enter Project Name"
+                  onChange={(e) => setTokenSymbol(e.target.value)}
+                />
+              </div>
+            </div>
+
 
             <div className="">
               Short Description
