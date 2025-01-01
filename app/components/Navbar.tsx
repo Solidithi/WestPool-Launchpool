@@ -11,6 +11,7 @@ import { navItems } from "@/app/constants";
 
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { debounce } from "../utils/helper";
 
 const Navbar = () => {
   const [toggle, setToggle] = useState(false);
@@ -19,40 +20,74 @@ const Navbar = () => {
 
   const user = useAddress();
 
-  useEffect(() => {
-    const checkProjectOwner = async () => {
-      const response = await axios.post("/api/launchpool/navbar", {
-        userAddress: user,
-      })
+  // useEffect(() => {
+  //   const checkProjectOwner = async () => {
+  //     const response = await axios.post("/api/launchpool/navbar", {
+  //       userAddress: user,
+  //     })
+
+  //     if (!response.data.success) {
+  //       console.log(response.data.message);
+  //       return;
+  //     }
+  //     console.log(response.data);
+  //     const isOwner = response.data.isOwner;
+
+  //     const owner = isOwner; // Replace with actual API call
+  //     if (owner) {
+  //       SET_NAV_MENU((prevMenu) => {
+  //         const isMyProjectAdded = prevMenu.some(
+  //           (item) => item.label === "My project"
+  //         );
+  //         if (!isMyProjectAdded) {
+  //           return [
+  //             {
+  //               label: "My project",
+  //               path: "/launchpool/myProject",
+  //             },
+  //             ...prevMenu,
+  //           ];
+  //         }
+  //         return prevMenu;
+  //       });
+  //     }
+  //   };
+  //   checkProjectOwner();
+  // }, [user]);
+
+
+
+  const checkProjectOwner = async () => {
+    if (!user) return;
+
+    try {
+      const response = await axios.post("/api/launchpool/navbar", { userAddress: user });
 
       if (!response.data.success) {
-        console.log(response.data.message);
+        console.error(response.data.message);
         return;
       }
-      console.log(response.data);
-      const isOwner = response.data.isOwner;
 
-      const owner = isOwner; // Replace with actual API call
-      if (owner) {
-        SET_NAV_MENU((prevMenu) => {
-          const isMyProjectAdded = prevMenu.some(
-            (item) => item.label === "My project"
-          );
-          if (!isMyProjectAdded) {
-            return [
-              {
-                label: "My project",
-                path: "/launchpool/myProject",
-              },
-              ...prevMenu,
-            ];
-          }
-          return prevMenu;
-        });
-      }
-    };
-    checkProjectOwner();
+      SET_NAV_MENU((prevMenu) => {
+        if (response.data.isOwner) {
+          return !prevMenu.some((item) => item.label === "My project")
+            ? [{ label: "My project", path: "/launchpool/myProject" }, ...prevMenu]
+            : prevMenu;
+        } else {
+          return prevMenu.filter((item) => item.label !== "My project");
+        }
+      });
+    } catch (error) {
+      console.error("Error checking project owner:", error);
+    }
+  };
+
+  const checkProjectOwnerDebounced = debounce(checkProjectOwner, 300);
+
+  useEffect(() => {
+    checkProjectOwnerDebounced();
   }, [user]);
+
 
   return (
     <nav className="sticky top-0 z-50 py-3 backdrop-blur-lg border-b-[1px] border-[#60799e] text-white">

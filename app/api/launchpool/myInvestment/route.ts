@@ -8,17 +8,40 @@ export async function POST(req: NextRequest, res: NextResponse) {
         userAddress
     } = body;
     try {
-        const project = await prismaClient.project.findMany({
+        // const project = await prismaClient.project.findMany({
+        //     where: {
+        //         invested: {
+        //             some: {
+        //                 user: {
+        //                     userAddress: userAddress,
+        //                 }
+        //             }
+        //         }
+        //     }
+        // });
+        const investedProjects = await prismaClient.investedProject.findMany({
             where: {
-                invested: {
-                    some: {
-                        user: {
-                            userAddress: userAddress,
-                        }
-                    }
+                user: {
+                    userAddress: userAddress,
                 }
             }
         });
+
+        const project = [];
+        for (let i = 0; i < investedProjects.length; i++) {
+            const projectDetails = await prismaClient.project.findUnique({
+                where: {
+                    id: investedProjects[i].projectId
+                }
+            });
+            project.push(projectDetails);
+        }
+
+        for (let i = 0; i < project.length; i++) {
+            console.log("Project Name: " + project[i]?.projectName);
+        }
+
+        console.log("This is Project " + project);
 
         return NextResponse.json({ success: true, projects: project }, { status: 200 })
 

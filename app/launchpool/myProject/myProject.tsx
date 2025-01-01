@@ -6,6 +6,7 @@ import { use, useEffect, useState } from "react";
 import axios from "axios";
 import { useAddress } from "@thirdweb-dev/react";
 import { ProjectStatus } from "@prisma/client";
+import { debounce } from "@/app/utils/helper";
 
 const MyProjectPage = () => {
   // const [projects, setProjects] = useState<any[]>([]);
@@ -20,9 +21,8 @@ const MyProjectPage = () => {
   const projectOwnerAddress = useAddress();
 
 
-  useEffect(() => {
-    const fetchMyProjects = async () => {
-      try {
+  const fetchMyProjects = async () => {
+    try {
         const response = await axios.post("/api/launchpool/myProject", {
           projectOwnerAddress,
         });
@@ -35,7 +35,7 @@ const MyProjectPage = () => {
         const projects = response.data.projects;
         const pending = [];
         const ended = [];
-
+        
         for (let i = 0; i < projects.length; i++) {
           if (projects[i].projectStatus === "Upcoming") {
             console.log("Pending Projects: " + projects[i]);
@@ -50,6 +50,8 @@ const MyProjectPage = () => {
         setPendingProjects(pending);
         setEndedProjects(ended);
         console.log("Pending Projects: " + pendingProjects);
+        console.log("Pending Projects: " + pendingProjects[0].projectName);
+        console.log("Ended Projects: " + endedProjects[0].projectName);
         for (let project in pendingProjects) {
           console.log("Pending Projects: " + project);
         }
@@ -59,8 +61,10 @@ const MyProjectPage = () => {
         console.log(error);
       }
     }
-
-    fetchMyProjects();
+    
+    const fetchProjectWithDebounce = debounce( fetchMyProjects, 1000);
+    useEffect(() => {
+      fetchProjectWithDebounce();
   }, [projectOwnerAddress]);
 
 
