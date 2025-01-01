@@ -234,9 +234,6 @@ const ProjectDetailPage = () => {
       return;
     }
 
-
-
-
     if (amount > 0 && amount != null) {
       setTotalStaked((prevTotal) => prevTotal + amount);
       setStakeAmount("");
@@ -248,7 +245,7 @@ const ProjectDetailPage = () => {
      * TODO: Take the onchain total staked amount to assign it to totalStaked
      *  
      *  */
-    // const amount = parseFloat(stakeAmount);
+    const amount = parseFloat(unStakeAmount);
     console.log("Page Param: " + pageParam);
     const response = await axios.post("/api/launchpool/projectDetail/unstake", {
       userAddress: userAddress,
@@ -263,10 +260,9 @@ const ProjectDetailPage = () => {
       return;
     }
 
-    // if (amount > 0 && amount != null) {
-    //   setTotalStaked((prevTotal) => prevTotal - amount);
-    //   setStakeAmount("");
-    // }
+    if (amount > 0 && amount != null) {
+      setUnStakeAmount("");
+    }
   }
 
 
@@ -502,14 +498,14 @@ const ProjectDetailPage = () => {
                           className="text-3xl font-bold text-white bg-transparent w-2/3 outline-none 
                           [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-moz-appearance:textfield]"
                           placeholder="enter"
-                          value={stakeAmount}
+                          value={unStakeAmount}
                           onChange={(e) => setUnStakeAmount(e.target.value)}
                         />
                       </div>
                     </div>
 
                     <button
-                      onClick={handleStake}
+                      onClick={handleUnstake}
                       className="btn bg-white text-[#7BA9EF] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#2C3E6F]"
                     >
                       Unstake
