@@ -4,9 +4,9 @@ import Image from "next/image";
 import { buyTable, sellTable } from "../../constants/index";
 import clsx from "clsx";
 import axios from "axios";
-import { Project } from "@/app/interface/interface";
+import { Project, Offer } from "@/app/interface/interface";
 const Dashboard = () => {
-  const [projects, setProjects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<Array<Project | Offer>>([]);
   const [loading, setLoading] = useState(true);
 
   //  ------------Gọi API--------------
@@ -72,11 +72,13 @@ const Dashboard = () => {
                 </thead>
                 <tbody className="text-center ">
                   {buyTable.map((data) => (
+                    //  {projects.map((data) => (
                     <>
                       <tr className="cursor-pointer hover:bg-[#1A2E4A] text-white border-b border-[#E0E0E0] last:border-b-0 text-right py-5">
                         <td>
                           <div className="flex items-center gap-4 justify-end">
                             <Image
+                              // src={(data as Project).projectLogo}
                               src={data.icon}
                               width={40}
                               height={40}
@@ -85,7 +87,7 @@ const Dashboard = () => {
                             />
                             <div className="flex flex-col  gap-1">
                               <span className="text-[17px] font-bold">
-                                {data.offerid}
+                                HiHi
                               </span>
                             </div>
                           </div>
