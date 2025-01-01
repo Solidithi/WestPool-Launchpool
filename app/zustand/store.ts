@@ -28,6 +28,8 @@ type ProjectBasisState = {
 type ProjectDetailState = {
   projectName: string;
   setProjectName: (value: string) => void;
+  tokenSymbol: string;
+  setTokenSymbol: (value: string) => void;
   shortDescription: string;
   setShortDescription: (value: string) => void;
   longDescription: string;
@@ -137,6 +139,8 @@ const useProjectBasisStore = create<ProjectBasisState>((set) => ({
 const useProjectDetailStore = create<ProjectDetailState>((set) => ({
   projectName: "",
   setProjectName: (value) => set({ projectName: value }),
+  tokenSymbol: "",
+  setTokenSymbol: (value) => set({ tokenSymbol: value }),
   shortDescription: "",
   setShortDescription: (value) => set({ shortDescription: value }),
   longDescription: "",

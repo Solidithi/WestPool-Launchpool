@@ -143,7 +143,7 @@ const MyProjectPage = () => {
                 .filter((data) => data.endsIn !== "--")
                 .map((data) => (
                   <div
-                    key={data.title}
+                    key={data.id}
                     className="bg-base-200 collapse w-10/12 border-2 border-[#A1C6FF] transition duration-500 ease-in-out transform hover:scale-105"
                   >
                     <input type="checkbox" className="peer" />
@@ -151,15 +151,15 @@ const MyProjectPage = () => {
                     <div className="collapse-title bg-gradient-to-r from-[#204275] to-[#4D75B3] text-white peer-checked:bg-[#3D69AC] peer-checked:text-white flex items-center">
                       <Image
                         className="rounded-full bg-gray-500"
-                        src={data.image}
+                        src={data.projectLogo}
                         alt="logo"
                         width={50}
                         height={50}
                       />
                       <div className="flex flex-col ml-5">
-                        <span className=" text-lg">{data.title}</span>
+                        <span className=" text-lg">{data.projectName}</span>
                         <span className="text-sm">
-                          {data.short_description}
+                          {data.shortDescription}
                         </span>
                       </div>
                     </div>
@@ -170,7 +170,7 @@ const MyProjectPage = () => {
                     >
                       <div className="flex items-center">
                         <div className="">
-                          <p className="">hello</p>
+                          <p className="">{data.longDescription}</p>
                         </div>
                         <div className="ml-auto mb-4 mr-5   ">
                           <button

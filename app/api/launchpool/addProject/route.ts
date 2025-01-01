@@ -7,22 +7,23 @@ export async function POST(req: NextRequest, res: NextResponse) {
   const body = await req.json();
   console.log(body);
   const {
-      projectName,
-      verifiedToken,
-      projectLogo,
-      projectImage,
-      shortDescription,
-      longDescription,
-      acceptedVToken,
-      minStake,
-      maxStake,
-      fromDate,
-      toDate,
-      // projectStatus,
-      chain,
-      poolBudget,
-      targetStake,
-      projectOwnerAddress,
+    projectName,
+    tokenSymbol,
+    verifiedToken,
+    projectLogo,
+    projectImage,
+    shortDescription,
+    longDescription,
+    acceptedVToken,
+    minStake,
+    maxStake,
+    fromDate,
+    toDate,
+    // projectStatus,
+    chain,
+    poolBudget,
+    targetStake,
+    projectOwnerAddress,
   } = body;
 
   try {
@@ -110,6 +111,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
         // targetStake: 50000, // Add appropriate value
 
         projectName: projectName,
+        tokenSymbol: tokenSymbol,
         projectOwnerAddress: projectOwnerAddress,
         verifiedTokenAddress: verifiedToken,
         projectLogo: projectLogo,
@@ -138,6 +140,26 @@ export async function POST(req: NextRequest, res: NextResponse) {
     }
 
     console.log(project);
+    //update launchpool number of project
+    // const launchPoolData = await prismaClient.launchPool.findMany({});
+    const launchPool = await prismaClient.launchPool.findFirst();
+
+    if (!launchPool) {
+      // Create a new LaunchPool record if none exists
+      await prismaClient.launchPool.create({
+        data: { totalProject: 1, uniqueParticipants: 0, totalTx: 0 },
+      });
+    } else {
+      // Update the existing LaunchPool record
+      await prismaClient.launchPool.update({
+        where: { id: launchPool.id },
+        data: {
+          totalProject: { increment: 1 },
+        },
+      });
+    }
+
+
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {

@@ -58,6 +58,17 @@ export async function POST(req: NextRequest, res: NextResponse) {
                 id: projectId,
             }
         })
+        // update launchpool number of project
+        const updateLaunchPool = await prismaClient.launchPool.update({
+            data: {
+                totalTx: {
+                    increment: 1
+                }
+            },
+            where: {
+                id: "1"
+            }
+        })
 
         return NextResponse.json({ success: true, offer: offer, project: project }, { status: 200})
 

@@ -10,6 +10,7 @@ import { Project } from "../../interface/interface"
 
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { coinbaseWallet, ConnectWallet, metamaskWallet, useConnect, useConnectionStatus, walletConnect } from "@thirdweb-dev/react";
 
 const AllProject = () => {
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
@@ -51,6 +52,40 @@ const AllProject = () => {
     return !data.toDate || daysLeft <= 0;
   });
 
+  const connect = useConnect();
+  const walletConfig = metamaskWallet();
+  const connectOptions = { chainId: 420420421 };
+
+  const handleConnectWallet = async () => {
+    try {
+      const wallet = await connect(
+        walletConfig, // pass the wallet config object
+        connectOptions, // pass options required by the wallet (if any)
+      );
+
+      console.log("connected to", wallet);
+    } catch (e) {
+      console.error("failed to connect", e);
+    }
+  }
+
+  // const [isOpen, setIsOpen] = useState(false);
+
+  // const wallets = [
+  //   metamaskWallet(),
+  //   coinbaseWallet(),
+  //   walletConnect(),
+  // ];
+
+  // async function handleConnect(walletConfig: any) {
+  //   try {
+  //     const wallet = await connect(walletConfig);
+  //     console.log("Connected to", wallet);
+  //     setIsOpen(false); // Close modal after connection
+  //   } catch (e) {
+  //     console.error("Failed to connect", e);
+  //   }
+  // }
 
   //  ------------Gọi API--------------
   useEffect(() => {
@@ -290,9 +325,16 @@ const AllProject = () => {
                                   <span className="font-bold">
                                     START STAKING
                                   </span>
-                                  <button className="ml-2 bg-[#6D93CD] text-white py-1 px-4 rounded-3xl w-full h-[40px]">
-                                    Connect Wallet
-                                  </button>
+                                  {useConnectionStatus() === "connected" ?
+                                    <button className="ml-2 bg-[#6D93CD] text-white py-1 px-4 rounded-3xl w-full h-[40px]"
+                                    >
+                                      Stake
+                                    </button> :
+                                    <button className="ml-2 bg-[#6D93CD] text-white py-1 px-4 rounded-3xl w-full h-[40px]"
+                                      onClick={handleConnectWallet}>
+                                      Connect Wallet
+                                    </button>
+                                  }
                                 </div>
                               </div>
                             </td>
@@ -441,9 +483,22 @@ const AllProject = () => {
                                 <span className="font-bold">
                                   START STAKING
                                 </span>
-                                <button className="ml-2 bg-[#6D93CD] text-white py-1 px-4 rounded-3xl w-full h-[40px]">
-                                  Connect Wallet
-                                </button>
+                                {useConnectionStatus() === "connected" ?
+                                  <button className="ml-2 bg-[#6D93CD] text-white py-1 px-4 rounded-3xl w-full h-[40px]"
+                                  >
+                                    Stake
+                                  </button> :
+                                  // <button className="ml-2 bg-[#6D93CD] text-white py-1 px-4 rounded-3xl w-full h-[40px]"
+                                  //   onClick={handleConnectWallet}>
+                                  //   Connect Wallet
+                                  // </button>
+                                  <div>
+                                    <ConnectWallet style={{
+                                      backgroundColor: "#6D93CD",
+                                      marginLeft: "2px"
+                                    }} />
+                                  </div>
+                                }
                               </div>
                             </div>
                           </td>

@@ -3,6 +3,7 @@ import VerticalProgressBar from "@/app/components/Progress";
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import {
+  useCombinedStore,
   useProjectBasisStore,
   useProjectDetailStore,
   useVerifiedToken,
@@ -26,6 +27,7 @@ const PreviewPage = () => {
     minStake,
     maxStake,
     projectName,
+    tokenSymbol,
     projectLogo,
     projectImage,
     shortDescription,
@@ -40,7 +42,8 @@ const PreviewPage = () => {
   const [currentStep, setCurrentStep] = useState(2); // The active step index (e.g., 0-based)
   const [activeButton, setActiveButton] = useState(acceptedVToken[0]);
 
-  const { chain, poolBudget, targetStake } = useProjectBasisStore();
+  const { poolBudget, targetStake } = useProjectBasisStore();
+  const { chain } = useCombinedStore();
   
   const router = useRouter();
 
@@ -141,6 +144,7 @@ const PreviewPage = () => {
     );
     const response = await axios.post("/api/launchpool/addProject", {
       projectName,
+      tokenSymbol,
       verifiedToken,
       projectLogo,
       projectImage,
