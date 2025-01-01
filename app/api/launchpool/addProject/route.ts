@@ -48,8 +48,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
     //insert some random data to test
     let user = await prismaClient.user.findFirst({
       where: {
-        userAddress:
-          projectOwnerAddress,
+        userAddress: projectOwnerAddress,
       },
     });
 
@@ -59,13 +58,11 @@ export async function POST(req: NextRequest, res: NextResponse) {
           userAddress: projectOwnerAddress,
         },
       });
-
     }
 
     let projectOwner = await prismaClient.projectOwner.findFirst({
       where: {
-        userAddress:
-          projectOwnerAddress,
+        userAddress: projectOwnerAddress,
       },
     });
 
@@ -121,8 +118,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
         acceptedVToken: acceptedVToken,
         minStake: minStake,
         maxStake: maxStake,
-        fromDate: new Date(),
-        toDate: new Date(),
+        fromDate: fromDate,
+        toDate: toDate,
         txHashCreated: "0xsgrgrg2234", // Add appropriate value
         projectStatus: ProjectStatus.Upcoming, // Add appropriate value
         chainName: chain, // Add appropriate value
@@ -158,8 +155,6 @@ export async function POST(req: NextRequest, res: NextResponse) {
         },
       });
     }
-
-
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {

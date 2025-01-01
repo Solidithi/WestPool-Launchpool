@@ -49,7 +49,7 @@ const ProjectBasisPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col items-center mb-10">
       <div className="w-[90%] max-w-4xl p-8 bg-white rounded-3xl shadow-[0px_10px_20px_rgba(109,147,205,0.5),0px_-10px_20px_rgba(109,147,205,0.5),10px_0px_20px_rgba(109,147,205,0.5),-10px_0px_20px_rgba(109,147,205,0.5)]">
         <div className="flex flex-col text-[#404040] font-bold gap-y-10">
           <div className="grid grid-cols-2 gap-16">

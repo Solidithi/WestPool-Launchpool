@@ -14,6 +14,7 @@ interface CustomDropdownProps {
     id: string;
     name: string;
     image: string;
+    address?: string;
   }[];
   placeholder?: string;
   state: string;
@@ -27,6 +28,7 @@ const CustomDropdown = ({
 }: CustomDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] = useState(placeholder);
+  const { tokenAddress, setTokenAddress } = useCombinedStore();
   // const { chain, setChain } = useProjectBasisStore();
   // const setChain = useAvailableChain((state: AvailableChainState) => state.setChain);
 
@@ -123,6 +125,9 @@ const CustomDropdown = ({
                 setSelectedOption(option.name);
                 setIsOpen(false);
                 setGlobalState(option.name);
+                if (option.address) {
+                  setTokenAddress(option.address);
+                }
               }}
             >
               <Image

@@ -80,7 +80,7 @@ const MyProjectPage = () => {
           {/* Project Collapse component */}
           <div className="flex flex-col justify-center items-center gap-5">
             <>
-              {dataTable
+              {endedProjects
                 .filter((data) => data.endsIn === "--")
                 .map((data) => (
                   <div

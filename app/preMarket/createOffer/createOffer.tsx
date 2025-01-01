@@ -8,6 +8,7 @@ import { useEffect } from "react";
 
 const CreateOfferPage = () => {
   const {
+    tokenAddress,
     role,
     pricePerToken,
     amount,
@@ -15,6 +16,7 @@ const CreateOfferPage = () => {
     selectedToken,
     collateral,
     selectedCollateralToken,
+    setTokenAddress,
     setRole,
     setPricePerToken,
     setAmount,
@@ -28,6 +30,8 @@ const CreateOfferPage = () => {
 
   const handleDeposit = () => {
     //Condition to check every field is filled
+    console.log(tokenAddress, pricePerToken, amount, selectedNetwork, selectedToken, collateral, selectedCollateralToken);
+
     if (
       !pricePerToken ||
       !amount ||
