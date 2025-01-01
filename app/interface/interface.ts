@@ -45,10 +45,10 @@ export interface ProjectOwner {
 export interface Offer {
   id: string;
   pricePerToken: Decimal;
-  amount: number;
-  collateral: number;
-  tokenImagePreToken: string;
-  tokenImageCollateral: string;
+  amount: Decimal;
+  collateral: Decimal;
+  tokenPreTokenAddress: string;
+  tokenCollateralAddress: string;
   offerType: OfferType;
   startDate: Date;
   filledTime: Date;
