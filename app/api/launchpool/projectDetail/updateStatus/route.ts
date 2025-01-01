@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import prismaClient from "@/prisma";
+import { ProjectStatus } from "@prisma/client";
 
 export async function POST(req: NextRequest, res: NextResponse) {
   try {
@@ -27,14 +28,15 @@ export async function POST(req: NextRequest, res: NextResponse) {
     const project = projects[0];
     console.log("Project found:", project);
 
-    let projectStatus = "Upcoming";
+    let projectStatus: ProjectStatus = ProjectStatus.Upcoming;
+
     if (
       currentDate >= new Date(project.fromDate) &&
       currentDate <= new Date(project.toDate)
     ) {
-      projectStatus = "Ongoing";
+      projectStatus = ProjectStatus.Ongoing;
     } else if (currentDate > new Date(project.toDate)) {
-      projectStatus = "Completed";
+      projectStatus = ProjectStatus.Completed;
     }
 
     console.log("Determined project status:", projectStatus);
