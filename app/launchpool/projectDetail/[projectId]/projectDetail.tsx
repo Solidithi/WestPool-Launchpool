@@ -163,6 +163,29 @@ const ProjectDetailPage = () => {
     fetchProjects();
   }, [pageParam]);
 
+  //  ------------Gọi API cập nhật Status--------------
+  useEffect(() => {
+    const updateProjectStatus = async () => {
+      try {
+        const { projectId } = pageParam;
+
+        const res = await axios.post("/api/launchpool/projectDetail/updateStatus", { projectId });
+        const data = res.data;
+
+        if (data.success) {
+          console.log("Project status updated successfully:", data.data);
+        } else {
+          console.error("Failed to update project status:", data.error);
+        }
+      } catch (error) {
+        console.error("Error updating project status:", error);
+      }
+    };
+
+    updateProjectStatus();
+  }, [pageParam]);
+
+
 
   useEffect(() => {
     console.log("Project details:", projectDetails);
@@ -228,7 +251,7 @@ const ProjectDetailPage = () => {
                   {projectDetails[0]?.projectName}
                 </div>
 
-                <StatusDisplay status={status} />
+                <StatusDisplay status={projectDetails[0]?.projectStatus} />
                 {/* <div className="ml-5 rounded-xl px-5 flex items-center justify-center bg-[#102821] text-[#0E9A36]">
                   On going
                 </div> */}

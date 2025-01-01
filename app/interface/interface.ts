@@ -35,14 +35,14 @@ export interface User {
   offerId?: string;
 }
 
-interface ProjectOwner {
+export interface ProjectOwner {
   id: string;
   userAddress: string;
   User: User;
   Project: Project[];
 }
 
-interface Offer {
+export interface Offer {
   id: string;
   pricePerToken: Decimal;
   amount: number;
@@ -61,14 +61,14 @@ interface Offer {
   users: UserOffer[];
 }
 
-interface UserOffer {
+export interface UserOffer {
   userId: string;
   offerId: string;
   User: User;
   Offer: Offer;
 }
 
-interface InvestedProject {
+export interface InvestedProject {
   userId: string;
   projectId: string;
   User: User;

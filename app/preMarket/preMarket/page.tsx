@@ -19,7 +19,7 @@ const PreMarket = () => {
 
   const handleSubmit = () => {
     try {
-      router.push("/market/createOffer");
+      router.push("/preMarket/createOffer");
     } catch (e) {
       console.log(e);
     }
