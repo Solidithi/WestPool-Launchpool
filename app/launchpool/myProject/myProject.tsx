@@ -12,9 +12,9 @@ const MyProjectPage = () => {
   const [pendingProjects, setPendingProjects] = useState<any[]>([]);
   const [endedProjects, setEndedProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [ projectName, setProjectName ] = useState("");
-  const [ shortDescription, setShortDescription ] = useState("");
-  const [ longDescription, setLongDescription ] = useState("");
+  const [projectName, setProjectName] = useState("");
+  const [shortDescription, setShortDescription] = useState("");
+  const [longDescription, setLongDescription] = useState("");
 
 
   const projectOwnerAddress = useAddress();
@@ -27,20 +27,32 @@ const MyProjectPage = () => {
           projectOwnerAddress,
         });
         console.log("This : " + response.data);
-
-        if(response.data.success) {
-          console.log(response.data.projects);
+        if (!response.data.success) {
+          console.log(response.data.message);
+          return;
         }
 
-        for (let i = 0; i < response.data.projects.length; i++) {
-          if(response.data.projects[i].status === ProjectStatus.Upcoming) {
-            setPendingProjects((prev) => [...prev, response.data.projects[i]]);
+        const projects = response.data.projects;
+        const pending = [];
+        const ended = [];
+
+        for (let i = 0; i < projects.length; i++) {
+          if (projects[i].projectStatus === "Upcoming") {
+            console.log("Pending Projects: " + projects[i]);
+            console.log("Pending Projects: " + projects[i].projectName);
+            pending.push(projects[i]);
           } else {
-            setEndedProjects((prev) => [...prev, response.data.projects[i]]);
+            ended.push(projects[i]);
           }
         }
 
-  console.log("Pending Projects: " + pendingProjects);        
+        // Set state after loop
+        setPendingProjects(pending);
+        setEndedProjects(ended);
+        console.log("Pending Projects: " + pendingProjects);
+        for (let project in pendingProjects) {
+          console.log("Pending Projects: " + project);
+        }
 
 
       } catch (error) {
@@ -127,7 +139,7 @@ const MyProjectPage = () => {
           </div>
           <div className="flex flex-col justify-center items-center gap-5">
             <>
-              {dataTable
+              {pendingProjects
                 .filter((data) => data.endsIn !== "--")
                 .map((data) => (
                   <div

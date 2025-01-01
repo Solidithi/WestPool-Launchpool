@@ -1,13 +1,13 @@
 "use client";
 import CustomDropdown from "@/app/components/Dropdown";
 import { availableNetworks } from "@/app/constants";
-import useAvailableChain, { useProjectBasisStore } from "@/app/zustand/store";
+import useAvailableChain, { useCombinedStore, useProjectBasisStore } from "@/app/zustand/store";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const ProjectBasisPage = () => {
   const {
-    chain,
+    // chain,
     setChain,
     isTrading,
     setIsTrading,
@@ -18,6 +18,7 @@ const ProjectBasisPage = () => {
     targetAudience,
     setTargetAudience,
   } = useProjectBasisStore();
+  const { chain } = useCombinedStore()
   const router = useRouter();
 
   const handleSubmit = () => {
