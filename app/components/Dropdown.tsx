@@ -125,9 +125,19 @@ const CustomDropdown = ({
                 setSelectedOption(option.name);
                 setIsOpen(false);
                 setGlobalState(option.name);
+
                 if (option.address) {
-                  setTokenAddress(option.address);
+                  const updatedTokenAddress = [...tokenAddress];
+
+                  if (state === "selectedToken") {
+                    updatedTokenAddress[0] = option.address;
+                  } else if (state === "selectedCollateralToken") {
+                    updatedTokenAddress[1] = option.address;
+                  }
+
+                  setTokenAddress(updatedTokenAddress);
                 }
+
               }}
             >
               <Image

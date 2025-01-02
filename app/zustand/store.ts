@@ -69,7 +69,7 @@ type CombinedState = {
   toDate: string;
   projectImage: File | null;
   projectLogo: File | null;
-  tokenAddress: string;
+  tokenAddress: string[];
 
   // Create Offer State
   role: OfferType;
@@ -88,7 +88,7 @@ type CombinedState = {
   setSelectedNetwork: (value: string) => void;
   setSelectedToken: (value: string) => void;
   setSelectedCollateralToken: (value: string) => void;
-  setTokenAddress: (value: string) => void;
+  setTokenAddress: (value: string[]) => void;
 };
 
 type CombinedSetters = {
@@ -166,7 +166,7 @@ const useProjectDetailStore = create<ProjectDetailState>((set) => ({
 const useCombinedStore = create<CombinedState>((set) => ({
   // Initial State
   chain: "",
-  tokenAddress: "",
+  tokenAddress: [],
   isTrading: "",
   poolBudget: 0,
   targetStake: 0,
@@ -192,7 +192,7 @@ const useCombinedStore = create<CombinedState>((set) => ({
 
   // Dynamic Setters
   setChain: (value: string) => set({ chain: value }),
-  setTokenAddress: (value: string) => set({ tokenAddress: value }),
+  setTokenAddress: (value: string[]) => set({ tokenAddress: value }),
   setIsTrading: (value: string) => set({ isTrading: value }),
   setPoolBudget: (value: number) => set({ poolBudget: value }),
   setTargetStake: (value: number) => set({ targetStake: value }),

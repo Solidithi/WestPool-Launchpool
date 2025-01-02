@@ -17,6 +17,7 @@ const AllProject = () => {
   const [activeId, setActiveId] = useState(banners[0].id);
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
+  const connectionStatus = useConnectionStatus();
 
   //  ------------Xử lí khi mở nhiều row--------------
   const toggleRow = (index: number) => {
@@ -325,7 +326,7 @@ const AllProject = () => {
                                   <span className="font-bold">
                                     START STAKING
                                   </span>
-                                  {useConnectionStatus() === "connected" ?
+                                  {connectionStatus === "connected" ?
                                     <button className="ml-2 bg-[#6D93CD] text-white py-1 px-4 rounded-3xl w-full h-[40px]"
                                     >
                                       Stake
@@ -483,7 +484,7 @@ const AllProject = () => {
                                 <span className="font-bold">
                                   START STAKING
                                 </span>
-                                {useConnectionStatus() === "connected" ?
+                                {connectionStatus === "connected" ?
                                   <button className="ml-2 bg-[#6D93CD] text-white py-1 px-4 rounded-3xl w-full h-[40px]"
                                   >
                                     Stake
