@@ -1,10 +1,11 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { buyTable, sellTable } from "../../constants/index";
+import { buyTable, sellTable, availableTokens } from "../../constants/index";
 import clsx from "clsx";
 import axios from "axios";
-import { Project, Offer } from "@/app/interface/interface";
+import { Project, Offer, OfferType } from "@/app/interface/interface";
+import { CreateOfferStatus } from "@prisma/client";
 const Dashboard = () => {
   const [projects, setProjects] = useState<Array<Project | Offer>>([]);
   const [loading, setLoading] = useState(true);
@@ -62,7 +63,7 @@ const Dashboard = () => {
                 <thead>
                   <tr className="text-[#82B2FA]  text-[20px] font-extralight border-b-[#E0E0E0] text-right">
                     <th className="py-12">OFFER ID</th>
-                    <th>TIME</th>
+                    <th>START DATE</th>
                     <th>DEPOSITED</th>
                     <th className="w-[200px]">FOR</th>
                     <th className="w-[300px]">TX</th>
@@ -71,37 +72,64 @@ const Dashboard = () => {
                   </tr>
                 </thead>
                 <tbody className="text-center ">
-                  {buyTable.map((data) => (
-                    //  {projects.map((data) => (
+                  {/* {buyTable.map((data) => ( */}
+                  {projects.filter((data) => (data as Offer).offerType === OfferType.Buy).map((data) => (
                     <>
                       <tr className="cursor-pointer hover:bg-[#1A2E4A] text-white border-b border-[#E0E0E0] last:border-b-0 text-right py-5">
                         <td>
                           <div className="flex items-center gap-4 justify-end">
                             <Image
-                              // src={(data as Project).projectLogo}
-                              src={data.icon}
+                              src={(data as Project).projectLogo}
+                              // src={data.icon}
                               width={40}
                               height={40}
                               alt="icon"
                               className="rounded-full"
                             />
-                            <div className="flex flex-col  gap-1">
+                            <div className="flex">
                               <span className="text-[17px] font-bold">
-                                HiHi
+                                {(data as Project).tokenSymbol}
+                                <span className="text-[8px] text-gray-300 ml-1  mb-10">
+                                  {(data as Offer).index}
+                                </span>
                               </span>
+
                             </div>
                           </div>
                         </td>
-                        <td>{data.time}</td>
+                        <td>{(data as Offer).startDate.toString()}</td>
                         <td>
                           <div className="flex items-center gap-4 justify-end">
                             <div className="flex flex-col  gap-1">
                               <span className="text-[17px] font-bold">
-                                {data.deposit}
+                                {/* {
+                                  availableTokens.find(token => token.address === (data as Offer).tokenCollateralAddress)?.name || 'Unknown Token'
+                                } */}
+                                {(data as Offer).amount.toString()}
                               </span>
                             </div>
                             <Image
-                              src={data.deposit_icon}
+                              src={
+                                availableTokens.find(token => token.address === (data as Offer).tokenCollateralAddress)?.image || '/path/to/default-icon.png'
+                              }
+                              width={20}
+                              height={20}
+                              alt="icon"
+                              className="rounded-full"
+                            />
+
+                          </div>
+                        </td>
+                        <td>
+                          <div className="flex items-center gap-4 justify-end">
+                            <div className="flex flex-col  gap-1">
+                              <span className="text-[17px] font-bold">
+                                {/* {data.for} */}
+                                {(data as Offer).collateral.toString()}
+                              </span>
+                            </div>
+                            <Image
+                              src={(data as Project).projectLogo}
                               width={20}
                               height={20}
                               alt="icon"
@@ -109,51 +137,35 @@ const Dashboard = () => {
                             />
                           </div>
                         </td>
-                        <td>
-                          <div className="flex items-center gap-4 justify-end">
-                            <div className="flex flex-col  gap-1">
-                              <span className="text-[17px] font-bold">
-                                {data.for}
-                              </span>
-                            </div>
-                            <Image
-                              src={data.icon}
-                              width={20}
-                              height={20}
-                              alt="icon"
-                              className="rounded-full"
-                            />
-                          </div>
-                        </td>
-                        <td>{data.tx}</td>
+                        <td>{(data as Offer).txHash}</td>
                         <td className="text-right">
                           <div
                             className={clsx(
                               "font-extrabold rounded-2xl p-1 w-[100px] text-center ml-auto",
                               {
                                 "text-[#ce7b51] bg-[#423533]":
-                                  data.status === "Open",
+                                  (data as Offer).creatorStatus === CreateOfferStatus.Open,
                                 "text-[#e3cc1b] bg-[#333b0d]":
-                                  data.status === "Pending",
+                                  (data as Offer).creatorStatus === CreateOfferStatus.Pending,
                                 "text-[#329A81] bg-[#1B2B30]":
-                                  data.status === "Completed",
+                                  (data as Offer).creatorStatus === CreateOfferStatus.Settled,
                                 "text-gray-500 bg-slate-800":
-                                  data.status === "Cancelled" || data.status === "CancelledWithdraw",
+                                  (data as Offer).creatorStatus === CreateOfferStatus.Canceled || (data as Offer).creatorStatus === CreateOfferStatus.CanceledWithdraw,
                               }
                             )}
                           >
-                            {data.status === "CancelledWithdraw" ? "Cancelled" : data.status}
+                            {(data as Offer).creatorStatus === CreateOfferStatus.CanceledWithdraw ? CreateOfferStatus.Canceled : (data as Offer).creatorStatus}
                           </div>
                         </td>
 
                         <td>
-                          {data.status === "Completed" || data.status === "CancelledWithdraw" ? (
+                          {(data as Offer).creatorStatus === CreateOfferStatus.Settled || (data as Offer).creatorStatus === CreateOfferStatus.CanceledWithdraw ? (
                             <button
                               className="text-[#329A81] py-2 px-4 rounded-md text-[13px] duration-300 hover:scale-105"
                               onClick={() =>
                                 (
                                   document.getElementById(
-                                    `withdraw-${data.offerid}`
+                                    `withdraw-${(data as Offer).id}`
                                   ) as HTMLDialogElement
                                 ).showModal()
                               }
@@ -165,33 +177,33 @@ const Dashboard = () => {
                               className={clsx(
                                 "rounded-md text-[13px] duration-300 ml-auto py-2 px-4",
                                 {
-                                  "text-gray-600 cursor-not-allowed": data.status === "Cancelled",
+                                  "text-gray-600 cursor-not-allowed": (data as Offer).creatorStatus === CreateOfferStatus.Canceled,
                                   "bg-transparent text-[#ce7b51] hover:scale-105":
-                                    data.status !== "Cancelled",
+                                    (data as Offer).creatorStatus !== CreateOfferStatus.Canceled,
                                 }
                               )}
                               onClick={() =>
                                 (
                                   document.getElementById(
-                                    `cancel-order-${data.offerid}`
+                                    `cancel-order-${(data as Offer).id}`
                                   ) as HTMLDialogElement
                                 ).showModal()
                               }
-                              disabled={data.status === "Cancelled"}
+                              disabled={(data as Offer).creatorStatus === CreateOfferStatus.Canceled}
                             >
                               CANCEL ORDER
                             </button>
                           )}
 
                           <dialog
-                            id={`cancel-order-${data.offerid}`}
+                            id={`cancel-order-${(data as Offer).id}`}
                             className="modal"
                           >
                             <div className="modal-box bg-[#0C141E]">
                               <h3 className="font-bold text-lg mb-4 text-white">
                                 <div className="flex items-center gap-4 justify-start">
                                   <Image
-                                    src={data.icon}
+                                    src={(data as Project).projectLogo}
                                     width={50}
                                     height={50}
                                     alt="icon"
@@ -199,7 +211,7 @@ const Dashboard = () => {
                                   />
                                   <div className="flex flex-col gap-1">
                                     <span className="text-[17px] font-bold">
-                                      {data.offerid}
+                                      {(data as Offer).id}
                                     </span>
                                   </div>
                                 </div>
@@ -209,10 +221,13 @@ const Dashboard = () => {
                                 <div className="flex justify-between">
                                   <div>My deposit</div>
                                   <div className="flex gap-3">
-                                    <span className="font-bold">{data.deposit}</span>
+                                    <span className="font-bold">  {
+                                      availableTokens.find(token => token.address === (data as Offer).tokenCollateralAddress)?.name || 'Unknown Token'
+                                    }</span>
                                     <Image
-                                      src={data.deposit_icon}
-                                      width={20}
+                                      src={
+                                        availableTokens.find(token => token.address === (data as Offer).tokenCollateralAddress)?.image || '/path/to/default-icon.png'
+                                      } width={20}
                                       height={20}
                                       alt="icon"
                                       className="rounded-full"
@@ -222,10 +237,12 @@ const Dashboard = () => {
                                 <div className="flex justify-between">
                                   <div>My Compensation</div>
                                   <div className="flex gap-3">
-                                    <span className="font-bold">{data.deposit}</span>
-                                    <Image
-                                      src={data.deposit_icon}
-                                      width={20}
+                                    <span className="font-bold">  {
+                                      availableTokens.find(token => token.address === (data as Offer).tokenCollateralAddress)?.name || 'Unknown Token'
+                                    }</span>                                    <Image
+                                      src={
+                                        availableTokens.find(token => token.address === (data as Offer).tokenCollateralAddress)?.image || '/path/to/default-icon.png'
+                                      } width={20}
                                       height={20}
                                       alt="icon"
                                       className="rounded-full"
@@ -248,14 +265,14 @@ const Dashboard = () => {
                           </dialog>
 
                           <dialog
-                            id={`withdraw-${data.offerid}`}
+                            id={`withdraw-${(data as Offer).id}`}
                             className="modal"
                           >
                             <div className="modal-box bg-[#0C141E]">
                               <h3 className="font-bold text-lg mb-4 text-white">
                                 <div className="flex items-center gap-4 justify-start">
                                   <Image
-                                    src={data.icon}
+                                    src={(data as Project).projectLogo}
                                     width={50}
                                     height={50}
                                     alt="icon"
@@ -263,7 +280,7 @@ const Dashboard = () => {
                                   />
                                   <div className="flex flex-col gap-1">
                                     <span className="text-[17px] font-bold">
-                                      {data.offerid}
+                                      {(data as Offer).id}
                                     </span>
                                   </div>
                                 </div>
@@ -273,9 +290,9 @@ const Dashboard = () => {
                                 <div className="flex justify-between">
                                   <div>My project&apos;s token</div>
                                   <div className="flex gap-3">
-                                    <span className="font-bold">{data.for}</span>
+                                    {(data as Offer).collateral.toString()}
                                     <Image
-                                      src={data.icon}
+                                      src={(data as Project).projectLogo}
                                       width={20}
                                       height={20}
                                       alt="icon"
@@ -325,7 +342,7 @@ const Dashboard = () => {
                 <thead>
                   <tr className="text-[#82B2FA]  text-[20px] font-extralight border-b-[#E0E0E0] text-right">
                     <th className="py-12">OFFER ID</th>
-                    <th>TIME</th>
+                    <th>START DATE</th>
                     <th className="w-[200px]">FILL AMOUNT</th>
                     <th>DEPOSITED</th>
                     <th className="w-[300px]">TX</th>
@@ -334,36 +351,41 @@ const Dashboard = () => {
                   </tr>
                 </thead>
                 <tbody className="text-center ">
-                  {sellTable.map((data) => (
+                  {projects.filter((data) => (data as Offer).offerType === OfferType.Sell).map((data) => (
                     <>
                       <tr className="cursor-pointer hover:bg-[#1A2E4A] text-white border-b border-[#E0E0E0] last:border-b-0 text-right py-5">
                         <td>
                           <div className="flex items-center gap-4 justify-end">
                             <Image
-                              src={data.icon}
+                              src={(data as Project).projectLogo}
+                              // src={data.icon}
                               width={40}
                               height={40}
                               alt="icon"
                               className="rounded-full"
                             />
-                            <div className="flex flex-col  gap-1">
+                            <div className="flex">
                               <span className="text-[17px] font-bold">
-                                {data.offerid}
+                                {(data as Project).tokenSymbol}
+                                <span className="text-[8px] text-gray-300 ml-1  mb-10">
+                                  {(data as Offer).index}
+                                </span>
                               </span>
+
                             </div>
                           </div>
                         </td>
-                        <td>{data.time}</td>
+                        <td>{(data as Offer).startDate.toString()}</td>
 
                         <td>
                           <div className="flex items-center gap-4 justify-end">
                             <div className="flex flex-col  gap-1">
                               <span className="text-[17px] font-bold">
-                                {data.for}
+                                {(data as Offer).amount.toString()}
                               </span>
                             </div>
                             <Image
-                              src={data.icon}
+                              src={(data as Project).projectLogo}
                               width={20}
                               height={20}
                               alt="icon"
@@ -375,11 +397,13 @@ const Dashboard = () => {
                           <div className="flex items-center gap-4 justify-end">
                             <div className="flex flex-col  gap-1">
                               <span className="text-[17px] font-bold">
-                                {data.deposit}
+                                {(data as Offer).collateral.toString()}
                               </span>
                             </div>
                             <Image
-                              src={data.deposit_icon}
+                              src={
+                                availableTokens.find(token => token.address === (data as Offer).tokenCollateralAddress)?.image || '/path/to/default-icon.png'
+                              }
                               width={20}
                               height={20}
                               alt="icon"
@@ -387,24 +411,32 @@ const Dashboard = () => {
                             />
                           </div>
                         </td>
-                        <td>{data.tx}</td>
+                        <td>{(data as Offer).txHash}</td>
                         <td className="text-right">
                           <div
                             className={clsx(
                               "font-extrabold rounded-2xl p-1 w-[100px] text-center ml-auto",
                               {
+                                // "text-[#ce7b51] bg-[#423533]":
+                                //   data.status === "Open",
+                                // "text-[#329A81] bg-[#1B2B30]":
+                                //   data.status === "Settled",
+                                // "text-gray-500 bg-slate-800":
+                                //   data.status === "Cancelled" || data.status === "CancelledWithdraw",
+                                // "text-[#e3cc1b] bg-[#333b0d]":
+                                //   data.status === "Pending",
                                 "text-[#ce7b51] bg-[#423533]":
-                                  data.status === "Open",
-                                "text-[#329A81] bg-[#1B2B30]":
-                                  data.status === "Settled",
-                                "text-gray-500 bg-slate-800":
-                                  data.status === "Cancelled" || data.status === "CancelledWithdraw",
+                                  (data as Offer).creatorStatus === CreateOfferStatus.Open,
                                 "text-[#e3cc1b] bg-[#333b0d]":
-                                  data.status === "Pending",
+                                  (data as Offer).creatorStatus === CreateOfferStatus.Pending,
+                                "text-[#329A81] bg-[#1B2B30]":
+                                  (data as Offer).creatorStatus === CreateOfferStatus.Settled,
+                                "text-gray-500 bg-slate-800":
+                                  (data as Offer).creatorStatus === CreateOfferStatus.Canceled || (data as Offer).creatorStatus === CreateOfferStatus.CanceledWithdraw,
                               }
                             )}
                           >
-                            {data.status === "CancelledWithdraw" ? "Cancelled" : data.status}
+                            {(data as Offer).creatorStatus === CreateOfferStatus.CanceledWithdraw ? CreateOfferStatus.Canceled : (data as Offer).creatorStatus}
                           </div>
                         </td>
                         <td>
@@ -413,58 +445,58 @@ const Dashboard = () => {
                               "rounded-md text-[13px] duration-300 ml-auto py-2 px-4",
                               {
                                 "text-gray-600 cursor-not-allowed ":
-                                  data.status === "Cancelled",
+                                  (data as Offer).creatorStatus === CreateOfferStatus.Canceled,
 
                                 " text-[#329A81] hover:scale-105":
-                                  data.status === "Pending",
+                                  (data as Offer).creatorStatus === CreateOfferStatus.Pending,
 
                                 " text-[#ce7b51] hover:scale-105":
-                                  data.status === "Open",
+                                  (data as Offer).creatorStatus === CreateOfferStatus.Open,
 
                                 " text-[#e3cc1b] hover:scale-105":
-                                  data.status === "Settled" || data.status === "CancelledWithdraw",
+                                  (data as Offer).creatorStatus === CreateOfferStatus.Settled || (data as Offer).creatorStatus === CreateOfferStatus.CanceledWithdraw,
                               }
                             )}
                             onClick={() => {
-                              if (data.status === "Pending") {
+                              if ((data as Offer).creatorStatus === CreateOfferStatus.Pending) {
                                 (
-                                  document.getElementById(`settle-${data.offerid}`) as HTMLDialogElement
+                                  document.getElementById(`settle-${(data as Offer).id}`) as HTMLDialogElement
                                 ).showModal();
-                              } else if (data.status === "Open") {
+                              } else if ((data as Offer).creatorStatus === CreateOfferStatus.Open) {
                                 (
-                                  document.getElementById(`close-${data.offerid}`) as HTMLDialogElement
+                                  document.getElementById(`close-${(data as Offer).id}`) as HTMLDialogElement
                                 ).showModal();
-                              } else if (data.status === "Settled" || data.status === "CancelledWithdraw") {
+                              } else if ((data as Offer).creatorStatus === CreateOfferStatus.Settled || (data as Offer).creatorStatus === CreateOfferStatus.CanceledWithdraw) {
                                 (
-                                  document.getElementById(`withdraw1-${data.offerid}`) as HTMLDialogElement
+                                  document.getElementById(`withdraw1-${(data as Offer).id}`) as HTMLDialogElement
                                 ).showModal();
                               }
                             }}
-                            disabled={data.status === "Closed"}
+                            disabled={(data as Offer).creatorStatus === CreateOfferStatus.Closed}
                           >
-                            {data.status === "Pending"
+                            {(data as Offer).creatorStatus === CreateOfferStatus.Pending
                               ? "Settle"
-                              : data.status === "Open"
+                              : (data as Offer).creatorStatus === CreateOfferStatus.Open
                                 ? "Close"
-                                : data.status === "Settled" || data.status === "CancelledWithdraw"
+                                : (data as Offer).creatorStatus === CreateOfferStatus.Settled || (data as Offer).creatorStatus === CreateOfferStatus.CanceledWithdraw
                                   ? "Withdraw"
                                   : "Close"}
                           </button>
 
                           {/* Modal Settle */}
-                          <dialog id={`settle-${data.offerid}`} className="modal">
+                          <dialog id={`settle-${(data as Offer).id}`} className="modal">
                             <div className="modal-box bg-[#0C141E]">
                               <h3 className="font-bold text-lg mb-4 text-white">
                                 <div className="flex items-center gap-4 justify-start">
                                   <Image
-                                    src={data.icon}
+                                    src={(data as Project).projectLogo}
                                     width={50}
                                     height={50}
                                     alt="icon"
                                     className="rounded-full"
                                   />
                                   <div className="flex flex-col gap-1">
-                                    <span className="text-[17px] font-bold">{data.offerid}</span>
+                                    <span className="text-[17px] font-bold">{(data as Offer).id}</span>
                                   </div>
                                 </div>
                               </h3>
@@ -473,9 +505,9 @@ const Dashboard = () => {
                                 <div className="flex justify-between">
                                   <div>Filled amount</div>
                                   <div className="flex gap-3">
-                                    <span className="font-bold">{data.for}</span>
+                                    <span className="font-bold">{(data as Offer).amount.toString()}</span>
                                     <Image
-                                      src={data.icon}
+                                      src={(data as Project).projectLogo}
                                       width={20}
                                       height={20}
                                       alt="icon"
@@ -486,10 +518,11 @@ const Dashboard = () => {
                                 <div className="flex justify-between">
                                   <div>My deposit</div>
                                   <div className="flex gap-3">
-                                    <span className="font-bold">{data.deposit}</span>
+                                    <span className="font-bold">{(data as Offer).collateral.toString()}</span>
                                     <Image
-                                      src={data.deposit_icon}
-                                      width={20}
+                                      src={
+                                        availableTokens.find(token => token.address === (data as Offer).tokenCollateralAddress)?.image || '/path/to/default-icon.png'
+                                      } width={20}
                                       height={20}
                                       alt="icon"
                                       className="rounded-full"
@@ -499,10 +532,11 @@ const Dashboard = () => {
                                 <div className="flex justify-between">
                                   <div>My Compensation</div>
                                   <div className="flex gap-3">
-                                    <span className="font-bold">{data.deposit}</span>
+                                    <span className="font-bold">{(data as Offer).collateral.toString()}</span>
                                     <Image
-                                      src={data.deposit_icon}
-                                      width={20}
+                                      src={
+                                        availableTokens.find(token => token.address === (data as Offer).tokenCollateralAddress)?.image || '/path/to/default-icon.png'
+                                      } width={20}
                                       height={20}
                                       alt="icon"
                                       className="rounded-full"
@@ -524,19 +558,19 @@ const Dashboard = () => {
                             </form>
                           </dialog>
 
-                          <dialog id={`withdraw1-${data.offerid}`} className="modal">
+                          <dialog id={`withdraw1-${(data as Offer).id}`} className="modal">
                             <div className="modal-box bg-[#0C141E]">
                               <h3 className="font-bold text-lg mb-4 text-white">
                                 <div className="flex items-center gap-4 justify-start">
                                   <Image
-                                    src={data.icon}
+                                    src={(data as Project).projectLogo}
                                     width={50}
                                     height={50}
                                     alt="icon"
                                     className="rounded-full"
                                   />
                                   <div className="flex flex-col gap-1">
-                                    <span className="text-[17px] font-bold">{data.offerid}</span>
+                                    <span className="text-[17px] font-bold">{(data as Offer).id}</span>
                                   </div>
                                 </div>
                               </h3>
@@ -545,9 +579,9 @@ const Dashboard = () => {
                                 <div className="flex justify-between">
                                   <div>My received token</div>
                                   <div className="flex gap-3">
-                                    <span className="font-bold">{data.deposit}</span>
+                                    <span className="font-bold">{(data as Offer).amount.toString()}</span>
                                     <Image
-                                      src={data.deposit_icon}
+                                      src={(data as Project).projectLogo}
                                       width={20}
                                       height={20}
                                       alt="icon"
@@ -570,19 +604,19 @@ const Dashboard = () => {
                             </form>
                           </dialog>
 
-                          <dialog id={`close-${data.offerid}`} className="modal">
+                          <dialog id={`close-${(data as Offer).id}`} className="modal">
                             <div className="modal-box bg-[#0C141E]">
                               <h3 className="font-bold text-lg mb-4 text-white">
                                 <div className="flex items-center gap-4 justify-start">
                                   <Image
-                                    src={data.icon}
+                                    src={(data as Project).projectLogo}
                                     width={50}
                                     height={50}
                                     alt="icon"
                                     className="rounded-full"
                                   />
                                   <div className="flex flex-col gap-1">
-                                    <span className="text-[17px] font-bold">{data.offerid}</span>
+                                    <span className="text-[17px] font-bold">{(data as Offer).id}</span>
                                   </div>
                                 </div>
                               </h3>

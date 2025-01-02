@@ -87,6 +87,7 @@ model Offer {
   collateral             Decimal
   tokenPreTokenAddress   String
   tokenCollateralAddress String
+  txHash                 String
   offerType              OfferType
   startDate              DateTime
   filledTime             DateTime
@@ -99,7 +100,7 @@ model Offer {
   users                  UserOffer[]
 }
 
-model UserOffer { // many-many User and Offer
+model UserOffer {
   userId  String
   offerId String
 
@@ -109,15 +110,15 @@ model UserOffer { // many-many User and Offer
   @@id([userId, offerId])
 }
 
-model InvestedProject { // many-many Project and User
-  id           String  @id @default(uuid())
-  userAddress  String
-  projectId    String
-  stakeType    StakeType
-  txHash       String
-  createdAt    DateTime @default(now())
-  project      Project @relation(fields: [projectId], references: [id])
-  user         User    @relation(fields: [userAddress], references: [userAddress])
+model InvestedProject {
+  id          String    @id @default(uuid())
+  userAddress String
+  projectId   String
+  stakeType   StakeType
+  txHash      String
+  createdAt   DateTime  @default(now())
+  project     Project   @relation(fields: [projectId], references: [id])
+  user        User      @relation(fields: [userAddress], references: [userAddress])
 }
 
 // model InvestedProject {
@@ -150,6 +151,7 @@ enum FillerOfferStatus {
   Completed
   Canceled
   CanceledWithdraw
+  Closed
 }
 
 enum OfferType {

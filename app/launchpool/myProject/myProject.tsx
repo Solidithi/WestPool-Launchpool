@@ -65,7 +65,7 @@ const MyProjectPage = () => {
     const fetchProjectWithDebounce = debounce( fetchMyProjects, 1000);
     useEffect(() => {
       fetchProjectWithDebounce();
-  }, [projectOwnerAddress]);
+  }, [projectOwnerAddress, fetchProjectWithDebounce]);
 
 
 

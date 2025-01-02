@@ -5,20 +5,21 @@ export interface Project {
   projectName: string;
   projectOwnerAddress: string;
   verifiedTokenAddress: string;
+  tokenSymbol: string;
   projectLogo: string;
   projectImage: string[];
   shortDescription: string;
   longDescription: string;
   acceptedVToken: string[];
-  minStake: number;
-  maxStake: number;
+  minStake: Decimal;
+  maxStake: Decimal;
   fromDate: Date;
   toDate: Date;
   txHashCreated: string;
   projectStatus: string;
   chainName: string;
-  poolBudget: number;
-  targetStake: number;
+  poolBudget: Decimal;
+  targetStake: Decimal;
   projectOwner: ProjectOwner;
   userId?: string;
   offers: Offer[];
@@ -45,10 +46,12 @@ export interface ProjectOwner {
 export interface Offer {
   id: string;
   pricePerToken: Decimal;
+  index: number;
   amount: Decimal;
   collateral: Decimal;
   tokenPreTokenAddress: string;
   tokenCollateralAddress: string;
+  txHash: string;
   offerType: OfferType;
   startDate: Date;
   filledTime: Date;
@@ -75,21 +78,22 @@ export interface InvestedProject {
   Project: Project;
 }
 
-enum ProjectStatus {
+export enum ProjectStatus {
   Upcoming,
   Ongoing,
   Completed,
 }
 
-enum CreateOfferStatus {
-  Open,
-  Pending,
-  Settled,
-  Canceled,
-  CanceledWithdraw,
+export enum CreateOfferStatus {
+  Open = "Open",
+  Pending = "Pending",
+  Settled = "Settled",
+  Canceled = "Canceled",
+  CanceledWithdraw = "CanceledWithdraw",
+  Closed = "Closed",
 }
 
-enum FillerOfferStatus {
+export enum FillerOfferStatus {
   NotYet,
   Pending,
   Completed,
@@ -97,7 +101,7 @@ enum FillerOfferStatus {
   CanceledWithdraw,
 }
 
-enum OfferType {
+export enum OfferType {
   Buy,
   Sell,
 }
