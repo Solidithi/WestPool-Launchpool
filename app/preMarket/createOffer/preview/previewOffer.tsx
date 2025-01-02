@@ -5,11 +5,13 @@ import { OfferType } from "@prisma/client";
 import { useAddress } from "@thirdweb-dev/react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const PreviewOfferPage = () => {
   const {
     role,
     pricePerToken,
+    tokenAddress,
     amount,
     selectedNetwork,
     selectedToken,
@@ -41,6 +43,7 @@ const PreviewOfferPage = () => {
     try {
       const response = await axios.post("/api/preMarket/preview", {
         role,
+        tokenAddress,
         pricePerToken,
         amount,
         selectedNetwork,

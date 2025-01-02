@@ -20,6 +20,20 @@ export async function POST(req: NextRequest, res: NextResponse) {
     console.log("User Address: ", userAddress);
     console.log("Project ID: ", projectId);
     console.log("Transaction Hash: ", txHash);
+    
+    const getUser = await prismaClient.user.findFirst({
+      where: {
+        userAddress: userAddress,
+      },
+    });
+
+    if (getUser === null) {
+      const user = await prismaClient.user.create({
+        data: {
+          userAddress: userAddress,
+        },
+      });
+    }
 
     const createdStake = await prismaClient.investedProject.create({
       data: {

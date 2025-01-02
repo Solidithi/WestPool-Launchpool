@@ -5,7 +5,7 @@ import { buyTable, sellTable, availableTokens } from "../../constants/index";
 import clsx from "clsx";
 import axios from "axios";
 import { Project, Offer, OfferType } from "@/app/interface/interface";
-import { CreateOfferStatus } from "@prisma/client";
+import { CreateOfferStatus, FillerOfferStatus } from "@prisma/client";
 const Dashboard = () => {
   const [projects, setProjects] = useState<Array<Project | Offer>>([]);
   const [loading, setLoading] = useState(true);
@@ -144,22 +144,22 @@ const Dashboard = () => {
                               "font-extrabold rounded-2xl p-1 w-[100px] text-center ml-auto",
                               {
                                 "text-[#ce7b51] bg-[#423533]":
-                                  (data as Offer).creatorStatus === CreateOfferStatus.Open,
+                                  (data as Offer).fillerStatus === FillerOfferStatus.NotYet,
                                 "text-[#e3cc1b] bg-[#333b0d]":
-                                  (data as Offer).creatorStatus === CreateOfferStatus.Pending,
+                                  (data as Offer).fillerStatus === FillerOfferStatus.Pending,
                                 "text-[#329A81] bg-[#1B2B30]":
-                                  (data as Offer).creatorStatus === CreateOfferStatus.Settled,
+                                  (data as Offer).fillerStatus === FillerOfferStatus.Completed,
                                 "text-gray-500 bg-slate-800":
-                                  (data as Offer).creatorStatus === CreateOfferStatus.Canceled || (data as Offer).creatorStatus === CreateOfferStatus.CanceledWithdraw,
+                                  (data as Offer).fillerStatus === FillerOfferStatus.Canceled || (data as Offer).fillerStatus === FillerOfferStatus.CanceledWithdraw,
                               }
                             )}
                           >
-                            {(data as Offer).creatorStatus === CreateOfferStatus.CanceledWithdraw ? CreateOfferStatus.Canceled : (data as Offer).creatorStatus}
+                            {(data as Offer).fillerStatus === FillerOfferStatus.CanceledWithdraw ? FillerOfferStatus.Canceled : (data as Offer).fillerStatus}
                           </div>
                         </td>
 
                         <td>
-                          {(data as Offer).creatorStatus === CreateOfferStatus.Settled || (data as Offer).creatorStatus === CreateOfferStatus.CanceledWithdraw ? (
+                          {(data as Offer).fillerStatus === FillerOfferStatus.Completed || (data as Offer).fillerStatus === FillerOfferStatus.CanceledWithdraw ? (
                             <button
                               className="text-[#329A81] py-2 px-4 rounded-md text-[13px] duration-300 hover:scale-105"
                               onClick={() =>
@@ -177,9 +177,9 @@ const Dashboard = () => {
                               className={clsx(
                                 "rounded-md text-[13px] duration-300 ml-auto py-2 px-4",
                                 {
-                                  "text-gray-600 cursor-not-allowed": (data as Offer).creatorStatus === CreateOfferStatus.Canceled,
+                                  "text-gray-600 cursor-not-allowed": (data as Offer).fillerStatus === CreateOfferStatus.Canceled,
                                   "bg-transparent text-[#ce7b51] hover:scale-105":
-                                    (data as Offer).creatorStatus !== CreateOfferStatus.Canceled,
+                                    (data as Offer).fillerStatus !== CreateOfferStatus.Canceled,
                                 }
                               )}
                               onClick={() =>
@@ -189,7 +189,7 @@ const Dashboard = () => {
                                   ) as HTMLDialogElement
                                 ).showModal()
                               }
-                              disabled={(data as Offer).creatorStatus === CreateOfferStatus.Canceled}
+                              disabled={(data as Offer).fillerStatus === CreateOfferStatus.Canceled}
                             >
                               CANCEL ORDER
                             </button>

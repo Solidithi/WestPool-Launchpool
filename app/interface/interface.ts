@@ -78,7 +78,15 @@ export interface InvestedProject {
   Project: Project;
 }
 
-export enum ProjectStatus {
+export interface TokenData {
+  id: string;
+  name: string;
+  symbol: string;
+  image: string;
+  address: string;
+}
+
+enum ProjectStatus {
   Upcoming,
   Ongoing,
   Completed,
@@ -94,11 +102,11 @@ export enum CreateOfferStatus {
 }
 
 export enum FillerOfferStatus {
-  NotYet,
-  Pending,
-  Completed,
-  Canceled,
-  CanceledWithdraw,
+  NotYet = "NotYet",
+  Pending = "Pending",
+  Completed = "Completed",
+  Canceled = "Canceled",
+  CanceledWithdraw = "CanceledWithdraw",
 }
 
 export enum OfferType {
