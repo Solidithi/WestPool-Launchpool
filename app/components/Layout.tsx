@@ -16,7 +16,7 @@ import {
   MoonbaseAlpha,
 } from "@thirdweb-dev/chains";
 
-import { AstarShibuya, LocalChain } from "./customSupportedChains";
+import { AssetHubWestend, LocalChain } from "./customSupportedChains";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -32,7 +32,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         Astar,
         AstarZkevm,
         AstarZkyoto,
-        AstarShibuya,
+        AssetHubWestend,
         Moonbeam,
         Moonriver,
         MoonbaseAlpha,

@@ -131,6 +131,7 @@ const CustomDropdown = ({
 
                   if (state === "selectedToken") {
                     updatedTokenAddress[0] = option.address;
+                    // updatedTokenAddress[2] = option.symbol;
                   } else if (state === "selectedCollateralToken") {
                     updatedTokenAddress[1] = option.address;
                   }

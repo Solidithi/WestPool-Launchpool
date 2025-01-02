@@ -9,9 +9,12 @@ import {
   useVerifiedToken,
 } from "@/app/zustand/store";
 import StatusDisplay from "@/app/components/Status";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
-import { useAddress } from "@thirdweb-dev/react";
+import { useAddress, useChain, useContract, useContractEvents, useContractRead, useContractWrite } from "@thirdweb-dev/react";
+import { chainConfig } from "@/app/config";
+import { PoolFactoryABI } from "@/app/abi";
+import { convertNumToOnChainFormat } from "@/app/utils/decimals";
 const PreviewPage = () => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -50,6 +53,10 @@ const PreviewPage = () => {
 
   const router = useRouter();
 
+  const [factoryAddress, setFactoryAddress] = useState<string | undefined>(undefined);
+  const [txHashWatching, setTxHashWatching] = useState<string | null>(null);
+  const [isSendingHTTPRequest, setIsSendingHTTPRequest] = useState<boolean>(false);
+  const [alertText, setAlertText] = useState<string>("");
 
 
   useEffect(() => {
@@ -130,47 +137,325 @@ const PreviewPage = () => {
   }, [timeLeft]);
 
 
-  const handleSubmit = async () => {
-    //log all the data below
-    console.log(
-      "Project Name: " + projectName + "\n" +
-      "Verified Token: " + verifiedToken + "\n" +
-      "Project Logo: " + projectLogo + "\n" +
-      "Project Image: " + projectImage + "\n" +
-      "Short Description" + shortDescription + "\n" +
-      "Long Description" + longDescription + "\n" +
-      "Accepted VToken" + acceptedVToken + "\n" +
-      "Min Stake" + minStake + "\n" +
-      "Max Stake" + maxStake + "\n" +
-      "From Date" + fromDate + "\n" +
-      "To Date" + toDate + "\n"
-    );
-    const response = await axios.post("/api/launchpool/addProject", {
-      projectName,
-      tokenSymbol,
-      verifiedToken,
-      projectLogo,
-      projectImage,
-      shortDescription,
-      longDescription,
-      acceptedVToken,
-      minStake,
-      maxStake,
-      fromDate,
-      toDate,
-      projectStatus,
-      chain,
-      poolBudget,
-      targetStake,
-      projectOwnerAddress,
-    })
+  const currentChain = useChain();
 
-    console.log(response);
-    if (response.status === 200) {
-      alert("Success");
-      router.push("/launchpool/myProject");
+  useEffect(() => {
+    if (!currentChain) return;
+
+    const address: string =
+      chainConfig[currentChain.chainId.toString() as keyof typeof chainConfig]
+        ?.contracts?.PoolFactory?.address;
+
+    setFactoryAddress(address);
+  }, [currentChain]);
+
+  const { contract: factoryContract, error: factoryConnErr } = useContract(
+    factoryAddress, // Contract address
+    PoolFactoryABI // Contract abi
+  );
+
+
+  //Might have more VToken pools
+  const { contract: VTContract, error: VTConnErr } = useContract(
+    acceptedVToken[0], //selectedVToken
+    "token"
+  );
+
+  const { contract: PTContract, error: PTConnErr } = useContract(
+    verifiedToken, //verifiedProjectToken
+    "token"
+  );
+
+  const {
+    mutateAsync: callCreateProject,
+    isLoading: isCallingCreateProject,
+    error: createProjectError,
+  } = useContractWrite(factoryContract, "createPool");
+
+  const { data: VTDecimals, error: VTDecimalsReadErr } = useContractRead(
+    VTContract,
+    "decimals"
+  );
+
+  const { data: PTDecimals, error: PTDecimalsReadErr } = useContractRead(
+    PTContract,
+    "decimals"
+  );
+
+  let {
+    data: poolCreatedEvt,
+    isLoading: isWaitingForPoolCreated,
+    error: eventListenerError,
+  } = useContractEvents(factoryContract, "PoolCreated", {
+    queryFilter: {
+      filters: {
+        projectOwner: projectOwnerAddress,
+      },
+      order: "desc",
+    },
+    subscribe: true,
+  });
+
+  useEffect(() => {
+    if (!txHashWatching) {
+      console.trace(
+        `Not looking forward to any event from any contract at this moment`
+      );
+      return;
     }
+
+    const justDoIt = async () => {
+      if (eventListenerError) {
+        console.trace("Lmao, eventListenerError");
+        showAlertWithText(`Contract event error occurred`);
+        console.error(
+          `Co event from smart contract due to error:\n${eventListenerError}`
+        );
+      }
+
+      if (poolCreatedEvt && !eventListenerError) {
+        console.trace("Processing events");
+        console.debug(`isWaitingForEvent = ${isWaitingForPoolCreated}`);
+        console.debug(`eventData = ${poolCreatedEvt}`);
+        console.debug(`eventListenerError = ${eventListenerError}`);
+
+        const wantedEvent = poolCreatedEvt.find((evt) => {
+          return evt.transaction.transactionHash === txHashWatching;
+        });
+
+        if (!wantedEvent) {
+          console.trace("Wanted event not found in list of emitted events");
+        }
+
+        let wantedData = wantedEvent?.data;
+        if (!wantedData) {
+          console.trace("wantedEvent.data is undefined! what the F?");
+          return;
+        }
+
+        wantedData.projectOwner = wantedData.projectOwner.toString();
+        wantedData.projectId = Number(wantedData.projectId as bigint);
+        wantedData.txnHashCreated = wantedEvent!.transaction.transactionHash;
+        const eventData = wantedData;
+
+        setIsSendingHTTPRequest(true);
+        try {
+          const response = await axios.post("/api/launchpool/addProject", {
+            projectName,
+            tokenSymbol,
+            verifiedToken,
+            projectLogo,
+            projectImage,
+            shortDescription,
+            longDescription,
+            acceptedVToken,
+            minStake,
+            maxStake,
+            fromDate,
+            toDate,
+            projectStatus,
+            chain,
+            poolBudget,
+            targetStake,
+            projectOwnerAddress,
+            eventData
+          })
+          if (response.status === 200) {
+            showAlertWithText("Success! Your transaction was processed");
+            cleanup();
+            router.push("/launchpool/myProject");
+          }
+        } catch (err) {
+          setIsSendingHTTPRequest(false);
+          console.error(`error while calling POST api:\n${err}`);
+          if (err instanceof AxiosError) {
+            if (err.response) {
+              console.error(`error status code: ${err.response.statusText}`);
+            }
+            showAlertWithText("Transaction finished but failed to be saved");
+            setTxHashWatching(null);
+          }
+        }
+      }
+    };
+
+    const cleanup = () => {
+      setTxHashWatching(null);
+      poolCreatedEvt = undefined;
+      isWaitingForPoolCreated = false;
+      eventListenerError = undefined;
+      setIsSendingHTTPRequest(false);
+    };
+
+    justDoIt();
+
+    // cleanup
+    return cleanup;
+  }, [txHashWatching]);
+
+  const showAlertWithText = (text: string) => {
+    setAlertText(text);
+    (document.getElementById("alertDialog") as HTMLDialogElement).showModal();
   };
+
+  useEffect(() => {
+    if (!createProjectError) {
+      return;
+    }
+    showAlertWithText(`Error occurred! Could not create project`);
+    console.error(`Cannot create project due to error:\n${createProjectError}`);
+  }, [createProjectError]);
+
+  // verifyToken: string, tokenExchangeRate: string, unixTime: Date, unixTimeEnd: Date,
+  //   minInvest: number, maxInvest: number, softCap: number, hardCap: number,
+  //     reward: number, selectedVToken: string) => {
+
+  if (factoryConnErr) {
+    alert("failed to connect to factory contract");
+  }
+
+  const handleSubmit = async () => {
+    if (VTConnErr) {
+      console.error(`Failed to connect to vToken contract:\n${VTConnErr}`);
+      return;
+    }
+
+    console.log("Success Smartcontract");
+
+    if (VTDecimalsReadErr) {
+      showAlertWithText("Failed to read vToken decimals");
+      console.error(VTDecimalsReadErr);
+      return;
+    }
+
+    // if (PTDecimalsReadErr) {
+    //   showAlertWithText(`Failed to retrieve information about project token`);
+    //   console.error(PTDecimalsReadErr);
+    // }
+
+    console.trace(`VTDecimals is ${VTDecimals}`);
+    console.debug(`factoryAddress is : ${factoryAddress}`);
+    console.debug(`Project Owner address is :${projectOwnerAddress}`);
+
+    console.debug(
+      `factory contract address is ${factoryContract?.getAddress()}`
+    );
+
+    const resp = await callCreateProject({
+      args: [
+        verifiedToken, //verifyToken
+        acceptedVToken[0], //selectedVToken
+        new Date(fromDate).getTime() / 1000, //startDate
+        new Date(toDate).getTime() / 1000, //endDate
+        convertNumToOnChainFormat(
+          Number(poolBudget),
+          PTDecimals
+        ), //total Project Token
+        convertNumToOnChainFormat(
+          Number(maxStake),
+          VTDecimals
+        ), //maxInvestment
+        convertNumToOnChainFormat(
+          Number(minStake),
+          VTDecimals
+        ), //minInvestment 
+        convertNumToOnChainFormat(
+          Number(targetStake),
+          PTDecimals
+        ), //targetStake
+
+
+        // formDataVerifyToken, //verifyToken
+        // convertNumToOnChainFormat(
+        //   Number(formDataPromotion.tokenExchangeRate),
+        //   VTDecimals
+        // ), //tokenExchangeRate
+        // new Date(formDataPromotion.startDate).getTime() / 1000, //startDate
+        // new Date(formDataPromotion.endDate).getTime() / 1000, //endDate
+        // convertNumToOnChainFormat(
+        //   Number(formDataPromotion.minInvestment),
+        //   VTDecimals
+        // ), //minInvestment
+        // convertNumToOnChainFormat(
+        //   Number(formDataPromotion.maxInvestment),
+        //   VTDecimals
+        // ), //maxInvestment
+        // convertNumToOnChainFormat(
+        //   Number(formDataPromotion.hardcap),
+        //   VTDecimals
+        // ), //hardcap
+        // convertNumToOnChainFormat(
+        //   Number(formDataPromotion.softcap),
+        //   VTDecimals
+        // ), //softcap
+        // convertNumToOnChainFormat(Number(formDataPromotion.reward) / 100, 4), //reward percentage
+        // formDataGeneralDetail.selectedCoin, //selectedVToken
+      ],
+    });
+
+    if (createProjectError) {
+      console.error(
+        `cannot create project due to error:\n${createProjectError}`
+      );
+      return;
+    }
+
+    if (!resp) {
+      console.error("resp is undefined");
+      return;
+    }
+
+    const receipt = resp.receipt;
+    const txHash = receipt.transactionHash;
+    console.debug("Transaction Hash watching:", txHash);
+    setTxHashWatching(txHash);
+    console.trace("Set txHash watching");
+  };
+
+
+
+  // const handleSubmit = async () => {
+  //   //log all the data below
+  //   console.log(
+  //     "Project Name: " + projectName + "\n" +
+  //     "Verified Token: " + verifiedToken + "\n" +
+  //     "Project Logo: " + projectLogo + "\n" +
+  //     "Project Image: " + projectImage + "\n" +
+  //     "Short Description" + shortDescription + "\n" +
+  //     "Long Description" + longDescription + "\n" +
+  //     "Accepted VToken" + acceptedVToken + "\n" +
+  //     "Min Stake" + minStake + "\n" +
+  //     "Max Stake" + maxStake + "\n" +
+  //     "From Date" + fromDate + "\n" +
+  //     "To Date" + toDate + "\n"
+  //   );
+  //   const response = await axios.post("/api/launchpool/addProject", {
+  //     projectName,
+  //     tokenSymbol,
+  //     verifiedToken,
+  //     projectLogo,
+  //     projectImage,
+  //     shortDescription,
+  //     longDescription,
+  //     acceptedVToken,
+  //     minStake,
+  //     maxStake,
+  //     fromDate,
+  //     toDate,
+  //     projectStatus,
+  //     chain,
+  //     poolBudget,
+  //     targetStake,
+  //     projectOwnerAddress,
+  //     eventData
+  //   })
+
+  //   console.log(response);
+  //   if (response.status === 200) {
+  //     alert("Success");
+  //     router.push("/launchpool/myProject");
+  //   }
+  // };
 
   useEffect(() => {
 
