@@ -75,6 +75,16 @@ export interface InvestedProject {
   Project: Project;
 }
 
+export interface TokenData {
+  id: string;
+  name: string;
+  symbol: string;
+  image: string;
+  address: string;
+
+}
+
+
 enum ProjectStatus {
   Upcoming,
   Ongoing,

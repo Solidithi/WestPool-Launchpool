@@ -118,14 +118,14 @@ export async function POST(req: NextRequest, res: NextResponse) {
         acceptedVToken: acceptedVToken,
         minStake: minStake,
         maxStake: maxStake,
-        fromDate: fromDate,
-        toDate: toDate,
+        fromDate: new Date(fromDate),
+        toDate: new Date(toDate),
         txHashCreated: "0xsgrgrg2234", // Add appropriate value
         projectStatus: ProjectStatus.Upcoming, // Add appropriate value
         chainName: chain, // Add appropriate value
         poolBudget: poolBudget, // Add appropriate value
         targetStake: targetStake, // Add appropriate value
-        userId: user.id,
+        // userId: user.id,
       },
     });
 

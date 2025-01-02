@@ -11,19 +11,30 @@ export async function POST(req: NextRequest, res: NextResponse) {
         pricePerToken,
         amount,
         selectedNetwork,
-        selectedToken,
+        // selectedToken,
         collateral,
-        selectedCollateralToken,
+        // selectedCollateralToken,
+        tokenAddress,
         creatorAddress,
     } = body;
+
+    console.log("Role: "+role); 
+    console.log("PricePerToken: "+pricePerToken);
+    console.log("Amount: "+amount);
+    console.log("SelectedNetwork: "+selectedNetwork);
+    // console.log("SelectedToken: "+selectedToken);
+    console.log("Collateral: "+collateral);
+    // console.log("SelectedCollateralToken: "+selectedCollateralToken55);
+    console.log("TokenAddress: "+tokenAddress[0]);
+    console.log("CreatorAddress: "+creatorAddress);
 
     try {
         const getProject = await prismaClient.project.findFirst({
             where: {
-                verifiedTokenAddress: selectedToken,
+                verifiedTokenAddress: tokenAddress[0],
             }
         });
-
+        console.log("Project: "+getProject);
         const projectId = getProject?.id;
         console.log("ProjectId: "+projectId);
 
@@ -40,11 +51,11 @@ export async function POST(req: NextRequest, res: NextResponse) {
                 pricePerToken: pricePerToken,
                 amount: amount,
                 collateral: collateral,
-                tokenPreTokenAddress: selectedToken,
-                tokenCollateralAddress: selectedCollateralToken,
+                tokenPreTokenAddress: tokenAddress[0],
+                tokenCollateralAddress: tokenAddress[1],
                 offerType: role,
                 startDate: new Date().toISOString(),
-                filledTime:"",
+                filledTime: new Date().toISOString(),
                 creatorStatus: CreateOfferStatus.Open,
                 fillerStatus: FillerOfferStatus.NotYet,
                 creatorAddress: creatorAddress,

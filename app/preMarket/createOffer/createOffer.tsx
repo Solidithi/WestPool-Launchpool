@@ -4,7 +4,10 @@ import CustomDropdown from "../../components/Dropdown";
 import SidePick from "../../components/SidePick";
 import { availableNetworks, availableTokens } from "../../constants";
 import { useCombinedStore, useCreateOfferStore } from "../../zustand/store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { TokenData } from "@/app/interface/interface";
+import { id } from "ethers/lib/utils";
 
 const CreateOfferPage = () => {
   const {
@@ -26,6 +29,7 @@ const CreateOfferPage = () => {
     setSelectedCollateralToken,
   } = useCombinedStore();
 
+  const [ projectTokens, setProjectTokens ] = useState<TokenData[]>([]);
   const router = useRouter();
 
   const handleDeposit = () => {
@@ -68,6 +72,43 @@ const CreateOfferPage = () => {
       setCollateral(pricePerToken * amount);
     }
   }, [pricePerToken, amount, setCollateral]);
+
+
+  useEffect(() => {
+    const fetchProjectTokens = async () => {
+      const response = await axios.post("/api/preMarket/projectToken", {});
+
+      if (!response.data.success) {
+        console.log(response.data.message);
+        return;
+      }
+
+      console.log(response.data);
+
+      const projectTokens = response.data.projects;
+      const tokens = projectTokens.map((project: any) => {
+        return {
+          id: project.id,
+          name: project.projectName,
+          symbol: project.tokenSymbol,
+          image: project.projectLogo,
+          address: project.verifiedTokenAddress,
+        };
+      });
+      console.log("Tokens: ", tokens);  
+      setProjectTokens(tokens);
+
+      // for(let project in projectTokens){
+
+      // }
+
+
+      
+    }
+    fetchProjectTokens();
+  }, []);
+
+
 
   return (
     <div>
@@ -126,7 +167,7 @@ const CreateOfferPage = () => {
                 <div className="text-black w-full text-center">
                   <CustomDropdown
                     className="text-[#5a88ce]"
-                    options={availableTokens}
+                    options={projectTokens}
                     placeholder="Select Token"
                     state="selectedToken"
                   />
