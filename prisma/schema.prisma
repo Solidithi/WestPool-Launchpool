@@ -143,6 +143,7 @@ enum CreateOfferStatus {
   Settled
   Canceled
   CanceledWithdraw
+  Closed
 }
 
 enum FillerOfferStatus {
@@ -151,7 +152,6 @@ enum FillerOfferStatus {
   Completed
   Canceled
   CanceledWithdraw
-  Closed
 }
 
 enum OfferType {

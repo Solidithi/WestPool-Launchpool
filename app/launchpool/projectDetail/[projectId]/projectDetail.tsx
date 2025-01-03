@@ -666,10 +666,10 @@ const ProjectDetailPage = () => {
 
               <div className="flex justify-between flex-wrap gap-5">
                 <span className="text-[20px] font-light">Chain: <span className="text-[20px] font-bold">{projectDetails[0]?.chainName}</span></span>
-                <span className="text-[20px] font-light">Pool Budget: <span className="text-[20px] font-bold">{projectDetails[0]?.poolBudget}</span></span>
-                <span className="text-[20px] font-light">Target Stake: <span className="text-[20px] font-bold">{projectDetails[0]?.targetStake}</span></span>
-                <span className="text-[20px] font-light">Min Stake: <span className="text-[20px] font-bold">{projectDetails[0]?.minStake}</span></span>
-                <span className="text-[20px] font-light">Max Stake: <span className="text-[20px] font-bold">{projectDetails[0]?.maxStake}</span></span>
+                <span className="text-[20px] font-light">Pool Budget: <span className="text-[20px] font-bold">{projectDetails[0]?.poolBudget.toString()}</span></span>
+                <span className="text-[20px] font-light">Target Stake: <span className="text-[20px] font-bold">{projectDetails[0]?.targetStake.toString()}</span></span>
+                <span className="text-[20px] font-light">Min Stake: <span className="text-[20px] font-bold">{projectDetails[0]?.minStake.toString()}</span></span>
+                <span className="text-[20px] font-light">Max Stake: <span className="text-[20px] font-bold">{projectDetails[0]?.maxStake.toString()}</span></span>
               </div>
 
 

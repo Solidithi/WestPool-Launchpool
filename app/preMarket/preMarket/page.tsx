@@ -7,10 +7,13 @@ import { useRouter } from "next/navigation";
 import { banners } from "../../constants/index";
 import { tokenTable } from "../../constants/index";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Project } from "@prisma/client";
+import axios from "axios";
 const PreMarket = () => {
   const [activeId, setActiveId] = useState(banners[0].id);
-
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
   const handleSelectImage = (id: string) => {
     setActiveId(id);
   };
@@ -24,6 +27,31 @@ const PreMarket = () => {
       console.log(e);
     }
   }
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const res = await axios.get("/api/launchpool/allProject");
+        const data = res.data;
+
+        if (data.success) {
+          setProjects(data.data);
+        } else {
+          console.error("Failed to fetch projects:", data.error);
+        }
+      } catch (error) {
+        console.error("Error fetching projects:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  if (loading) return <div className="flex justify-center items-center h-[80vh]">
+    <span className="loading loading-dots loading-lg "></span>
+  </div>;
 
 
   return (
@@ -80,25 +108,25 @@ const PreMarket = () => {
             <thead>
               <tr className="text-[#82B2FA] text-center text-[20px] font-extralight border-b-[#E0E0E0]">
                 <th className="py-12 flex justify-start pl-10">Name</th>
-                <th>Price</th>
+                {/* <th>Price</th>
                 <th>1 hour</th>
                 <th>1 day</th>
                 <th>Volume 24h</th>
-                <th>Liquidity</th>
+                <th>Liquidity</th> */}
               </tr>
             </thead>
             <tbody className="text-center">
-              {tokenTable.map((data, index) => (
+              {projects.map((data, index) => (
                 <>
                   <tr className="cursor-pointer  text-white border-b border-[#E0E0E0] last:border-b-0 ">
-                    <td>
+                    <td className="py-6">
                       <Link
                         key={index}
-                        href={`/market/tokenOffer/${index + 1}`}
-                        className="flex items-center gap-4 justify-start pl-6 transform hover:-translate-y-1 hover:scale-105 duration-300"
+                        href={`/preMarket/tokenOffer/${data.id}`}
+                        className="flex items-center gap-4 justify-start pl-6 transform hover:-translate-y-2  duration-300"
                       >
                         <Image
-                          src={data.icon}
+                          src={data.projectLogo}
                           width={50}
                           height={50}
                           alt="icon"
@@ -106,12 +134,12 @@ const PreMarket = () => {
                         />
                         <div className=" text-left ">
                           <span className="text-[17px] font-bold">
-                            {data.name}
+                            {data.projectName}
                           </span>
                         </div>
                       </Link>
                     </td>
-                    <td>{data.price}</td>
+                    {/* <td>{data.price}</td>
                     <td
                       className={`${parseFloat(data.change1h) >= 0
                         ? "text-green-500 font-bold"
@@ -129,7 +157,7 @@ const PreMarket = () => {
                       {data.change1d}
                     </td>
                     <td>{data.marketCap}</td>
-                    <td>{data.volume}</td>
+                    <td>{data.volume}</td> */}
                   </tr>
                 </>
               ))}

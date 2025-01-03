@@ -4,21 +4,29 @@ import Image from "next/image";
 import { buyTable, sellTable, availableTokens } from "../../constants/index";
 import clsx from "clsx";
 import axios from "axios";
-import { Project, Offer, OfferType } from "@/app/interface/interface";
+import { Offer, OfferType } from "@/app/interface/interface";
 import { CreateOfferStatus, FillerOfferStatus } from "@prisma/client";
+import { useAddress } from "@thirdweb-dev/react";
+
 const Dashboard = () => {
-  const [projects, setProjects] = useState<Array<Project | Offer>>([]);
+  const [projects, setProjects] = useState<Offer[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const userAddress = useAddress();
 
   //  ------------Gọi API--------------
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const res = await axios.get("/api/preMarket/dashboard");
+        const res = await axios.post("/api/preMarket/dashboard", {
+          userAddress
+        });
         const data = res.data;
 
         if (data.success) {
           setProjects(data.data);
+          console.log("Projects:", data.data);
+
         } else {
           console.error("Failed to fetch projects:", data.error);
         }
@@ -30,11 +38,11 @@ const Dashboard = () => {
     };
 
     fetchProjects();
-  }, []);
+  }, [userAddress]);
 
   if (loading) return <div className="flex justify-center items-center h-[80vh]">
     <span className="loading loading-dots loading-lg "></span>
-  </div>;
+  </div>
 
   return (
     <div className="flex flex-col items-center space-y-6 px-[5%] pb-12 xl:space-y-12 xl:px-12 mt-10 ">
@@ -50,7 +58,7 @@ const Dashboard = () => {
           name="my_tabs_2"
           role="tab"
           className="tab text-[#7BA9EF] text-[15px]"
-          aria-label="Buy"
+          aria-label="Filled"
           defaultChecked
         />
         <div
@@ -73,13 +81,13 @@ const Dashboard = () => {
                 </thead>
                 <tbody className="text-center ">
                   {/* {buyTable.map((data) => ( */}
-                  {projects.filter((data) => (data as Offer).offerType === OfferType.Buy).map((data) => (
+                  {projects.filter((data) => (data as Offer).fillerAddress === userAddress).map((data) => (
                     <>
                       <tr className="cursor-pointer hover:bg-[#1A2E4A] text-white border-b border-[#E0E0E0] last:border-b-0 text-right py-5">
                         <td>
                           <div className="flex items-center gap-4 justify-end">
                             <Image
-                              src={(data as Project).projectLogo}
+                              src={data.project.projectLogo}
                               // src={data.icon}
                               width={40}
                               height={40}
@@ -88,7 +96,7 @@ const Dashboard = () => {
                             />
                             <div className="flex">
                               <span className="text-[17px] font-bold">
-                                {(data as Project).tokenSymbol}
+                                {data.project.tokenSymbol}
                                 <span className="text-[8px] text-gray-300 ml-1  mb-10">
                                   {(data as Offer).index}
                                 </span>
@@ -97,7 +105,9 @@ const Dashboard = () => {
                             </div>
                           </div>
                         </td>
-                        <td>{(data as Offer).startDate.toString()}</td>
+                        <td>
+                          {new Date((data as Offer).startDate).toLocaleDateString("en-GB")}
+                        </td>
                         <td>
                           <div className="flex items-center gap-4 justify-end">
                             <div className="flex flex-col  gap-1">
@@ -129,7 +139,7 @@ const Dashboard = () => {
                               </span>
                             </div>
                             <Image
-                              src={(data as Project).projectLogo}
+                              src={data.project.projectLogo}
                               width={20}
                               height={20}
                               alt="icon"
@@ -203,7 +213,7 @@ const Dashboard = () => {
                               <h3 className="font-bold text-lg mb-4 text-white">
                                 <div className="flex items-center gap-4 justify-start">
                                   <Image
-                                    src={(data as Project).projectLogo}
+                                    src={data.project.projectLogo}
                                     width={50}
                                     height={50}
                                     alt="icon"
@@ -272,7 +282,7 @@ const Dashboard = () => {
                               <h3 className="font-bold text-lg mb-4 text-white">
                                 <div className="flex items-center gap-4 justify-start">
                                   <Image
-                                    src={(data as Project).projectLogo}
+                                    src={data.project.projectLogo}
                                     width={50}
                                     height={50}
                                     alt="icon"
@@ -292,7 +302,7 @@ const Dashboard = () => {
                                   <div className="flex gap-3">
                                     {(data as Offer).collateral.toString()}
                                     <Image
-                                      src={(data as Project).projectLogo}
+                                      src={data.project.projectLogo}
                                       width={20}
                                       height={20}
                                       alt="icon"
@@ -330,7 +340,7 @@ const Dashboard = () => {
           name="my_tabs_2"
           role="tab"
           className="tab text-[#7BA9EF] text-[15px]"
-          aria-label="Sell"
+          aria-label="Offer created"
         />
         <div
           role="tabpanel"
@@ -351,13 +361,13 @@ const Dashboard = () => {
                   </tr>
                 </thead>
                 <tbody className="text-center ">
-                  {projects.filter((data) => (data as Offer).offerType === OfferType.Sell).map((data) => (
+                  {projects.filter((data) => (data as Offer).creatorAddress === userAddress).map((data) => (
                     <>
                       <tr className="cursor-pointer hover:bg-[#1A2E4A] text-white border-b border-[#E0E0E0] last:border-b-0 text-right py-5">
                         <td>
                           <div className="flex items-center gap-4 justify-end">
                             <Image
-                              src={(data as Project).projectLogo}
+                              src={data.project.projectLogo}
                               // src={data.icon}
                               width={40}
                               height={40}
@@ -366,7 +376,7 @@ const Dashboard = () => {
                             />
                             <div className="flex">
                               <span className="text-[17px] font-bold">
-                                {(data as Project).tokenSymbol}
+                                {data.project.tokenSymbol}
                                 <span className="text-[8px] text-gray-300 ml-1  mb-10">
                                   {(data as Offer).index}
                                 </span>
@@ -375,7 +385,9 @@ const Dashboard = () => {
                             </div>
                           </div>
                         </td>
-                        <td>{(data as Offer).startDate.toString()}</td>
+                        <td>
+                          {new Date((data as Offer).startDate).toLocaleDateString("en-GB")}
+                        </td>
 
                         <td>
                           <div className="flex items-center gap-4 justify-end">
@@ -385,7 +397,7 @@ const Dashboard = () => {
                               </span>
                             </div>
                             <Image
-                              src={(data as Project).projectLogo}
+                              src={data.project.projectLogo}
                               width={20}
                               height={20}
                               alt="icon"
@@ -431,6 +443,8 @@ const Dashboard = () => {
                                   (data as Offer).creatorStatus === CreateOfferStatus.Pending,
                                 "text-[#329A81] bg-[#1B2B30]":
                                   (data as Offer).creatorStatus === CreateOfferStatus.Settled,
+                                "text-gray-400 bg-slate-600":
+                                  (data as Offer).creatorStatus === CreateOfferStatus.Closed,
                                 "text-gray-500 bg-slate-800":
                                   (data as Offer).creatorStatus === CreateOfferStatus.Canceled || (data as Offer).creatorStatus === CreateOfferStatus.CanceledWithdraw,
                               }
@@ -489,7 +503,7 @@ const Dashboard = () => {
                               <h3 className="font-bold text-lg mb-4 text-white">
                                 <div className="flex items-center gap-4 justify-start">
                                   <Image
-                                    src={(data as Project).projectLogo}
+                                    src={data.project.projectLogo}
                                     width={50}
                                     height={50}
                                     alt="icon"
@@ -507,7 +521,7 @@ const Dashboard = () => {
                                   <div className="flex gap-3">
                                     <span className="font-bold">{(data as Offer).amount.toString()}</span>
                                     <Image
-                                      src={(data as Project).projectLogo}
+                                      src={data.project.projectLogo}
                                       width={20}
                                       height={20}
                                       alt="icon"
@@ -563,7 +577,7 @@ const Dashboard = () => {
                               <h3 className="font-bold text-lg mb-4 text-white">
                                 <div className="flex items-center gap-4 justify-start">
                                   <Image
-                                    src={(data as Project).projectLogo}
+                                    src={data.project.projectLogo}
                                     width={50}
                                     height={50}
                                     alt="icon"
@@ -581,7 +595,7 @@ const Dashboard = () => {
                                   <div className="flex gap-3">
                                     <span className="font-bold">{(data as Offer).amount.toString()}</span>
                                     <Image
-                                      src={(data as Project).projectLogo}
+                                      src={data.project.projectLogo}
                                       width={20}
                                       height={20}
                                       alt="icon"
@@ -609,7 +623,7 @@ const Dashboard = () => {
                               <h3 className="font-bold text-lg mb-4 text-white">
                                 <div className="flex items-center gap-4 justify-start">
                                   <Image
-                                    src={(data as Project).projectLogo}
+                                    src={data.project.projectLogo}
                                     width={50}
                                     height={50}
                                     alt="icon"

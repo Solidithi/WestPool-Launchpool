@@ -110,6 +110,6 @@ export enum FillerOfferStatus {
 }
 
 export enum OfferType {
-  Buy,
-  Sell,
+  Buy = "Buy",
+  Sell = "Sell",
 }

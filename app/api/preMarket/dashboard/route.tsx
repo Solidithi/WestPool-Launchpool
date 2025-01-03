@@ -1,18 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import prismaClient from "@/prisma";
+import { OfferType } from "@prisma/client";
 
 export async function POST(req: NextRequest, res: NextResponse) {
     try {
         const body = await req.json();
-        const { userId } = body;
+        const { userAdress } = body;
 
-        const preMarketData = await prismaClient.offer.findMany({
+        const preMarketDataBuy = await prismaClient.offer.findMany({
             where: {
-                users: {
-                    some: {
-                        userId: userId,
-                    },
-                },
+                fillerAddress: userAdress,
+                // offerType: OfferType.Buy,
             },
             include: {
                 project: true,
@@ -20,8 +18,30 @@ export async function POST(req: NextRequest, res: NextResponse) {
             },
         });
 
+        const preMarketDataSell = await prismaClient.offer.findMany({
+            where: {
+                creatorAddress: userAdress,
+                // offerType: OfferType.Sell,
+            },
+            include: {
+                project: true,
+                users: true,
+            },
+        });
+
+        // Gộp hai mảng và thêm trường phân biệt
+        const unifiedData = [
+            ...preMarketDataBuy.map((item) => ({
+                ...item,
+            })),
+            ...preMarketDataSell.map((item) => ({
+                ...item,
+            })),
+        ];
+
+        // Trả về JSON chuẩn
         return NextResponse.json(
-            { success: true, data: preMarketData },
+            { success: true, data: unifiedData },
             { status: 200 }
         );
     } catch (error) {

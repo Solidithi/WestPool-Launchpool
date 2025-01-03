@@ -10,10 +10,14 @@ export async function POST(req: NextRequest, res: NextResponse) {
     console.log("Project ID:", projectId);
 
     const preMarketData = await prismaClient.offer.findMany({
-      include: {
-        project: true,
+      where: {
+        project: {
+          id: projectId, // Liên kết thông qua bảng project
+        },
       },
-      where: { id: projectId },
+      include: {
+        project: true, // Để bao gồm thông tin project trong kết quả
+      },
     });
 
     // const launchpoolData = await prismaClient.project.findMany({

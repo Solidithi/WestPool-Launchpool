@@ -3,11 +3,13 @@ import prismaClient from "@/prisma";
 
 export async function GET(req: NextRequest, res: NextResponse) {
   try {
-    const preMarketData = await prismaClient.offer.findMany({
-      include: {
-        project: true,
-      },
-    });
+    const preMarketData = await prismaClient.project.findMany();
+
+    // const preMarketData = await prismaClient.offer.findMany({
+    //   include: {
+    //     project: true,
+    //   },
+    // });
 
     // Test =))
     // const tokenData = await prismaClient.project.findMany();

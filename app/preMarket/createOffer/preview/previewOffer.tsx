@@ -52,17 +52,17 @@ const PreviewOfferPage = () => {
         selectedCollateralToken,
         creatorAddress,
       });
-      console.log(response.data);
+      console.log("response: " + response.data);
 
-      if (response.data.success ) {
-        console.log(response.data);
+      if (response.data.success) {
+        console.log("---------.------- " + response.data);
       }
 
-      const projectId = response.data.project.projectId;
+      const projectId = response.data.project;
+      console.log("prjid: " + projectId);
 
 
       router.push(`/preMarket/tokenOffer/${projectId}`);
-      
     } catch (error) {
       console.log(error);
     }
