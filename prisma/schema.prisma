@@ -90,11 +90,11 @@ model Offer {
   txHash                 String
   offerType              OfferType
   startDate              DateTime
-  filledTime             DateTime
+  filledTime             DateTime //Filler
   creatorStatus          CreateOfferStatus
-  fillerStatus           FillerOfferStatus
+  fillerStatus           FillerOfferStatus //Filler
   creatorAddress         String
-  fillerAddress          String
+  fillerAddress          String //Filler
   projectId              String
   project                Project           @relation(fields: [projectId], references: [id])
   users                  UserOffer[]

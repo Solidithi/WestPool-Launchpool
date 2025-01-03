@@ -8,13 +8,13 @@
 // # RPC_ENDPOINT=https://astar-mainnet.g.alchemy.com/v2/YXeTvtAle8Rm_JfIQ4cEOj1iO-o4Ydrg
 // RPC_ENDPOINT=https://astar.api.onfinality.io/public
 
-export const AstarShibuya = {
-    "chain": "ASTR",
-    "chainId": 81,
+export const AssetHubWestend = {
+    "chain": "Westend",
+    "chainId": 420420421,
     "explorers": [
         {
             "name": "subscan",
-            "url": "https://shibuya.subscan.io/",
+            "url": "https://assethub-westend.subscan.io",
             "standard": "none",
             "icon": {
                 "url": "ipfs://Qma2GfW5nQHuA7nGqdEfwaXPL63G9oTwRTQKaGTfjNtM2W",
@@ -33,19 +33,16 @@ export const AstarShibuya = {
         "format": "png"
     },
     "infoURL": "https://evm.shibuya.astar.network/",
-    "name": "Shibuya",
+    "name": "Asset-Hub Westend Testnet",
     "nativeCurrency": {
-        "name": "Shibuya",
-        "symbol": "SBY",
-        "decimals": 18
+        "name": "Westend",
+        "symbol": "WND",
+        "decimals": 12
     },
-    "networkId": 81,
+    "networkId": 420420421,
     "redFlags": [],
     "rpc": [
-        "https://evm.shibuya.astar.network/",
-        "https://shibuya-rpc.dwellir.com",
-        "https://astar.public.blastapi.io/",
-        "https://astar.api.onfinality.io/public",
+        "https://assethub-westend.subscan.io",
     ],
     "shortName": "sby",
     "slug": "shibuya",
