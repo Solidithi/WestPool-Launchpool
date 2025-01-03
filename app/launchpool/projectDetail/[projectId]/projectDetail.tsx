@@ -215,7 +215,7 @@ const ProjectDetailPage = () => {
     }
   }, [projectDetails]);
 
-  const handleStake = async () => {
+  const handleStake = async (dialogId: string) => {
     /***
      * TODO: Take the onchain total staked amount to assign it to totalStaked
      */
@@ -229,6 +229,11 @@ const ProjectDetailPage = () => {
 
     if (response.data.success) {
       console.log("Stake successful");
+
+      const dialog = document.getElementById(dialogId) as HTMLDialogElement;
+      if (dialog) {
+        dialog.close(); // Đóng popup
+      }
     } else {
       console.error("Failed to stake:", response.data.error);
       return;
@@ -240,7 +245,7 @@ const ProjectDetailPage = () => {
     }
   };
 
-  const handleUnstake = async () => {
+  const handleUnstake = async (dialogId: string) => {
     /***
      * TODO: Take the onchain total staked amount to assign it to totalStaked
      *  
@@ -255,6 +260,10 @@ const ProjectDetailPage = () => {
 
     if (response.data.success) {
       console.log("Unstake successful");
+      const dialog = document.getElementById(dialogId) as HTMLDialogElement;
+      if (dialog) {
+        dialog.close(); // Đóng popup
+      }
     } else {
       console.error("Failed to unstake:", response.data.error);
       return;
@@ -459,7 +468,7 @@ const ProjectDetailPage = () => {
                     </div>
 
                     <button
-                      onClick={handleStake}
+                      onClick={() => handleStake("lock")}
                       className="btn bg-white text-[#7BA9EF] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#2C3E6F]"
                     >
                       Stake
@@ -505,7 +514,7 @@ const ProjectDetailPage = () => {
                     </div>
 
                     <button
-                      onClick={handleUnstake}
+                      onClick={() => handleUnstake("unlock")}
                       className="btn bg-white text-[#7BA9EF] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#2C3E6F]"
                     >
                       Unstake

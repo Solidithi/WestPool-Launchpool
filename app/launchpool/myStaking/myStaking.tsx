@@ -17,49 +17,49 @@ const MyStakingPage = () => {
 
   const fetchMyProjects = async () => {
     try {
-        const response = await axios.post("/api/launchpool/myProject", {
-          investorAddress,
-        });
-        console.log(response.data);
-        
-        if (response.data.success) {
-          console.log(response.data.projects);
-        }
+      const response = await axios.post("/api/launchpool/myProject", {
+        investorAddress,
+      });
+      console.log(response.data);
 
-        const projects = response.data.projects;
-        const pending = [];
-        const ended = [];
-        
-        for (let i = 0; i < projects.length; i++) {
-          if (projects[i].projectStatus !== "Upcoming") {
-            console.log("Pending Projects: " + projects[i]);
-            console.log("Pending Projects: " + projects[i].projectName);
-            pending.push(projects[i]);
-          } else {
-            ended.push(projects[i]);
-          }
-        }
-
-        // Set state after loop
-        setPendingProjects(pending);
-        setEndedProjects(ended);
-        console.log("Pending Projects: " + pendingProjects);
-        for (let project in pendingProjects) {
-          console.log("Pending Projects: " + project);
-        }
-
-      } catch (error) {
-        console.log(error);
+      if (response.data.success) {
+        console.log(response.data.projects);
       }
-    }
 
-    const fetchProjectWithDebounce = debounce(fetchMyProjects, 1000);
-    useEffect(() => {
-      fetchProjectWithDebounce();
+      const projects = response.data.projects;
+      const pending = [];
+      const ended = [];
+
+      for (let i = 0; i < projects.length; i++) {
+        if (projects[i].projectStatus !== "Upcoming") {
+          console.log("Pending Projects: " + projects[i]);
+          console.log("Pending Projects: " + projects[i].projectName);
+          pending.push(projects[i]);
+        } else {
+          ended.push(projects[i]);
+        }
+      }
+
+      // Set state after loop
+      setPendingProjects(pending);
+      setEndedProjects(ended);
+      console.log("Pending Projects: " + pendingProjects);
+      for (let project in pendingProjects) {
+        console.log("Pending Projects: " + project);
+      }
+
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const fetchProjectWithDebounce = debounce(fetchMyProjects, 1000);
+  useEffect(() => {
+    fetchProjectWithDebounce();
   }, [investorAddress]);
 
-  
-  
+
+
   return (
     <div>
       <div className="py-10">
@@ -72,7 +72,7 @@ const MyStakingPage = () => {
           {/* Project Collapse component */}
           <div className="flex flex-col justify-center items-center gap-5 ">
             <>
-              {dataTable
+              {endedProjects
                 .filter((data) => data.endsIn === "--")
                 .map((data) => (
                   <div

@@ -6,7 +6,7 @@
     "testnet": true,
     "contracts": {
       "MockProjectToken": {
-        "address": "0x2fc631e4B3018258759C52AF169200213e84ABab",
+        "address": "0x05Aa229Aec102f78CE0E852A812a388F076Aa555",
         "decimals": "18"
       },
       "MockVAsset": {
@@ -17,7 +17,7 @@
         "address": ""
       },
       "PoolFactory": {
-        "address": "0xfbAb4aa40C202E4e80390171E82379824f7372dd"
+        "address": "0xC6bA8C3233eCF65B761049ef63466945c362EdD2"
       }
     },
     "nativeAsset": {

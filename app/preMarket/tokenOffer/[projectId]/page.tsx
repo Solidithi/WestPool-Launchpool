@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
+import { useAddress } from "@thirdweb-dev/react";
 
 
 
@@ -13,6 +14,8 @@ const TokenOffer = () => {
   const [projectDetails, setProjectDetails] = useState<Offer[]>([]);
   const [loading, setLoading] = useState(true);
   const pageParam = useParams();
+  const userAddress = useAddress();
+
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -40,6 +43,39 @@ const TokenOffer = () => {
 
     fetchProjects();
   }, [pageParam]);
+
+  const handleOffer = async (projectId: string, offerId: string, dialogId: string) => {
+    try {
+      const response = await axios.post("/api/preMarket/trade", {
+        userAddress,
+        projectId,
+        offerId,
+      });
+
+      console.log(useAddress);
+
+
+      const data = response.data;
+
+      if (data.success) {
+        console.log("Offer successfully updated!");
+        alert("Successfully !");
+        const dialog = document.getElementById(dialogId) as HTMLDialogElement;
+        if (dialog) {
+          dialog.close(); // Đóng popup
+        }
+      } else {
+        console.error("Failed to update offer:", data.error);
+        alert("Could not update the offer. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error calling API:", error);
+      alert("An unexpected error occurred. Please try again later.");
+    }
+  };
+
+
+
 
   if (loading) return <div className="flex justify-center items-center h-[80vh]">
     <span className="loading loading-dots loading-lg "></span>
@@ -206,13 +242,15 @@ const TokenOffer = () => {
                             </div>
                           </div>
 
-                          <button className="btn bg-white text-[#7BA9EF] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#2C3E6F]">
+                          <button
+                            onClick={() => handleOffer(project.project.id, project.id, `buy-${project.id}`)}
+                            className="btn bg-white text-[#7BA9EF] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#2C3E6F]">
                             Buy
                           </button>
                         </div>
                         <form method="dialog" className="modal-backdrop">
                           <button>close</button>
-                        </form>Sell
+                        </form>
                       </dialog>
                     </td>
                   </tr>
@@ -333,7 +371,9 @@ const TokenOffer = () => {
                             </div>
                           </div>
 
-                          <button className="btn bg-white text-[#e86c6c] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#2a1919]">
+                          <button
+                            onClick={() => handleOffer(project.project.id, project.id, `sell-${project.id}`)}
+                            className="btn bg-white text-[#e86c6c] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#2a1919]">
                             Sell
                           </button>
                         </div>

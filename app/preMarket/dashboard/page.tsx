@@ -38,7 +38,146 @@ const Dashboard = () => {
     };
 
     fetchProjects();
-  }, [userAddress]);
+  }, [userAddress,]);
+
+  const handleCancelFiller = async (offerId: string, dialogId: string) => {
+    try {
+      const response = await axios.post("/api/preMarket/dashboard/fillerCancel", {
+        offerId,
+      });
+
+      const data = response.data;
+
+      if (data.success) {
+        console.log(`Offer with ID ${offerId} has been successfully canceled by the filler.`);
+        alert("The filler offer has been successfully canceled.");
+        fetchProjects();
+
+        const dialog = document.getElementById(dialogId) as HTMLDialogElement;
+        if (dialog) {
+          dialog.close(); // Đóng popup
+        }
+      } else {
+        console.error(`Failed to cancel filler offer with ID ${offerId}:`, data.error);
+        alert("Failed to cancel the filler offer. Please try again.");
+      }
+    } catch (error) {
+      console.error(`Unexpected error when canceling filler offer with ID ${offerId}:`, error);
+      alert("An unexpected error occurred. Please try again later.");
+    }
+  };
+
+  const handleWithdrawFiller = (dialogId: string) => {
+    const dialog = document.getElementById(dialogId) as HTMLDialogElement;
+    if (dialog) {
+      dialog.close(); // Đóng popup
+    }
+  };
+
+
+  const handleCancelOF = async (offerId: string, dialogId: string) => {
+    try {
+      const response = await axios.post("/api/preMarket/dashboard/ofCancel", {
+        offerId,
+      });
+
+      const data = response.data;
+
+      if (data.success) {
+        console.log(`Offer with ID ${offerId} has been successfully canceled.`);
+        alert("The offer has been successfully canceled.");
+        fetchProjects();
+        // Đóng popup
+        const dialog = document.getElementById(dialogId) as HTMLDialogElement;
+        if (dialog) {
+          dialog.close(); // Đóng popup
+        }
+      } else {
+        console.error(`Failed to cancel offer with ID ${offerId}:`, data.error);
+        alert("Failed to cancel the offer. Please try again.");
+      }
+    } catch (error) {
+      console.error(`Unexpected error when canceling offer with ID ${offerId}:`, error);
+      alert("An unexpected error occurred. Please try again later.");
+    }
+  };
+
+  const handleCloseOF = async (offerId: string, dialogId: string) => {
+    try {
+      const response = await axios.post("/api/preMarket/dashboard/ofClose", {
+        offerId,
+      });
+
+      const data = response.data;
+
+      if (data.success) {
+        console.log(`Offer with ID ${offerId} has been successfully closed.`);
+        alert("The offer has been successfully closed.");
+        fetchProjects();
+        // Đóng popup
+        const dialog = document.getElementById(dialogId) as HTMLDialogElement;
+        if (dialog) {
+          dialog.close(); // Đóng popup
+        }
+      } else {
+        console.error(`Failed to close offer with ID ${offerId}:`, data.error);
+        alert("Failed to close the offer. Please try again.");
+      }
+    } catch (error) {
+      console.error(`Unexpected error when closing offer with ID ${offerId}:`, error);
+      alert("An unexpected error occurred. Please try again later.");
+    }
+  };
+
+
+  const handleSettleOF = async (offerId: string, dialogId: string) => {
+    try {
+      const response = await axios.post("/api/preMarket/dashboard/ofSettle", {
+        offerId,
+      });
+
+      const data = response.data;
+
+      if (data.success) {
+        console.log(`Offer with ID ${offerId} has been successfully settled.`);
+        alert("The offer has been successfully settled.");
+        fetchProjects();
+        // Đóng popup
+        const dialog = document.getElementById(dialogId) as HTMLDialogElement;
+        if (dialog) {
+          dialog.close(); // Đóng popup
+        }
+      } else {
+        console.error(`Failed to settle offer with ID ${offerId}:`, data.error);
+        alert("Failed to settle the offer. Please try again.");
+      }
+    } catch (error) {
+      console.error(`Unexpected error when settling offer with ID ${offerId}:`, error);
+      alert("An unexpected error occurred. Please try again later.");
+    }
+  };
+
+  const fetchProjects = async () => {
+    setLoading(true); // Hiển thị trạng thái loading nếu cần
+    try {
+      const res = await axios.post("/api/preMarket/dashboard", { userAddress });
+      const data = res.data;
+
+      if (data.success) {
+        setProjects(data.data);
+        console.log("Projects:", data.data);
+      } else {
+        console.error("Failed to fetch projects:", data.error);
+      }
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+
 
   if (loading) return <div className="flex justify-center items-center h-[80vh]">
     <span className="loading loading-dots loading-lg "></span>
@@ -106,7 +245,7 @@ const Dashboard = () => {
                           </div>
                         </td>
                         <td>
-                          {new Date((data as Offer).startDate).toLocaleDateString("en-GB")}
+                          {new Date((data as Offer).filledTime).toLocaleDateString("en-GB")}
                         </td>
                         <td>
                           <div className="flex items-center gap-4 justify-end">
@@ -227,7 +366,7 @@ const Dashboard = () => {
                                 </div>
                               </h3>
 
-                              <div className="flex flex-col justify-start gap-5 border-gray-300 border rounded-lg p-4 my-5 ">
+                              {/* <div className="flex flex-col justify-start gap-5 border-gray-300 border rounded-lg p-4 my-5 ">
                                 <div className="flex justify-between">
                                   <div>My deposit</div>
                                   <div className="flex gap-3">
@@ -263,9 +402,13 @@ const Dashboard = () => {
                                   <div>Platform fee</div>
                                   <div>2.5%</div>
                                 </div>
-                              </div>
+                              </div> */}
 
-                              <button className="btn bg-[#423533] text-[#ce7b51] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#201a19]">
+                              <div className="flex my-5 text-[24px]">Do you want to cancel this offer</div>
+
+                              <button
+                                onClick={() => handleCancelFiller((data as Offer).id, `cancel-order-${(data as Offer).id}`)}
+                                className="btn bg-[#423533] text-[#ce7b51] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#201a19]">
                                 Cancel Order
                               </button>
                             </div>
@@ -316,7 +459,9 @@ const Dashboard = () => {
                                 </div>
                               </div>
 
-                              <button className="btn text-[#329A81] bg-[#1B2B30] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#201a19]">
+                              <button
+                                onClick={() => handleWithdrawFiller(`withdraw-${(data as Offer).id}`)}
+                                className="btn text-[#329A81] bg-[#1B2B30] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#201a19]">
                                 Withdraw
                               </button>
                             </div>
@@ -454,48 +599,78 @@ const Dashboard = () => {
                           </div>
                         </td>
                         <td>
-                          <button
-                            className={clsx(
-                              "rounded-md text-[13px] duration-300 ml-auto py-2 px-4",
-                              {
-                                "text-gray-600 cursor-not-allowed ":
-                                  (data as Offer).creatorStatus === CreateOfferStatus.Canceled,
+                          {(data as Offer).creatorStatus === CreateOfferStatus.Pending ? (
+                            <>
+                              {/* Nút Settle */}
+                              <button
+                                className="rounded-md text-[13px] duration-300 ml-auto py-2 px-4 text-[#329A81] hover:scale-105"
+                                onClick={() => {
+                                  (
+                                    document.getElementById(`settle-${(data as Offer).id}`) as HTMLDialogElement
+                                  ).showModal();
+                                }}
+                              >
+                                Settle
+                              </button>
+                              {/* Nút Cancel */}
+                              <button
+                                className="rounded-md text-[13px] duration-300 ml-auto py-2 px-4 text-red-500 hover:scale-105"
+                                onClick={() => {
+                                  (
+                                    document.getElementById(`cancel-${(data as Offer).id}`) as HTMLDialogElement
+                                  ).showModal();
+                                }}
+                              >
+                                Cancel
+                              </button>
+                            </>
+                          ) : (
+                            <button
+                              className={clsx(
+                                "rounded-md text-[13px] duration-300 ml-auto py-2 px-4",
+                                {
+                                  "text-gray-600 cursor-not-allowed":
+                                    (data as Offer).creatorStatus === CreateOfferStatus.Canceled,
 
-                                " text-[#329A81] hover:scale-105":
-                                  (data as Offer).creatorStatus === CreateOfferStatus.Pending,
+                                  " text-[#329A81] hover:scale-105":
+                                    (data as Offer).creatorStatus === CreateOfferStatus.Pending,
 
-                                " text-[#ce7b51] hover:scale-105":
-                                  (data as Offer).creatorStatus === CreateOfferStatus.Open,
+                                  " text-[#ce7b51] hover:scale-105":
+                                    (data as Offer).creatorStatus === CreateOfferStatus.Open,
 
-                                " text-[#e3cc1b] hover:scale-105":
-                                  (data as Offer).creatorStatus === CreateOfferStatus.Settled || (data as Offer).creatorStatus === CreateOfferStatus.CanceledWithdraw,
-                              }
-                            )}
-                            onClick={() => {
-                              if ((data as Offer).creatorStatus === CreateOfferStatus.Pending) {
-                                (
-                                  document.getElementById(`settle-${(data as Offer).id}`) as HTMLDialogElement
-                                ).showModal();
-                              } else if ((data as Offer).creatorStatus === CreateOfferStatus.Open) {
-                                (
-                                  document.getElementById(`close-${(data as Offer).id}`) as HTMLDialogElement
-                                ).showModal();
-                              } else if ((data as Offer).creatorStatus === CreateOfferStatus.Settled || (data as Offer).creatorStatus === CreateOfferStatus.CanceledWithdraw) {
-                                (
-                                  document.getElementById(`withdraw1-${(data as Offer).id}`) as HTMLDialogElement
-                                ).showModal();
-                              }
-                            }}
-                            disabled={(data as Offer).creatorStatus === CreateOfferStatus.Closed}
-                          >
-                            {(data as Offer).creatorStatus === CreateOfferStatus.Pending
-                              ? "Settle"
-                              : (data as Offer).creatorStatus === CreateOfferStatus.Open
+                                  " text-gray-500 hover:scale-105":
+                                    (data as Offer).creatorStatus === CreateOfferStatus.Closed,
+
+                                  " text-[#e3cc1b] hover:scale-105":
+                                    (data as Offer).creatorStatus === CreateOfferStatus.Settled ||
+                                    (data as Offer).creatorStatus === CreateOfferStatus.CanceledWithdraw,
+                                }
+                              )}
+                              onClick={() => {
+                                if ((data as Offer).creatorStatus === CreateOfferStatus.Open) {
+                                  (
+                                    document.getElementById(`close-${(data as Offer).id}`) as HTMLDialogElement
+                                  ).showModal();
+                                } else if (
+                                  (data as Offer).creatorStatus === CreateOfferStatus.Settled ||
+                                  (data as Offer).creatorStatus === CreateOfferStatus.CanceledWithdraw
+                                ) {
+                                  (
+                                    document.getElementById(`withdraw1-${(data as Offer).id}`) as HTMLDialogElement
+                                  ).showModal();
+                                }
+                              }}
+                              disabled={(data as Offer).creatorStatus === CreateOfferStatus.Closed}
+                            >
+                              {(data as Offer).creatorStatus === CreateOfferStatus.Open
                                 ? "Close"
-                                : (data as Offer).creatorStatus === CreateOfferStatus.Settled || (data as Offer).creatorStatus === CreateOfferStatus.CanceledWithdraw
+                                : (data as Offer).creatorStatus === CreateOfferStatus.Settled ||
+                                  (data as Offer).creatorStatus === CreateOfferStatus.CanceledWithdraw
                                   ? "Withdraw"
                                   : "Close"}
-                          </button>
+                            </button>
+                          )}
+
 
                           {/* Modal Settle */}
                           <dialog id={`settle-${(data as Offer).id}`} className="modal">
@@ -563,7 +738,9 @@ const Dashboard = () => {
                                 </div>
                               </div>
 
-                              <button className="btn text-[#329A81] bg-[#1B2B30] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#141f23]">
+                              <button
+                                onClick={() => handleSettleOF((data as Offer).id, `settle-${(data as Offer).id}`)}
+                                className="btn text-[#329A81] bg-[#1B2B30] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#141f23]">
                                 Settle
                               </button>
                             </div>
@@ -637,7 +814,9 @@ const Dashboard = () => {
 
                               <div className="flex my-5 text-[24px]">Do you want to close this offer</div>
 
-                              <button className="btn text-[#ce7b51] bg-[#423533] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#281f1d]">
+                              <button
+                                onClick={() => handleCloseOF((data as Offer).id, `close-${(data as Offer).id}`)}
+                                className="btn text-[#ce7b51] bg-[#423533] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#281f1d]">
                                 Close
                               </button>
                             </div>
@@ -645,6 +824,37 @@ const Dashboard = () => {
                               <button>close</button>
                             </form>
                           </dialog>
+
+                          <dialog id={`cancel-${(data as Offer).id}`} className="modal">
+                            <div className="modal-box bg-[#0C141E]">
+                              <h3 className="font-bold text-lg mb-4 text-white">
+                                <div className="flex items-center gap-4 justify-start">
+                                  <Image
+                                    src={data.project.projectLogo}
+                                    width={50}
+                                    height={50}
+                                    alt="icon"
+                                    className="rounded-full"
+                                  />
+                                  <div className="flex flex-col gap-1">
+                                    <span className="text-[17px] font-bold">{(data as Offer).id}</span>
+                                  </div>
+                                </div>
+                              </h3>
+
+                              <div className="flex my-5 text-[24px]">Do you want to cancel this offer</div>
+
+                              <button
+                                onClick={() => handleCancelOF((data as Offer).id, `cancel-${(data as Offer).id}`)}
+                                className="btn text-red-500 bg-[#54221b] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#281f1d]">
+                                Cancel
+                              </button>
+                            </div>
+                            <form method="dialog" className="modal-backdrop">
+                              <button>close</button>
+                            </form>
+                          </dialog>
+
                         </td>
 
                       </tr>
