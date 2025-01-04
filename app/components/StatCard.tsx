@@ -2,7 +2,7 @@ import React from "react";
 import clsx from "clsx";
 import Image from "next/image";
 interface StatCardProps {
-  type: "Total Project" | "Staked Amount" | "Unique Participant";
+  type: "Total Project" | "Total Staking" | "Unique Participant";
   count: number;
   label: string;
   icon: string;
@@ -19,7 +19,7 @@ const StatCard = ({ count = 0, label, icon, type }: StatCardProps) => {
           "bg-gradient-to-r from-[#204275] to-[#4D75B3] text-white border-2 border-[#A1C6FF]":
             type === "Unique Participant",
           "bg-gradient-to-r from-[#3A66A9] to-[#7BA9EF] text-white border-2 border-[#A1C6FF]":
-            type === "Staked Amount",
+            type === "Total Staking",
         }
       )}
     >

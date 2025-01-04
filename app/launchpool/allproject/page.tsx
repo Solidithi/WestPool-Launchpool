@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 
 import { banners } from "../../constants/index";
 import { dataTable } from "../../constants/index";
-import { Project } from "../../interface/interface"
+import { Launchpool, Project } from "../../interface/interface"
 
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -16,6 +16,7 @@ const AllProject = () => {
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
   const [activeId, setActiveId] = useState(banners[0].id);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [totalProject, setTotalProject] = useState<Launchpool[]>([]);
   const [loading, setLoading] = useState(true);
   const connectionStatus = useConnectionStatus();
 
@@ -95,8 +96,12 @@ const AllProject = () => {
         const res = await axios.get("/api/launchpool/allProject");
         const data = res.data;
 
-        if (data.success) {
+        const res2 = await axios.get("/api/launchpool/allProject/launchpool");
+        const data2 = res2.data;
+
+        if (data.success && data2.success) {
           setProjects(data.data);
+          setTotalProject(data2.data);
         } else {
           console.error("Failed to fetch projects:", data.error);
         }
@@ -109,6 +114,27 @@ const AllProject = () => {
 
     fetchProjects();
   }, []);
+
+  // useEffect(() => {
+  //   const fetchProjects = async () => {
+  //     try {
+  //       const res = await axios.get("/api/launchpool/allProject/launchpool");
+  //       const data = res.data;
+
+  //       if (data.success) {
+  //         setTotalProject(data.data);
+  //       } else {
+  //         console.error("Failed to fetch projects:", data.error);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching projects:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchProjects();
+  // }, []);
 
   if (loading) return <div className="flex justify-center items-center h-[80vh]">
     <span className="loading loading-dots loading-lg "></span>
@@ -167,20 +193,20 @@ const AllProject = () => {
       <div className="flex w-full flex-col justify-between gap-5 sm:flex-row xl:gap-10">
         <StatCard
           type="Total Project"
-          count={100000}
+          count={totalProject[0]?.totalProject ?? 0}
           label="Total Project"
           icon="https://i.pinimg.com/736x/5f/30/dd/5f30dd9e794a5a509398b45cd38274c2.jpg"
         />
         <StatCard
           type="Unique Participant"
-          count={100000}
+          count={totalProject[0]?.uniqueParticipants ?? 0}
           label="Unique Participant"
           icon="https://i.pinimg.com/736x/ab/df/23/abdf233a4de440510677808f1c234a87.jpg"
         />
         <StatCard
-          type="Staked Amount"
-          count={100000}
-          label="Staked Amount"
+          type="Total Staking"
+          count={totalProject[0]?.totalTx ?? 0}
+          label="Total Staking"
           icon="https://i.pinimg.com/736x/90/af/12/90af12758c4f2881b57866bfeffc0d92.jpg"
         />
       </div>

@@ -86,6 +86,13 @@ export interface TokenData {
   address: string;
 }
 
+export interface Launchpool {
+  id: string;
+  totalProject: number;
+  uniqueParticipants: number;
+  totalTx: number;
+}
+
 enum ProjectStatus {
   Upcoming,
   Ongoing,
