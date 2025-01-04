@@ -1,16 +1,13 @@
-import { exec, ChildProcess } from "child_process";
-import { ethers } from "ethers";
-import { readFileSync, writeFileSync } from "fs";
-import { PoolFactoryABI } from "../abi/";
+import { exec, ChildProcess } from 'child_process';
+import { ethers } from 'ethers';
+import { readFileSync, writeFileSync } from 'fs';
+import { PoolFactoryABI } from '../abi/';
 
 export function startAnvil(): ChildProcess {
   // Spawn Anvil process
-  const anvilProcess = exec("anvil", (error, stdout, stderr) => {
+  const anvilProcess = exec('anvil', (error, stdout, stderr) => {
     if (error) {
-      console.error(
-        "\x1b[31m%s\x1b[0m",
-        `Error starting Anvil: ${error.message}`
-      );
+      console.error("\x1b[31m%s\x1b[0m", `Error starting Anvil: ${error.message}`);
       return;
     }
     if (stderr) {
@@ -21,8 +18,8 @@ export function startAnvil(): ChildProcess {
   });
 
   // Set up a handler to kill the Anvil process when the Node.js process exits
-  process.on("exit", () => {
-    console.log("Stopping Anvil...");
+  process.on('exit', () => {
+    console.log('Stopping Anvil...');
     anvilProcess.kill();
   });
 
@@ -67,41 +64,25 @@ export async function deployContract(
   await contract.deployTransaction.wait();
 
   // write new contract address to chainConfig file
-  let chainConfigJSON = JSON.parse(
-    readFileSync("app/config/chainConfig.json", { encoding: "utf-8" })
-  );
+  let chainConfigJSON = JSON.parse(readFileSync("app/config/chainConfig.json", { encoding: "utf-8" }));
   // console.log(`Chain config json: ${chainConfigJSON}`);
   const nameInConfig = !!nameAlias ? nameAlias : contractName;
   // console.log(`Name in config: ${nameInConfig}`);
-  if (
-    Object.keys(chainConfigJSON[31337]?.contracts)?.findIndex(
-      (v) => v === nameInConfig
-    ) != -1
-  ) {
-    chainConfigJSON[31337]["contracts"][nameInConfig]["address"] =
-      contract.address;
+  if (Object.keys(chainConfigJSON[31337]?.contracts)?.findIndex((v) => v === nameInConfig) != -1) {
+    chainConfigJSON[31337]["contracts"][nameInConfig]["address"] = contract.address;
 
-        if (nameInConfig === "MockVDot") {
-            let vAsset: any = (chainConfigJSON[31337]["vAssets"] as object[]).find((obj: any) => obj["symbol"] === "vDOT")
-            vAsset["address"] = contract.address;
-        }
+    if (nameInConfig === "MockVDot") {
+      let vAsset: any = (chainConfigJSON[31337]["vAssets"] as object[]).find((obj: any) => obj["symbol"] === "vDOT")
+      vAsset["address"] = contract.address;
     }
   }
-  writeFileSync(
-    "app/config/chainConfig.json",
-    JSON.stringify(chainConfigJSON, null, 2)
-  );
-  console.log(
-    "\x1b[32m%s\x1b[0m",
-    `Saved ${nameInConfig} contract address to app/config/chainConfig.json`
-  );
+  writeFileSync("app/config/chainConfig.json", JSON.stringify(chainConfigJSON, null, 2));
+  console.log('\x1b[32m%s\x1b[0m', `Saved ${nameInConfig} contract address to app/config/chainConfig.json`);
   return contract;
 }
 
-export async function getCurrentBlockTimestamp(
-  provider: ethers.providers.Provider
-): Promise<number> {
-  const block = await provider.getBlock("latest");
+export async function getCurrentBlockTimestamp(provider: ethers.providers.Provider): Promise<number> {
+  const block = await provider.getBlock('latest');
   return block.timestamp;
 }
 
@@ -111,109 +92,101 @@ async function run(): Promise<void> {
   // const provider = getProvider("http://127.0.0.1:8545");
   const provider = getProvider("http://localhost:8545");
 
-  const foundryTestPrivKey =
-    "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d";
-  const signer = getSigner(foundryTestPrivKey, provider);
+
+  const foundryTestPrivKey = "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d";
+  const signer = getSigner(foundryTestPrivKey, provider)
+
+  const mockVAssetContract = await deployContract(
+    "MockVDot",
+    signer,
+    undefined,
+  );
+  const mockVTokenAddr = mockVAssetContract.address;
+  // await mockVAssetContract.freeMoneyForEveryone(
+  //     "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+  //     BigInt(1000 * (10 ** 9) * 10 ** 18),
+  // );
+
+
+  // deploy BifrostEarningMock contract
+  const bifrostEarningMockContract = await deployContract(
+    "BifrostEarningMock",
+    signer,
+    undefined,
+    mockVTokenAddr,
+    BigInt(10 ** 18),
+  );
+  const bifrostEarningMockAddr = bifrostEarningMockContract.address;
 
   // deploy ProjectPoolFactory contract
   const factoryContract = await deployContract(
     "PoolFactory",
     signer,
-    undefined
+    undefined,
     // ethers.constants.AddressZero,
+    bifrostEarningMockAddr,
   );
   const factoryAddr = factoryContract.address;
 
-    // deploy mockVToken and mockProjectToken
-    const mockVAssetContract = await deployContract(
-        "MockVDot",
-        signer,
-        undefined,
-    );
-    const mockVTokenAddr = mockVAssetContract.address;
-    // await mockVAssetContract.freeMoneyForEveryone(
-    //     "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-    //     BigInt(1000 * (10 ** 9) * 10 ** 18),
-    // );
+  // deploy ProjectPoolFactory contract
 
 
-    // deploy BifrostEarningMock contract
-    const bifrostEarningMockContract = await deployContract(
-        "BifrostEarningMock",
-        signer,
-        undefined,
-        mockVTokenAddr,
-        BigInt(10 ** 18),
-    );
-    const bifrostEarningMockAddr = bifrostEarningMockContract.address;
-
-    // deploy ProjectPoolFactory contract
-    const factoryContract = await deployContract(
-        "PoolFactory",
-        signer,
-        undefined,
-        // ethers.constants.AddressZero,
-        bifrostEarningMockAddr,
-    );
-    const factoryAddr = factoryContract.address;
+  // deploy mockVToken and mockProjectToken
 
 
-    const mockProjectTokenContract = await deployContract(
-        "MockProjectToken",
-        signer,
-        undefined,
-    );
-    const mockProjectTokenAddr = mockProjectTokenContract.address;
-    // await mockProjectTokenContract.freeMoneyForEveryone(
-    //     "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
-    //     BigInt(1000 * (10 ** 9) * 10 ** 18),
-    // );
+  const mockProjectTokenContract = await deployContract(
+    "MockProjectToken",
+    signer,
+    undefined,
+  );
+  const mockProjectTokenAddr = mockProjectTokenContract.address;
+  // await mockProjectTokenContract.freeMoneyForEveryone(
+  //     "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+  //     BigInt(1000 * (10 ** 9) * 10 ** 18),
+  // );
 
-    // // create example project pool
-    // const blockTimestamp = await getCurrentBlockTimestamp(provider);
-    // const startTime = blockTimestamp + 2;
-    // // wait 2 secs
-    // await new Promise(resolve => setTimeout(resolve, 2000));
-    // const totalProjectTokens = BigInt(1000 * (10 ** await mockProjectTokenContract.decimals()));
-    // const maxVTokensPerStaker = BigInt(10 * (10 ** await mockVAssetContract.decimals()));
-    // const minVTokensPerStaker = BigInt(1 * (10 ** await mockVAssetContract.decimals()));
-    // const targetStakeAmount = BigInt(100 * (10 ** await mockProjectTokenContract.decimals()));
+  // // create example project pool
+  // const blockTimestamp = await getCurrentBlockTimestamp(provider);
+  // const startTime = blockTimestamp + 2;
+  // // wait 2 secs
+  // await new Promise(resolve => setTimeout(resolve, 2000));
+  // const totalProjectTokens = BigInt(1000 * (10 ** await mockProjectTokenContract.decimals()));
+  // const maxVTokensPerStaker = BigInt(10 * (10 ** await mockVAssetContract.decimals()));
+  // const minVTokensPerStaker = BigInt(1 * (10 ** await mockVAssetContract.decimals()));
+  // const targetStakeAmount = BigInt(100 * (10 ** await mockProjectTokenContract.decimals()));
 
-    // const tx = await factoryContract.createPool(
-    //     mockProjectTokenAddr,
-    //     mockVTokenAddr,
-    //     BigInt(startTime), // start time
-    //     BigInt(startTime + (60 * 60)), // end time = start time + 60 minutes
-    //     totalProjectTokens,
-    //     maxVTokensPerStaker,
-    //     minVTokensPerStaker,
-    //     targetStakeAmount,
-    //     // BigInt(10 * (10 ** await mockVAssetContract.decimals())), // 1 project token = 10 vTokens
-    //     // BigInt(1 * (10 ** await mockVAssetContract.decimals())), // min invest is 1 vTokens
-    //     // BigInt(10 * (10 ** await mockVAssetContract.decimals())), // max invest is 10 vTokens
-    //     // BigInt(1000 * (10 ** await mockProjectTokenContract.decimals())), // hard cap is 1000 vTokens
-    //     // BigInt(100 * (10 ** await mockProjectTokenContract.decimals())), // soft cap is 1000 vTokens
-    //     // BigInt(50), // 0.5%,
-    // );
+  // const tx = await factoryContract.createPool(
+  //   mockProjectTokenAddr,
+  //   mockVTokenAddr,
+  //   BigInt(startTime), // start time
+  //   BigInt(startTime + (60 * 60)), // end time = start time + 60 minutes
+  //   totalProjectTokens,
+  //   maxVTokensPerStaker,
+  //   minVTokensPerStaker,
+  //   targetStakeAmount,
+  //   // BigInt(10 * (10 ** await mockVAssetContract.decimals())), // 1 project token = 10 vTokens
+  //   // BigInt(1 * (10 ** await mockVAssetContract.decimals())), // min invest is 1 vTokens
+  //   // BigInt(10 * (10 ** await mockVAssetContract.decimals())), // max invest is 10 vTokens
+  //   // BigInt(1000 * (10 ** await mockProjectTokenContract.decimals())), // hard cap is 1000 vTokens
+  //   // BigInt(100 * (10 ** await mockProjectTokenContract.decimals())), // soft cap is 1000 vTokens
+  //   // BigInt(50), // 0.5%,
+  // );
 
-    // const waitTx = await tx.wait();
-    // console.log(waitTx);
-    // const poolAddr = await factoryContract.getPoolAddress(1);
+  // const waitTx = await tx.wait();
+  // console.log(waitTx);
+  // const poolAddr = await factoryContract.getPoolAddress(1);
 
-    console.log('\x1b[36m%s\x1b[0m', `BifrostEarningMock contract deployed to ${bifrostEarningMockAddr}`);
-    console.log('\x1b[36m%s\x1b[0m', `PoolFactory contract deployed to ${factoryAddr}`);
-    // console.log('\x1b[36m%s\x1b[0m', `Pool Address: ${poolAddr}`);
-    console.log('\x1b[36m%s\x1b[0m', `Mock VToken contract deployed to ${mockVTokenAddr}`);
-    console.log('\x1b[36m%s\x1b[0m', `Mock ProjectToken contract deployed to ${mockProjectTokenAddr}`);
-    // console.log('\x1b[36m%s\x1b[0m', `An example ProjectPool contract was created at address ${poolAddr}`);
+  console.log('\x1b[36m%s\x1b[0m', `Mock BifrostEarning contract deployed to ${bifrostEarningMockAddr}`);
+  console.log('\x1b[36m%s\x1b[0m', `PoolFactory contract deployed to ${factoryAddr}`);
+  // console.log('\x1b[36m%s\x1b[0m', `Pool Address: ${poolAddr}`);
+  console.log('\x1b[36m%s\x1b[0m', `Mock VToken contract deployed to ${mockVTokenAddr}`);
+  console.log('\x1b[36m%s\x1b[0m', `Mock ProjectToken contract deployed to ${mockProjectTokenAddr}`);
+  // console.log('\x1b[36m%s\x1b[0m', `An example ProjectPool contract was created at address ${poolAddr}`);
 }
 
 async function invest() {
-  const provider = getProvider("http://localhost:8545");
-  const signer = getSigner(
-    "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
-    provider
-  );
+  const provider = getProvider('http://localhost:8545');
+  const signer = getSigner("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80", provider);
   const poolContract = new ethers.Contract(
     "0xB7A5bd0345EF1Cc5E66bf61BdeC17D2461fBd968",
     PoolFactoryABI,
@@ -221,23 +194,20 @@ async function invest() {
   );
 
   try {
-    const tx = await poolContract.investProject(BigInt("9500000000000000000"));
+    const tx = await poolContract.investProject(
+      BigInt("9500000000000000000")
+    );
     console.debug(`invest response:\n${tx}`);
   } catch (err) {
     console.error(`error when sending invest():\n${err}`);
   }
 }
 
-run()
-  .then()
-  .catch((err) => console.error(err));
+run().then().catch(err => console.error(err))
 
 async function testXCMOracle() {
-  const provider = getProvider("");
-  const signer = getSigner(
-    "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80",
-    provider
-  );
+  const provider = getProvider('');
+  const signer = getSigner("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80", provider);
   const poolContract = new ethers.Contract(
     "0xB7A5bd0345EF1Cc5E66bf61BdeC17D2461fBd968",
     PoolFactoryABI,
@@ -245,11 +215,15 @@ async function testXCMOracle() {
   );
 
   try {
-    const tx = await poolContract.investProject(BigInt("9500000000000000000"));
+    const tx = await poolContract.investProject(
+      BigInt("9500000000000000000")
+    );
     console.debug(`invest response:\n${tx}`);
   } catch (err) {
     console.error(`error when sending invest():\n${err}`);
   }
+
 }
+
 
 // invest().then().catch();
