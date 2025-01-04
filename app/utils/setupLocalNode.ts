@@ -81,11 +81,10 @@ export async function deployContract(
     chainConfigJSON[31337]["contracts"][nameInConfig]["address"] =
       contract.address;
 
-    if (nameInConfig === "MockVDot") {
-      let vAsset: any = (chainConfigJSON[31337]["vAssets"] as object[]).find(
-        (obj: any) => obj["symbol"] === "WND"
-      );
-      vAsset["address"] = contract.address;
+        if (nameInConfig === "MockVDot") {
+            let vAsset: any = (chainConfigJSON[31337]["vAssets"] as object[]).find((obj: any) => obj["symbol"] === "vDOT")
+            vAsset["address"] = contract.address;
+        }
     }
   }
   writeFileSync(
@@ -125,82 +124,88 @@ async function run(): Promise<void> {
   );
   const factoryAddr = factoryContract.address;
 
-  // deploy mockVToken and mockProjectToken
-  const mockVAssetContract = await deployContract(
-    "MockVDot",
-    signer,
-    undefined
-  );
-  const mockVTokenAddr = mockVAssetContract.address;
-  // await mockVAssetContract.freeMoneyForEveryone(
-  //     "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
-  //     BigInt(1000 * (10 ** 9) * 10 ** 18),
-  // );
+    // deploy mockVToken and mockProjectToken
+    const mockVAssetContract = await deployContract(
+        "MockVDot",
+        signer,
+        undefined,
+    );
+    const mockVTokenAddr = mockVAssetContract.address;
+    // await mockVAssetContract.freeMoneyForEveryone(
+    //     "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+    //     BigInt(1000 * (10 ** 9) * 10 ** 18),
+    // );
 
-  const mockProjectTokenContract = await deployContract(
-    "MockProjectToken",
-    signer,
-    undefined
-  );
-  const mockProjectTokenAddr = mockProjectTokenContract.address;
-  // await mockProjectTokenContract.freeMoneyForEveryone(
-  //     "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
-  //     BigInt(1000 * (10 ** 9) * 10 ** 18),
-  // );
 
-  // create example project pool
-  const blockTimestamp = await getCurrentBlockTimestamp(provider);
-  const startTime = blockTimestamp + 2;
-  // wait 2 secs
-  await new Promise((resolve) => setTimeout(resolve, 2000));
-  const totalProjectTokens = BigInt(
-    1000 * 10 ** (await mockProjectTokenContract.decimals())
-  );
-  const maxVTokensPerStaker = BigInt(
-    10 * 10 ** (await mockVAssetContract.decimals())
-  );
-  const minVTokensPerStaker = BigInt(
-    1 * 10 ** (await mockVAssetContract.decimals())
-  );
-  const targetStakeAmount = BigInt(
-    100 * 10 ** (await mockProjectTokenContract.decimals())
-  );
+    // deploy BifrostEarningMock contract
+    const bifrostEarningMockContract = await deployContract(
+        "BifrostEarningMock",
+        signer,
+        undefined,
+        mockVTokenAddr,
+        BigInt(10 ** 18),
+    );
+    const bifrostEarningMockAddr = bifrostEarningMockContract.address;
 
-  // const tx = await factoryContract.createPool(
-  //     mockProjectTokenAddr,
-  //     mockVTokenAddr,
-  //     BigInt(startTime), // start time
-  //     BigInt(startTime + (60 * 60)), // end time = start time + 60 minutes
-  //     totalProjectTokens,
-  //     maxVTokensPerStaker,
-  //     minVTokensPerStaker,
-  //     targetStakeAmount,
-  //     // BigInt(10 * (10 ** await mockVAssetContract.decimals())), // 1 project token = 10 vTokens
-  //     // BigInt(1 * (10 ** await mockVAssetContract.decimals())), // min invest is 1 vTokens
-  //     // BigInt(10 * (10 ** await mockVAssetContract.decimals())), // max invest is 10 vTokens
-  //     // BigInt(1000 * (10 ** await mockProjectTokenContract.decimals())), // hard cap is 1000 vTokens
-  //     // BigInt(100 * (10 ** await mockProjectTokenContract.decimals())), // soft cap is 1000 vTokens
-  //     // BigInt(50), // 0.5%,
-  // );
+    // deploy ProjectPoolFactory contract
+    const factoryContract = await deployContract(
+        "PoolFactory",
+        signer,
+        undefined,
+        // ethers.constants.AddressZero,
+        bifrostEarningMockAddr,
+    );
+    const factoryAddr = factoryContract.address;
 
-  // const waitTx = await tx.wait();
-  // console.log(waitTx);
-  // const poolAddr = await factoryContract.getPoolAddress(1);
 
-  console.log(
-    "\x1b[36m%s\x1b[0m",
-    `PoolFactory contract deployed to ${factoryAddr}`
-  );
-  // console.log('\x1b[36m%s\x1b[0m', `Pool Address: ${poolAddr}`);
-  console.log(
-    "\x1b[36m%s\x1b[0m",
-    `Mock VToken contract deployed to ${mockVTokenAddr}`
-  );
-  console.log(
-    "\x1b[36m%s\x1b[0m",
-    `Mock ProjectToken contract deployed to ${mockProjectTokenAddr}`
-  );
-  // console.log('\x1b[36m%s\x1b[0m', `An example ProjectPool contract was created at address ${poolAddr}`);
+    const mockProjectTokenContract = await deployContract(
+        "MockProjectToken",
+        signer,
+        undefined,
+    );
+    const mockProjectTokenAddr = mockProjectTokenContract.address;
+    // await mockProjectTokenContract.freeMoneyForEveryone(
+    //     "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+    //     BigInt(1000 * (10 ** 9) * 10 ** 18),
+    // );
+
+    // // create example project pool
+    // const blockTimestamp = await getCurrentBlockTimestamp(provider);
+    // const startTime = blockTimestamp + 2;
+    // // wait 2 secs
+    // await new Promise(resolve => setTimeout(resolve, 2000));
+    // const totalProjectTokens = BigInt(1000 * (10 ** await mockProjectTokenContract.decimals()));
+    // const maxVTokensPerStaker = BigInt(10 * (10 ** await mockVAssetContract.decimals()));
+    // const minVTokensPerStaker = BigInt(1 * (10 ** await mockVAssetContract.decimals()));
+    // const targetStakeAmount = BigInt(100 * (10 ** await mockProjectTokenContract.decimals()));
+
+    // const tx = await factoryContract.createPool(
+    //     mockProjectTokenAddr,
+    //     mockVTokenAddr,
+    //     BigInt(startTime), // start time
+    //     BigInt(startTime + (60 * 60)), // end time = start time + 60 minutes
+    //     totalProjectTokens,
+    //     maxVTokensPerStaker,
+    //     minVTokensPerStaker,
+    //     targetStakeAmount,
+    //     // BigInt(10 * (10 ** await mockVAssetContract.decimals())), // 1 project token = 10 vTokens
+    //     // BigInt(1 * (10 ** await mockVAssetContract.decimals())), // min invest is 1 vTokens
+    //     // BigInt(10 * (10 ** await mockVAssetContract.decimals())), // max invest is 10 vTokens
+    //     // BigInt(1000 * (10 ** await mockProjectTokenContract.decimals())), // hard cap is 1000 vTokens
+    //     // BigInt(100 * (10 ** await mockProjectTokenContract.decimals())), // soft cap is 1000 vTokens
+    //     // BigInt(50), // 0.5%,
+    // );
+
+    // const waitTx = await tx.wait();
+    // console.log(waitTx);
+    // const poolAddr = await factoryContract.getPoolAddress(1);
+
+    console.log('\x1b[36m%s\x1b[0m', `BifrostEarningMock contract deployed to ${bifrostEarningMockAddr}`);
+    console.log('\x1b[36m%s\x1b[0m', `PoolFactory contract deployed to ${factoryAddr}`);
+    // console.log('\x1b[36m%s\x1b[0m', `Pool Address: ${poolAddr}`);
+    console.log('\x1b[36m%s\x1b[0m', `Mock VToken contract deployed to ${mockVTokenAddr}`);
+    console.log('\x1b[36m%s\x1b[0m', `Mock ProjectToken contract deployed to ${mockProjectTokenAddr}`);
+    // console.log('\x1b[36m%s\x1b[0m', `An example ProjectPool contract was created at address ${poolAddr}`);
 }
 
 async function invest() {

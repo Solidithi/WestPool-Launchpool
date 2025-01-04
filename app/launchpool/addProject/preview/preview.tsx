@@ -56,6 +56,7 @@ const PreviewPage = () => {
   const [factoryAddress, setFactoryAddress] = useState<string | undefined>(undefined);
   const [txHashWatching, setTxHashWatching] = useState<string | null>(null);
   const [isSendingHTTPRequest, setIsSendingHTTPRequest] = useState<boolean>(false);
+  const [acceptedVTokenAddress, setAcceptedVTokenAddress] = useState<string | undefined>(undefined);
   const [alertText, setAlertText] = useState<string>("");
 
 
@@ -146,7 +147,11 @@ const PreviewPage = () => {
       chainConfig[currentChain.chainId.toString() as keyof typeof chainConfig]
         ?.contracts?.PoolFactory?.address;
 
+    const acceptedVTokenAddress = chainConfig[currentChain?.chainId?.toString() as keyof typeof chainConfig].vAssets.find(asset => asset.name === acceptedVToken[0])
+
+    setAcceptedVTokenAddress(acceptedVTokenAddress?.address);
     setFactoryAddress(address);
+
   }, [currentChain]);
 
   const { contract: factoryContract, error: factoryConnErr } = useContract(
@@ -157,7 +162,7 @@ const PreviewPage = () => {
 
   //Might have more VToken pools
   const { contract: VTContract, error: VTConnErr } = useContract(
-    acceptedVToken[0], //selectedVToken
+    acceptedVTokenAddress, //selectedVToken
     "token"
   );
 
@@ -174,7 +179,7 @@ const PreviewPage = () => {
 
   const { data: VTDecimals, error: VTDecimalsReadErr } = useContractRead(
     VTContract,
-    "decimals"
+    "decimals"  
   );
 
   const { data: PTDecimals, error: PTDecimalsReadErr } = useContractRead(
@@ -207,7 +212,7 @@ const PreviewPage = () => {
     const justDoIt = async () => {
       if (eventListenerError) {
         console.trace("Lmao, eventListenerError");
-        showAlertWithText(`Contract event error occurred`);
+        // showAlertWithText(`Contract event error occurred`);
         console.error(
           `Co event from smart contract due to error:\n${eventListenerError}`
         );
@@ -234,9 +239,12 @@ const PreviewPage = () => {
         }
 
         wantedData.projectOwner = wantedData.projectOwner.toString();
-        wantedData.projectId = Number(wantedData.projectId as bigint);
+        wantedData.poolId = Number(wantedData.poolId as bigint);
         wantedData.txnHashCreated = wantedEvent!.transaction.transactionHash;
         const eventData = wantedData;
+        console.log("Event Data PO address: " + eventData.projectOwner);
+        console.log("Event Data Pool Id: " + eventData.poolId);
+        console.log("Event Data Tx Hash: " + eventData.txnHashCreated);
 
         setIsSendingHTTPRequest(true);
         try {
@@ -261,7 +269,7 @@ const PreviewPage = () => {
             eventData
           })
           if (response.status === 200) {
-            showAlertWithText("Success! Your transaction was processed");
+            // showAlertWithText("Success! Your transaction was processed");
             cleanup();
             router.push("/launchpool/myProject");
           }
@@ -272,7 +280,7 @@ const PreviewPage = () => {
             if (err.response) {
               console.error(`error status code: ${err.response.statusText}`);
             }
-            showAlertWithText("Transaction finished but failed to be saved");
+            // showAlertWithText("Transaction finished but failed to be saved");
             setTxHashWatching(null);
           }
         }
@@ -293,16 +301,16 @@ const PreviewPage = () => {
     return cleanup;
   }, [txHashWatching]);
 
-  const showAlertWithText = (text: string) => {
-    setAlertText(text);
-    (document.getElementById("alertDialog") as HTMLDialogElement).showModal();
-  };
+  // const showAlertWithText = (text: string) => {
+  //   setAlertText(text);
+  //   (document.getElementById("alertDialog") as HTMLDialogElement).showModal();
+  // };
 
   useEffect(() => {
     if (!createProjectError) {
       return;
     }
-    showAlertWithText(`Error occurred! Could not create project`);
+    // showAlertWithText(`Error occurred! Could not create project`);
     console.error(`Cannot create project due to error:\n${createProjectError}`);
   }, [createProjectError]);
 
@@ -323,10 +331,12 @@ const PreviewPage = () => {
     console.log("Success Smartcontract");
 
     if (VTDecimalsReadErr) {
-      showAlertWithText("Failed to read vToken decimals");
+      // showAlertWithText("Failed to read vToken decimals");
       console.error(VTDecimalsReadErr);
       return;
     }
+
+    console.log("Success Decimals: " + VTDecimals);
 
     // if (PTDecimalsReadErr) {
     //   showAlertWithText(`Failed to retrieve information about project token`);
@@ -340,16 +350,20 @@ const PreviewPage = () => {
     console.debug(
       `factory contract address is ${factoryContract?.getAddress()}`
     );
+    console.log("Accepted VToken: " + acceptedVToken[0]);
 
+    const acceptedVTokenAddress = chainConfig[currentChain?.chainId?.toString() as keyof typeof chainConfig].vAssets.find(asset => asset.name === acceptedVToken[0])
+    console.log("Accepted VToken Address: " + acceptedVTokenAddress?.address);
     const resp = await callCreateProject({
       args: [
         verifiedToken, //verifyToken
-        acceptedVToken[0], //selectedVToken
+        acceptedVTokenAddress?.address, //selectedVToken
         new Date(fromDate).getTime() / 1000, //startDate
         new Date(toDate).getTime() / 1000, //endDate
         convertNumToOnChainFormat(
           Number(poolBudget),
-          PTDecimals
+          VTDecimals
+          // PTDecimals
         ), //total Project Token
         convertNumToOnChainFormat(
           Number(maxStake),
@@ -361,7 +375,7 @@ const PreviewPage = () => {
         ), //minInvestment 
         convertNumToOnChainFormat(
           Number(targetStake),
-          PTDecimals
+          VTDecimals
         ), //targetStake
 
 

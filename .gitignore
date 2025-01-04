@@ -34,3 +34,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+#ignore pnpm-lock.yaml
+pnpm-lock.yaml
+
+# ignore chainConfig.json
+chainConfig.json

@@ -5,7 +5,7 @@ import prismaClient from "@/prisma";
 
 export async function POST(req: NextRequest, res: NextResponse) {
   const body = await req.json();
-  console.log(body);
+  // console.log(body);
   const {
     projectName,
     tokenSymbol,
@@ -24,6 +24,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
     poolBudget,
     targetStake,
     projectOwnerAddress,
+    eventData,
   } = body;
 
   try {
@@ -86,6 +87,25 @@ export async function POST(req: NextRequest, res: NextResponse) {
         { status: 400 }
       );
     }
+    console.log("Event Data", eventData);
+    console.log("Project Id", eventData.poolId);
+    console.log("Project Owner Address", projectOwnerAddress);
+    console.log("Verified Token", verifiedToken);
+    // console.log("Project Logo", projectLogo);
+    // console.log("Project Image", projectImage);
+    console.log("Short Description", shortDescription);
+    console.log("Long Description", longDescription);
+    console.log("Accepted VToken", acceptedVToken);
+    console.log("Min Stake", minStake);
+    console.log("Max Stake", maxStake);
+    console.log("From Date", fromDate);
+    console.log("To Date", toDate);
+    console.log("Tx Hash Created", eventData.txnHashCreated);
+    console.log("Project Status", ProjectStatus.Upcoming);
+    console.log("Chain Name", chain);
+    console.log("Pool Budget", poolBudget);
+    console.log("Target Stake", targetStake);
+
 
     const project = await prismaClient.project.create({
       data: {
@@ -106,9 +126,10 @@ export async function POST(req: NextRequest, res: NextResponse) {
         // chainName: "Ethereum", // Add appropriate value
         // poolBudget: 100000, // Add appropriate value
         // targetStake: 50000, // Add appropriate value
-
+        id: eventData.poolId.toString(),
         projectName: projectName,
         tokenSymbol: tokenSymbol,
+        // projectOwnerAddress: eventData.projectOwner,
         projectOwnerAddress: projectOwnerAddress,
         verifiedTokenAddress: verifiedToken,
         projectLogo: projectLogo,
@@ -120,7 +141,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
         maxStake: maxStake,
         fromDate: new Date(fromDate),
         toDate: new Date(toDate),
-        txHashCreated: "0xsgrgrg2234", // Add appropriate value
+        txHashCreated: eventData.txnHashCreated, // Add appropriate value
         projectStatus: ProjectStatus.Upcoming, // Add appropriate value
         chainName: chain, // Add appropriate value
         poolBudget: poolBudget, // Add appropriate value

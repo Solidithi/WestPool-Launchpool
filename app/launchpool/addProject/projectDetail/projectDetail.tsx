@@ -1,9 +1,11 @@
 "use client";
 import { useProjectDetailStore } from "@/app/zustand/store";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import MultiSelect from "@/app/components/MultiSelect";
-import { availablePool } from "@/app/constants";
+import { useChain } from "@thirdweb-dev/react";
+import { chainConfig } from "@/app/config";
+// import { availablePool } from "@/app/constants";
 
 const ProjectDetailPage = () => {
   const {
@@ -30,6 +32,8 @@ const ProjectDetailPage = () => {
     projectLogo,
     setProjectLogo,
   } = useProjectDetailStore();
+
+  const [ vAssetsPools, setVAssetsPools ] = useState<any[]>([])
 
   const router = useRouter();
 
@@ -134,28 +138,46 @@ const ProjectDetailPage = () => {
       projectImage,
       projectLogo
     );
-    if (
-      projectName === "" ||
-      tokenSymbol === "" ||
-      shortDescription === "" ||
-      longDescription === "" ||
-      maxStake === undefined ||
-      minStake === undefined ||
-      acceptedVToken === null ||
-      fromDate === "" ||
-      toDate === "" ||
-      projectImage === null ||
-      projectLogo === null
-    ) {
-      alert("Please fill all the fields");
-      return;
-    }
+    // if (
+    //   projectName === "" ||
+    //   tokenSymbol === "" ||
+    //   shortDescription === "" ||
+    //   longDescription === "" ||
+    //   maxStake === undefined ||
+    //   minStake === undefined ||
+    //   acceptedVToken === null ||
+    //   fromDate === "" ||
+    //   toDate === "" ||
+    //   projectImage === null ||
+    //   projectLogo === null
+    // ) {
+    //   alert("Please fill all the fields");
+    //   return;
+    // }
     try {
+      const acceptedVTokenAddress = chainConfig[currentChain?.chainId?.toString() as keyof typeof chainConfig].vAssets.find(asset => asset.name === acceptedVToken[0]) 
+      console.log("Project Name: " + projectName);
+      console.log("Token Symbols: " + tokenSymbol);
+      console.log("Accepted VToken Address: " + acceptedVTokenAddress?.address);
+      console.log("Accepted VToken: " + acceptedVToken);
+
       router.push("/launchpool/addProject/preview");
     } catch (e) {
       console.log(e);
     }
   };
+
+  const currentChain = useChain()
+  useEffect(() => {
+    if(!currentChain) {
+      return
+    }
+    const chainId = currentChain.chainId
+    const vAssets =
+    chainConfig[chainId.toString() as keyof typeof chainConfig].vAssets;
+    setVAssetsPools(vAssets)
+   
+  }, [currentChain]);
 
   return (
     <div>
@@ -249,7 +271,7 @@ const ProjectDetailPage = () => {
                 /> */}
                 <MultiSelect
                   placeholder="Select Pool"
-                  options={availablePool}
+                  options={vAssetsPools}
                   state="acceptedVToken"
                 />
               </div>

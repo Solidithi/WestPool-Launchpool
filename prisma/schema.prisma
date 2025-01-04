@@ -8,7 +8,7 @@ datasource db {
 }
 
 model Project {
-  id                   String            @id @default(uuid())
+  id                   String            @id
   projectName          String
   projectOwnerAddress  String
   verifiedTokenAddress String            @unique
