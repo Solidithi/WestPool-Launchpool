@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import MultiSelect from "@/app/components/MultiSelect";
 import { useChain } from "@thirdweb-dev/react";
 import { chainConfig } from "@/app/config";
+import { availablePool } from "@/app/constants";
 // import { availablePool } from "@/app/constants";
 
 const ProjectDetailPage = () => {
@@ -33,7 +34,7 @@ const ProjectDetailPage = () => {
     setProjectLogo,
   } = useProjectDetailStore();
 
-  const [ vAssetsPools, setVAssetsPools ] = useState<any[]>([])
+  const [vAssetsPools, setVAssetsPools] = useState<any[]>([])
 
   const router = useRouter();
 
@@ -155,7 +156,7 @@ const ProjectDetailPage = () => {
     //   return;
     // }
     try {
-      const acceptedVTokenAddress = chainConfig[currentChain?.chainId?.toString() as keyof typeof chainConfig].vAssets.find(asset => asset.name === acceptedVToken[0]) 
+      const acceptedVTokenAddress = chainConfig[currentChain?.chainId?.toString() as keyof typeof chainConfig].vAssets.find(asset => asset.name === acceptedVToken[0])
       console.log("Project Name: " + projectName);
       console.log("Token Symbols: " + tokenSymbol);
       console.log("Accepted VToken Address: " + acceptedVTokenAddress?.address);
@@ -163,20 +164,24 @@ const ProjectDetailPage = () => {
 
       router.push("/launchpool/addProject/preview");
     } catch (e) {
-      console.log(e);
+      console.log("error isss: " + e);
     }
   };
 
   const currentChain = useChain()
   useEffect(() => {
-    if(!currentChain) {
+    if (!currentChain) {
       return
     }
     const chainId = currentChain.chainId
+    console.log(chainId);
+
     const vAssets =
-    chainConfig[chainId.toString() as keyof typeof chainConfig].vAssets;
+      chainConfig[chainId.toString() as keyof typeof chainConfig]?.vAssets;
+    console.log(vAssets);
+
     setVAssetsPools(vAssets)
-   
+
   }, [currentChain]);
 
   return (
@@ -272,6 +277,7 @@ const ProjectDetailPage = () => {
                 <MultiSelect
                   placeholder="Select Pool"
                   options={vAssetsPools}
+                  // options={availablePool}
                   state="acceptedVToken"
                 />
               </div>

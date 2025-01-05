@@ -6,8 +6,9 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import { useAddress } from "@thirdweb-dev/react";
-
+import { useAddress, useChain } from "@thirdweb-dev/react";
+import { chainConfig } from "@/app/config";
+import { PoolFactoryABI, PoolABI } from "@/app/abi";
 
 
 const TokenOffer = () => {
@@ -15,6 +16,31 @@ const TokenOffer = () => {
   const [loading, setLoading] = useState(true);
   const pageParam = useParams();
   const userAddress = useAddress();
+
+
+  const currentChain = useChain();
+
+
+  useEffect(() => {
+    if (!currentChain) {
+      return;
+    }
+
+    const address: string =
+      chainConfig[currentChain.chainId.toString() as keyof typeof chainConfig]
+        ?.contracts?.PoolFactory?.address;
+
+    setFactoryAddress(address);
+    console.log("address", address);
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const factoryContract = new ethers.Contract(
+      address,
+      PoolFactoryABI,
+      provider
+    );
+    setFactoryContract(factoryContract);
+  }, [currentChain]);
 
 
   useEffect(() => {

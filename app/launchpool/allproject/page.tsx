@@ -10,7 +10,13 @@ import { Launchpool, Project } from "../../interface/interface"
 
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { coinbaseWallet, ConnectWallet, metamaskWallet, useConnect, useConnectionStatus, walletConnect } from "@thirdweb-dev/react";
+import { coinbaseWallet, ConnectWallet, metamaskWallet, useAddress, useConnect, useConnectionStatus, walletConnect } from "@thirdweb-dev/react";
+import { ethers } from "ethers";
+import { useChain, useContract, useContractRead } from "@thirdweb-dev/react";
+import { chainConfig } from "@/app/config";
+import { PoolFactoryABI, PoolABI } from "@/app/abi";
+import { convertNumToOffchainFormat } from "@/app/utils/decimals";
+
 
 const AllProject = () => {
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
@@ -18,7 +24,29 @@ const AllProject = () => {
   const [projects, setProjects] = useState<Project[]>([]);
   const [totalProject, setTotalProject] = useState<Launchpool[]>([]);
   const [loading, setLoading] = useState(true);
+  // const [userClaimReward, setUserClaimReward] = useState<string | undefined>(undefined);
+  const [isCallingContract, setIsCallingContract] = useState<boolean>(false);
+
+  // const [apr, setApr] = useState<Project[]>([]);
+  // const [claimRewardProject, setClaimRewardProject] = useState<Project | undefined>(
+  //   undefined
+  // );
+
+  // const [crType, setCrType] = useState<1 | 2>(1);
+
+
+  const [factoryAddress, setFactoryAddress] = useState<string | undefined>(
+    undefined
+  );
+
+  const [factoryContract, setFactoryContract] = useState<ethers.Contract | null>(null);
+
   const connectionStatus = useConnectionStatus();
+
+  const currentChain = useChain();
+
+  const userAddress = useAddress()
+
 
   //  ------------Xử lí khi mở nhiều row--------------
   const toggleRow = (index: number) => {
@@ -89,40 +117,42 @@ const AllProject = () => {
   //   }
   // }
 
-  //  ------------Gọi API--------------
   useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const res = await axios.get("/api/launchpool/allProject");
-        const data = res.data;
+    if (!currentChain) {
+      return;
+    }
 
-        const res2 = await axios.get("/api/launchpool/allProject/launchpool");
-        const data2 = res2.data;
+    const address: string =
+      chainConfig[currentChain.chainId.toString() as keyof typeof chainConfig]
+        ?.contracts?.PoolFactory?.address;
 
-        if (data.success && data2.success) {
-          setProjects(data.data);
-          setTotalProject(data2.data);
-        } else {
-          console.error("Failed to fetch projects:", data.error);
-        }
-      } catch (error) {
-        console.error("Error fetching projects:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    setFactoryAddress(address);
+    console.log("address", address);
 
-    fetchProjects();
-  }, []);
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const factoryContract = new ethers.Contract(
+      address,
+      PoolFactoryABI,
+      provider
+    );
+    setFactoryContract(factoryContract);
+  }, [currentChain]);
 
+
+
+  //  ------------Gọi API--------------
   // useEffect(() => {
   //   const fetchProjects = async () => {
   //     try {
-  //       const res = await axios.get("/api/launchpool/allProject/launchpool");
+  //       const res = await axios.get("/api/launchpool/allProject");
   //       const data = res.data;
 
-  //       if (data.success) {
-  //         setTotalProject(data.data);
+  //       const res2 = await axios.get("/api/launchpool/allProject/launchpool");
+  //       const data2 = res2.data;
+
+  //       if (data.success && data2.success) {
+  //         setProjects(data.data);
+  //         setTotalProject(data2.data);
   //       } else {
   //         console.error("Failed to fetch projects:", data.error);
   //       }
@@ -135,6 +165,182 @@ const AllProject = () => {
 
   //   fetchProjects();
   // }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        // if (factoryContract) {
+        //   const apr = await factoryContract.calculateCurrentAPR();
+        //   console.log("Current APR:", apr.toString());
+        //   setApr(apr.toString());
+        // }
+
+
+        const res = await axios.get("/api/launchpool/allProject");
+        const data = res.data;
+
+        const res2 = await axios.get("/api/launchpool/allProject/launchpool");
+        const data2 = res2.data;
+
+        if (data.success && data2.success) {
+          setProjects(data.data);
+          setTotalProject(data2.data);
+        } else {
+          console.error("Failed to fetch projects:", data.error);
+        }
+
+        const projectAPR = [];
+
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        for (let i = 0; i < data.data.length; i++) {
+          let project = data.data[i];
+          console.log("project", project);
+
+          const poolAddress = await factoryContract?.getPoolAddress(
+            project.id
+          );
+
+          console.log("poolAddress", poolAddress);
+
+          const contract = new ethers.Contract(
+            poolAddress,
+            PoolABI,
+            provider
+          );
+
+          console.log("contract", contract);
+
+
+          const apr = await contract.calculateCurrentAPR();
+          const totalStaked = await contract.getTotalStaked();
+
+          console.log("APR:", apr.toString());
+
+          // projectAPR.push(
+          //   Object.assign(project, {
+          //     apr,
+          //     totalStaked
+          //   })
+          // );
+          try {
+            const userClaimReward = await contract.getUserCurrentAccumulatedRewards(userAddress);
+            console.log("userClaimReward", userClaimReward.toString());
+
+            if (userClaimReward && !userClaimReward.isZero()) {
+              projectAPR.push(
+                Object.assign(project, {
+                  apr,
+                  totalStaked,
+                  userClaimReward,
+                })
+              );
+            } else {
+              projectAPR.push(
+                Object.assign(project, {
+                  apr,
+                  totalStaked,
+                  userClaimReward: "0",
+                })
+              );
+            }
+          } catch (error) {
+            console.log(`No claim reward found for project ID: ${project.id}, skipping...`);
+          } finally {
+            projectAPR.push(
+              Object.assign(project, {
+                apr,
+                totalStaked,
+              })
+            );
+          }
+        }
+
+        setProjects(projectAPR)
+        console.log("APR:", projectAPR);
+
+
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [factoryContract]);
+
+
+
+  // const makeWithdrawTransaction = async (e?: any) => {
+  //   e.preventDefault();
+
+  //   if (!claimRewardProject) {
+  //     console.trace(`withdrawProject is empty`);
+  //   }
+
+  //   setIsCallingContract(true);
+  //   const provider = new ethers.providers.Web3Provider(window.ethereum);
+  //   const signer = provider.getSigner();
+
+  //   const poolAddr = await factoryContract!.getProjectPoolAddress(
+  //     claimRewardProject?.id
+  //   );
+  //   const poolContract = new ethers.Contract(poolAddr, PoolABI, signer);
+
+
+
+  //   setIsCallingContract(false);
+  //   (document.getElementById("withdrawDialog") as HTMLDialogElement).close();
+  // };
+
+  const handleClaimReward = async (project: Project) => {
+    console.log("Claiming reward for project:", project);
+
+    // setClaimRewardProject(project);
+    setIsCallingContract(true);
+
+    try {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner();
+      console.log("Provider", provider);
+      console.log("Signer", signer);
+
+      console.log("Provider and signer set up successfully.");
+
+      const poolAddr = await factoryContract?.getPoolAddress(
+        // claimRewardProject?.id
+        project.id
+      );
+      console.log("Pool address fetched:", poolAddr);
+
+      const poolContract = new ethers.Contract(poolAddr, PoolABI, signer);
+      console.log("Pool contract initialized:", poolContract);
+
+      const resp = await poolContract.claimRewards();
+      console.log("Transaction response:", resp);
+
+      // Hiển thị thông báo thành công
+      console.log("Reward claim successful for project:", project.id);
+      alert("Claim rewards successful!");
+
+    } catch (error) {
+      console.error("Error claiming reward:", error);
+
+      const errorMessage = (error as any)?.message || "";
+
+      if (errorMessage.includes("No rewards to claim")) {
+        alert("You have no rewards to claim.");
+      } else if (errorMessage.includes("Insufficient contract balance")) {
+        alert("The contract does not have enough tokens.");
+      } else {
+        alert("An error occurred while claiming rewards.");
+      }
+    } finally {
+      setIsCallingContract(false);
+    }
+  };
+
+
 
   if (loading) return <div className="flex justify-center items-center h-[80vh]">
     <span className="loading loading-dots loading-lg "></span>
@@ -272,9 +478,17 @@ const AllProject = () => {
                           {/* <td>{data.earned}</td>
                           <td>{data.token}</td> */}
                           <td>
-                            {/* {data.invested} */}
+                            {data.totalStaked?.toString()}
                           </td>
-                          <td>3.13%</td>
+                          <td>
+                            {/* {data.apr} */}
+                            {Number(
+                              convertNumToOffchainFormat(
+                                BigInt(data.apr ?? 0),
+                                2
+                              )
+                            )}
+                          </td>
                           <td>
                             {data.toDate
                               ? (() => {
@@ -340,10 +554,12 @@ const AllProject = () => {
                                   <div className="flex justify-between items-center">
                                     <input
                                       type="text"
-                                      value={0}
+                                      value={data.userClaimReward}
                                       className="bg-transparent"
                                     />
-                                    <button className="bg-gray-500 text-white py-1 px-4 rounded-3xl h-[35px]">
+                                    <button
+                                      onClick={(e) => handleClaimReward(data)}
+                                      className="btn bg-gray-500 text-white py-1 px-4 rounded-3xl h-[35px]">
                                       Harvest
                                     </button>
                                   </div>
@@ -365,7 +581,7 @@ const AllProject = () => {
                                 </div>
                               </div>
                             </td>
-                          </tr>
+                          </tr >
                         )}
                       </>
                     ))}
@@ -541,7 +757,7 @@ const AllProject = () => {
       </div>
 
       {/* ------------------------------------------------------------------------ */}
-    </div>
+    </div >
   );
 };
 

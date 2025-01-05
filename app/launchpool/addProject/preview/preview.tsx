@@ -147,6 +147,9 @@ const PreviewPage = () => {
       chainConfig[currentChain.chainId.toString() as keyof typeof chainConfig]
         ?.contracts?.PoolFactory?.address;
 
+    console.log("Address: " + address);
+
+
     const acceptedVTokenAddress = chainConfig[currentChain?.chainId?.toString() as keyof typeof chainConfig].vAssets.find(asset => asset.name === acceptedVToken[0])
 
     setAcceptedVTokenAddress(acceptedVTokenAddress?.address);
@@ -179,7 +182,7 @@ const PreviewPage = () => {
 
   const { data: VTDecimals, error: VTDecimalsReadErr } = useContractRead(
     VTContract,
-    "decimals"  
+    "decimals"
   );
 
   const { data: PTDecimals, error: PTDecimalsReadErr } = useContractRead(

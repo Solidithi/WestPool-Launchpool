@@ -35,7 +35,7 @@ const Dashboard = () => {
       } finally {
         setLoading(false);
       }
-    };
+    };  
 
     fetchProjects();
   }, [userAddress,]);

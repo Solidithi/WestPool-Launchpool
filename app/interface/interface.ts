@@ -24,6 +24,9 @@ export interface Project {
   userId?: string;
   offers: Offer[];
   invested: InvestedProject[];
+  apr?: number;
+  totalStaked?: number;
+  userClaimReward?: number;
 }
 
 export interface User {
@@ -93,7 +96,7 @@ export interface Launchpool {
   totalTx: number;
 }
 
-enum ProjectStatus {
+export enum ProjectStatus {
   Upcoming,
   Ongoing,
   Completed,
