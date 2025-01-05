@@ -144,7 +144,22 @@ async function run(): Promise<void> {
     signer,
     undefined,
   );
+
   const mockVDotAddress = mockVDot.address;
+
+
+  const mockVGLMR = await deployContract(
+    "MockERC20MintOnInit",
+    signer,
+    undefined,
+    "voucher Moonbeam",
+    "vGLMR",
+    convertNumToOnChainFormat(1000000000, 18),
+  )
+
+  const mockVGLMRAddress = mockVGLMR.address;
+
+
   // await mockVAssetContract.freeMoneyForEveryone(
   //     "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
   //     BigInt(1000 * (10 ** 9) * 10 ** 18),
@@ -195,6 +210,19 @@ async function run(): Promise<void> {
     undefined,
   );
   const mockProjectTokenAddr = mockProjectTokenContract.address;
+
+  const preMarketFactoryContract = await deployContract(
+    "PreMarketFactory",
+    signer,
+    undefined,
+    convertNumToOnChainFormat(2, 18),
+  );
+
+  const preMarketFactoryAddr = preMarketFactoryContract.address;
+  
+
+
+  
   // await mockProjectTokenContract.freeMoneyForEveryone(
   //     "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
   //     BigInt(1000 * (10 ** 9) * 10 ** 18),
@@ -233,8 +261,10 @@ async function run(): Promise<void> {
 
   console.log('\x1b[36m%s\x1b[0m', `Mock BifrostEarning contract deployed to ${bifrostEarningMockAddr}`);
   console.log('\x1b[36m%s\x1b[0m', `PoolFactory contract deployed to ${factoryAddr}`);
+  console.log('\x1b[36m%s\x1b[0m', `PreMarketFactory contract deployed to ${preMarketFactoryAddr}`);
   // console.log('\x1b[36m%s\x1b[0m', `Pool Address: ${poolAddr}`);
-  console.log('\x1b[36m%s\x1b[0m', `Mock VToken contract deployed to ${mockVDotAddress}`);
+  console.log('\x1b[36m%s\x1b[0m', `Mock VDOT contract deployed to ${mockVDotAddress}`);
+  console.log('\x1b[36m%s\x1b[0m', `Mock VGLMR contract deployed to ${mockVGLMRAddress}`);
   console.log('\x1b[36m%s\x1b[0m', `Mock ProjectToken contract deployed to ${mockProjectTokenAddr}`);
   // console.log('\x1b[36m%s\x1b[0m', `An example ProjectPool contract was created at address ${poolAddr}`);
 
