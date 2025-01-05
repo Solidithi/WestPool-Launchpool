@@ -101,3 +101,4 @@ export function convertNumToOffchainFormat(
 
 
 console.log(convertNumToOffchainFormat(BigInt(103000000000000000000), 18));
+console.log(convertNumToOnChainFormat(103, 18));

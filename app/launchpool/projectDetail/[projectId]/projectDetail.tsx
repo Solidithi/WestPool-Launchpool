@@ -10,7 +10,7 @@ import { useAddress, useChain, useContract, useContractEvents } from "@thirdweb-
 import { chainConfig } from "@/app/config";
 import { ethers } from "ethers";
 import { MockVAssetABI, PoolABI, PoolFactoryABI } from "@/app/abi";
-import { convertNumToOnChainFormat } from "@/app/utils/decimals";
+import { convertNumToOffchainFormat, convertNumToOnChainFormat } from "@/app/utils/decimals";
 
 
 type Status = "upcoming" | "ongoing" | "completed";
@@ -165,6 +165,7 @@ const ProjectDetailPage = () => {
         const data = res.data;
 
         if (data.success) {
+          console.log("Project details fetched successfully:", data.data);
           setProjectDetails(data.data);
         } else {
           console.error("Failed to fetch projects:", data.error);
@@ -413,19 +414,20 @@ const ProjectDetailPage = () => {
 
     const poolContractWithSigner = poolContract.connect(signer);
     console.log("Got pool contract with signer: ", poolContractWithSigner);
+    console.log("OnChainAmount: ", onChainAmount);
 
     try {
-      // const currentAllowance = await vAssetContract.allowance(userAddress, poolContract.address);
-      // console.log("Current allowance: ", currentAllowance.toString());
-      // if (currentAllowance.gte(onChainAmount)) {
-      //   console.log("Already approved");
-      // } else {
+      const currentAllowance = await vAssetContract.allowance(userAddress, poolContract.address);
+      console.log("Current allowance: ", currentAllowance.toString());
+      if (currentAllowance.gte(onChainAmount)) {
+        console.log("Already approved");
+      } else {
 
-      //   const approvalTx = await vAssetContract.approve(poolContract.address, amount);
-      //   console.log("Approval tx: ", approvalTx.hash);
-      //   await approvalTx.wait();
-      // }
-      // console.log("Approved");
+        const approvalTx = await vAssetContract.approve(poolContract.address, amount);
+        console.log("Approval tx: ", approvalTx.hash);
+        await approvalTx.wait();
+      }
+      console.log("Approved");
 
       const unStakeTx = await poolContractWithSigner.unstake(onChainAmount);
       if (!unStakeTx) {
@@ -520,8 +522,8 @@ const ProjectDetailPage = () => {
 
     const fetchTotalStaked = async () => {
       const totalStaked = await poolContract.getTotalStaked();
-      console.log("Total Staked: " + totalStaked);
-      setTotalStaked(totalStaked);
+      console.log("Total Pool Staked: " + totalStaked);
+      setTotalPoolStaked(totalStaked);
     };
 
     fetchTotalStaked();
@@ -610,7 +612,7 @@ const ProjectDetailPage = () => {
 
     const fetchUserTotalStaked = async () => {
       const totalStaked = await poolContract.getStakedAmount(userAddress);
-      console.log("Total Staked: " + totalStaked);
+      console.log("Total User Staked: " + totalStaked);
       setTotalStaked(totalStaked);
     };
 
@@ -725,9 +727,9 @@ const ProjectDetailPage = () => {
               key={index}
               className={`btn btn-ghost rounded-3xl px-8 py-2 text-white transition-colors duration-300 ${activeButton === token ? "bg-[#6D93CD]" : "bg-transparent"
                 }`}
-              onClick={() => setActiveButton(token)}
+              onClick={() => setActiveButton(token.toString())}
             >
-              {token} Pool
+              {token.toString()} Pool
             </button>
           ))}
 
@@ -771,7 +773,11 @@ const ProjectDetailPage = () => {
                 FDUSD Tokens Locked
               </span>
               <span className="text-[36px] text-white font-bold">
-                {totalStaked.toString()} FDUSD
+                {convertNumToOffchainFormat(
+                BigInt(totalStaked),
+                18,
+                )
+                } FDUSD
               </span>
             </div>
 
@@ -929,8 +935,8 @@ const ProjectDetailPage = () => {
         </div>
       </div>
 
-      {/* Similar to Binance */}
-      <div className="flex mt-10 w-full p-8 h-auto">
+     {/* Similar to Binance */}
+     <div className="flex mt-10 w-full p-8 h-auto">
         {projectDetails[0]?.acceptedVToken.map((token, index) => (
           activeButton === token && (
             <div
@@ -943,16 +949,22 @@ const ProjectDetailPage = () => {
                   {/* <!-- Row 1 --> */}
                   <div>
                     <p className="text-gray-400 text-lg">
-                      Total {token} tokens airdropped in the pool
+                      Total {token.toString()} tokens airdropped in the pool
                     </p>
                     <p className="text-lg font-bold text-white">
-                      {totalProjectToken} {token}
+                      {/* {totalProjectToken.toString()}  */}
+                      {Number(
+                        convertNumToOffchainFormat(
+                          BigInt(totalProjectToken ?? 0),
+                          18
+                        )
+                      )} {token.toString()}
                     </p>
                   </div>
                   <div>
                     <p className="text-gray-400 text-lg">Locked token</p>
                     <p className="text-lg font-bold text-green-500">
-                      ● {activeButton}
+                      ● {activeButton.toString()}
                     </p>
                   </div>
 
@@ -968,10 +980,16 @@ const ProjectDetailPage = () => {
                   <div>
                     {/* Total Project Token Locked */}
                     <p className="text-gray-400 text-lg">
-                      Total {token} tokens locked
+                      Total {token.toString()} tokens locked
                     </p>
                     <p className="text-lg font-bold text-white">
-                      {totalPoolStaked} {activeButton}
+                      {/* {totalPoolStaked.toString()}  */}
+                      {Number(
+                        convertNumToOffchainFormat(
+                          BigInt(totalPoolStaked ?? 0),
+                          18
+                        )
+                      )} {activeButton.toString()}
                     </p>
                   </div>
 
