@@ -27,6 +27,8 @@ export async function POST(req: NextRequest, res: NextResponse) {
     eventData,
   } = body;
 
+  console.log("Project Names: ", projectName);
+
   try {
     // const project = await prismaClient.project.create({
     //     data: {

@@ -75,9 +75,13 @@ const MyProjectPage = () => {
 
       for (let i = 0; i < projects.length; i++) {
         let project = projects[i];
+        console.log("Project: " + project);
+
         const poolAddress = await factoryContract!.getPoolAddress(
           project.id
         );
+        console.log("Pool Address: " + poolAddress);
+
         const contract = new ethers.Contract(
           poolAddress,
           PoolABI,
@@ -231,7 +235,6 @@ const MyProjectPage = () => {
                         <button
                           className="btn btn-xs sm:btn-sm md:btn-md lg:btn-md mt-4 rounded-2xl"
                           onClick={(e) => {
-                            e.stopPropagation();
                             handleClaimReward(data);
                           }}
                         >

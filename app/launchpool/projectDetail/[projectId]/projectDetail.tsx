@@ -6,7 +6,11 @@ import StatusDisplay from "@/app/components/Status";
 import { useParams } from "next/navigation";
 import axios from "axios";
 import { Project } from "@/app/interface/interface";
-import { useAddress } from "@thirdweb-dev/react";
+import { useAddress, useChain, useContract, useContractEvents } from "@thirdweb-dev/react";
+import { chainConfig } from "@/app/config";
+import { ethers } from "ethers";
+import { MockVAssetABI, PoolABI, PoolFactoryABI } from "@/app/abi";
+import { convertNumToOffchainFormat, convertNumToOnChainFormat } from "@/app/utils/decimals";
 
 
 type Status = "upcoming" | "ongoing" | "completed";
@@ -25,13 +29,23 @@ const ProjectDetailPage = () => {
 
   const [stakeAmount, setStakeAmount] = useState("");
   const [unStakeAmount, setUnStakeAmount] = useState("");
-  const [totalStaked, setTotalStaked] = useState(0);
+  // const [totalStaked, setTotalStaked] = useState(0);
 
   const [projectDetails, setProjectDetails] = useState<Project[]>([]);
 
 
   const [loading, setLoading] = useState(true);
   const userAddress = useAddress();
+  const [factoryContract, setFactoryContract] = useState<ethers.Contract>();
+  const [poolContract, setPoolContract] = useState<ethers.Contract>();
+  const [poolAddress, setPoolAddress] = useState<string>();
+  // const [ poolContractThirdWeb, setpoolContractThirdWeb] = useState<any>();
+  const [totalPoolStaked, setTotalPoolStaked] = useState<number>(0);
+  const [acceptedVTokenAddress, setAcceptedVTokenAddress] = useState<string>();
+  const [totalProjectToken, setTotalProjectToken] = useState<number>(0);
+  const [totalStaked, setTotalStaked] = useState<number>(0);
+  const [isSendingTx, setIsSendingTx] = useState<boolean>(false);
+  const [vAssetDecimals, setVAssetDecimals] = useState<number>(18);
 
   //Create these state var acceptedVToken,
   // minStake,
@@ -191,7 +205,6 @@ const ProjectDetailPage = () => {
 
   useEffect(() => {
     console.log("Project details:", projectDetails);
-    console.log("fromDate: ", projectDetails[0]?.longDescription);
     const currentDate = new Date();
     if (projectDetails[0]?.fromDate && projectDetails[0]?.toDate) {
       const from = new Date(projectDetails[0]?.fromDate);
@@ -215,64 +228,399 @@ const ProjectDetailPage = () => {
     }
   }, [projectDetails]);
 
+
+  // const {contract: poolContractThirdWeb, error: poolError } = useContract(
+  //   poolAddress || "",
+  //   PoolABI,
+  // )
+
+  // let {
+  //   data: stakedEvent,
+  //   isLoading: isWaitingForStakedEvent,
+  //   error: stakedEventError,
+  // } = useContractEvents( poolContractThirdWeb, "Staked", {
+  //   queryFilter: {
+  //     filters:{
+  //       investor: userAddress,
+  //     },
+  //     order: "desc",
+  //   },
+  //   subscribe: true,
+  // });
+
+
   const handleStake = async (dialogId: string) => {
     /***
      * TODO: Take the onchain total staked amount to assign it to totalStaked
      */
-    const amount = parseFloat(stakeAmount);
-    console.log("Page Param: " + pageParam);
-    const response = await axios.post("/api/launchpool/projectDetail/stake", {
-      userAddress: userAddress,
-      projectId: pageParam,
-      txHash: "0x123456",
-    })
-
-    if (response.data.success) {
-      console.log("Stake successful");
-
-      const dialog = document.getElementById(dialogId) as HTMLDialogElement;
-      if (dialog) {
-        dialog.close(); // Đóng popup
-      }
-    } else {
-      console.error("Failed to stake:", response.data.error);
+    if (!poolContract) {
+      console.error("Pool contract is not available");
       return;
     }
 
-    if (amount > 0 && amount != null) {
-      setTotalStaked((prevTotal) => prevTotal + amount);
-      setStakeAmount("");
+    if (!vAssetDecimals) {
+      console.error("vAssetDecimals is not available");
+      setVAssetDecimals(18);
     }
+
+    const amount = parseFloat(stakeAmount);
+    console.log("vAssetDecimalsvAssetDecimalsvAssetDecimalsvAssetDecimals vAssetDecimals: " + vAssetDecimals);
+    const onChainAmount = convertNumToOnChainFormat(amount, 18);
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    console.trace(
+      `metamask provided a signer with address: ${await signer.getAddress()}`
+    );
+
+    if (!acceptedVTokenAddress) {
+      console.trace(
+        `cannot make ERC20 approve tx because vAssetAddress is not ready`
+      );
+      return;
+    }
+
+    const vAssetContract = new ethers.Contract(
+      acceptedVTokenAddress as string,
+      MockVAssetABI,
+      signer
+    );
+
+    console.log("Got VAsset contract", vAssetContract);
+
+    const poolContractWithSigner = poolContract.connect(signer);
+    console.log("Got pool contract with signer: ", poolContractWithSigner);
+
+    try {
+      const currentAllowance = await vAssetContract.allowance(userAddress, poolContract.address);
+      console.log("Current allowance: ", currentAllowance.toString());
+      if (currentAllowance.gte(onChainAmount)) {
+        console.log("Already approved");
+      } else {
+
+        const approvalTx = await vAssetContract.approve(poolContract.address, amount);
+        console.log("Approval tx: ", approvalTx.hash);
+        await approvalTx.wait();
+      }
+      console.log("Approved");
+
+      const stakeTx = await poolContractWithSigner.stake(onChainAmount);
+      if (!stakeTx) {
+        console.error("Failed to stake");
+        return;
+      }
+      console.log("Staked");
+      const receipt = await stakeTx.wait();
+
+      // if(stakedEvent && !stakedEventError) {
+      //   console.trace("Processing events");
+      //   console.log("Staked event data: ",stakedEvent);
+
+      // }
+
+      const txHash: string = receipt.transactionHash;
+
+      // const wantedEvent = stakedEvent?.find((event) => {
+      //   return event.transaction.transactionHash === receipt.transactionHash
+      // }
+
+
+      console.log("Page Param: " + pageParam);
+      const response = await axios.post("/api/launchpool/projectDetail/stake", {
+        userAddress: userAddress,
+        projectId: pageParam,
+        txHash: txHash,
+      })
+
+      if (response.data.success) {
+        console.log("Stake successful");
+
+        const dialog = document.getElementById(dialogId) as HTMLDialogElement;
+        if (dialog) {
+          dialog.close(); // Đóng popup
+        }
+      } else {
+        console.error("Failed to stake:", response.data.error);
+        return;
+      }
+
+      // if (amount > 0 && amount != null) {
+      //   setTotalStaked((prevTotal) => prevTotal + amount);
+      // }
+
+      setStakeAmount("");
+
+    } catch (error) {
+      // showTxErrorToast();
+      console.error(`error when sending investment tx:\n${error}`);
+    }
+
+
   };
 
+
+  //Unstake the amount staked
   const handleUnstake = async (dialogId: string) => {
     /***
      * TODO: Take the onchain total staked amount to assign it to totalStaked
      *  
      *  */
-    const amount = parseFloat(unStakeAmount);
-    console.log("Page Param: " + pageParam);
-    const response = await axios.post("/api/launchpool/projectDetail/unstake", {
-      userAddress: userAddress,
-      projectId: pageParam,
-      txHash: "0x123456",
-    })
-
-    if (response.data.success) {
-      console.log("Unstake successful");
-      const dialog = document.getElementById(dialogId) as HTMLDialogElement;
-      if (dialog) {
-        dialog.close(); // Đóng popup
-      }
-    } else {
-      console.error("Failed to unstake:", response.data.error);
+    if (!poolContract) {
+      console.error("Pool contract is not available");
       return;
     }
 
-    if (amount > 0 && amount != null) {
-      setUnStakeAmount("");
+    if (!vAssetDecimals) {
+      console.error("vAssetDecimals is not available");
+      setVAssetDecimals(18);
     }
+
+    if (!totalStaked) {
+      console.error("Total staked is not available");
+      return;
+    }
+
+    if (totalStaked === 0 || totalStaked - parseFloat(unStakeAmount) < 0) {
+      console.error("Cannot unstake more than staked amount");
+      return;
+    }
+
+    const amount = parseFloat(unStakeAmount);
+
+
+    const onChainAmount = convertNumToOnChainFormat(amount, vAssetDecimals!);
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner();
+    console.trace(
+      `metamask provided a signer with address: ${await signer.getAddress()}`
+    );
+
+    if (!acceptedVTokenAddress) {
+      console.trace(
+        `cannot make ERC20 approve tx because vAssetAddress is not ready`
+      );
+      return;
+    }
+
+    const vAssetContract = new ethers.Contract(
+      acceptedVTokenAddress as string,
+      MockVAssetABI,
+      signer
+    );
+
+    console.log("Got VAsset contract", vAssetContract);
+
+    const poolContractWithSigner = poolContract.connect(signer);
+    console.log("Got pool contract with signer: ", poolContractWithSigner);
+
+    try {
+      // const currentAllowance = await vAssetContract.allowance(userAddress, poolContract.address);
+      // console.log("Current allowance: ", currentAllowance.toString());
+      // if (currentAllowance.gte(onChainAmount)) {
+      //   console.log("Already approved");
+      // } else {
+
+      //   const approvalTx = await vAssetContract.approve(poolContract.address, amount);
+      //   console.log("Approval tx: ", approvalTx.hash);
+      //   await approvalTx.wait();
+      // }
+      // console.log("Approved");
+
+      const unStakeTx = await poolContractWithSigner.unstake(onChainAmount);
+      if (!unStakeTx) {
+        console.error("Failed to Unstake");
+        return;
+      }
+      console.log("UnStaked");
+      const receipt = await unStakeTx.wait();
+
+      // if(stakedEvent && !stakedEventError) {
+      //   console.trace("Processing events");
+      //   console.log("Staked event data: ",stakedEvent);
+
+      // }
+
+      const txHash: string = receipt.transactionHash;
+
+
+
+      // const amount = parseFloat(unStakeAmount);
+      console.log("Page Param: " + pageParam);
+      const response = await axios.post("/api/launchpool/projectDetail/unstake", {
+        userAddress: userAddress,
+        projectId: pageParam,
+        txHash: txHash,
+      })
+
+      if (response.data.success) {
+        console.log("Unstake successful");
+        const dialog = document.getElementById(dialogId) as HTMLDialogElement;
+        if (dialog) {
+          dialog.close(); // Đóng popup
+        }
+      } else {
+        console.error("Failed to unstake:", response.data.error);
+        return;
+      }
+
+      if (amount > 0 && amount != null) {
+        setUnStakeAmount("");
+      }
+    } catch (error) {
+      // showTxErrorToast();
+      console.error(`error when sending investment tx:\n${error}`);
+    }
+
   }
+
+  const currentChain = useChain();
+  //Fetch Pool Contract
+  useEffect(() => {
+    if (!currentChain) {
+      return;
+    }
+    const address: string =
+      chainConfig[currentChain.chainId.toString() as keyof typeof chainConfig]
+        ?.contracts?.PoolFactory?.address;
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    console.log("Provider: " + provider);
+    const factoryContract = new ethers.Contract(
+      address,
+      PoolFactoryABI,
+      provider
+    );
+
+    const poolAddress = factoryContract.getPoolAddress(pageParam.projectId);
+    console.log("Pool Address: " + poolAddress);
+
+    const poolContract = new ethers.Contract(
+      poolAddress,
+      PoolABI,
+      provider
+    );
+
+    setPoolAddress(poolAddress);
+    setPoolContract(poolContract);
+    setFactoryContract(factoryContract);
+    // setpoolContractThirdWeb(poolContractThirdWeb);
+
+  }, [currentChain]);
+
+  //Fetch total staked
+  useEffect(() => {
+    if (!currentChain || !poolContract) {
+      return;
+    }
+
+    const fetchTotalStaked = async () => {
+      try {
+        const totalStaked = await poolContract.getTotalStaked();
+        console.log("Total Pool Staked:", totalStaked.toString());
+        setTotalPoolStaked(totalStaked);
+      } catch (error) {
+        console.error("Error fetching total staked:", error);
+      }
+    };
+
+    fetchTotalStaked();
+  }, [poolContract, currentChain]);
+
+
+  //Fetch Accepted VToken Address and Decimals
+  useEffect(() => {
+    if (!currentChain) {
+      return;
+    }
+
+    if (!poolContract) {
+      return;
+    }
+
+    const fetchAcceptedVTokenAddress = async () => {
+      const acceptedVTokenAddress = await poolContract.getAcceptedVAsset();
+      console.log("Accepted VToken: " + acceptedVTokenAddress);
+      setAcceptedVTokenAddress(acceptedVTokenAddress);
+    };
+
+
+    fetchAcceptedVTokenAddress();
+  }, [poolContract, currentChain]);
+
+  useEffect(() => {
+    if (!currentChain) {
+      return;
+    }
+
+    if (!poolContract) {
+      return;
+    }
+
+    if (!acceptedVTokenAddress) {
+      return;
+    }
+
+    const fetchVAssetDecimals = async () => {
+      const vAssetContract = new ethers.Contract(
+        acceptedVTokenAddress as string,
+        MockVAssetABI,
+        poolContract.provider
+      );
+
+      const decimals = await vAssetContract.decimals();
+      console.log("Decimals: " + decimals);
+      setVAssetDecimals(decimals);
+    }
+
+    fetchVAssetDecimals();
+
+  }, [poolContract, currentChain]);
+
+
+  // Fetch Total Project Token
+  useEffect(() => {
+    if (!currentChain) {
+      return;
+    }
+
+    if (!poolContract) {
+      return;
+    }
+
+    const fetchTotalProjectToken = async () => {
+      const totalProjectToken = await poolContract.getTotalProjectToken();
+      console.log("Total Project Token: " + totalProjectToken);
+      setTotalProjectToken(totalProjectToken);
+    };
+
+    fetchTotalProjectToken();
+
+  }, [poolContract, currentChain]);
+
+
+  // Fetch User Total Staked Amount
+  useEffect(() => {
+    if (!currentChain) {
+      return;
+    }
+
+    if (!poolContract) {
+      return;
+    }
+
+    const fetchUserTotalStaked = async () => {
+      const totalStaked = await poolContract.getStakedAmount(userAddress);
+      console.log("Total Staked: " + totalStaked);
+      setTotalStaked(totalStaked);
+    };
+
+    fetchUserTotalStaked();
+
+  }, [poolContract, currentChain, userAddress]);
+
+
+
 
 
 
@@ -424,7 +772,13 @@ const ProjectDetailPage = () => {
                 FDUSD Tokens Locked
               </span>
               <span className="text-[36px] text-white font-bold">
-                {totalStaked} FDUSD
+                {/* {totalStaked.toString()} FDUSD */}
+                {Number(
+                  convertNumToOffchainFormat(
+                    BigInt(totalStaked ?? 0),
+                    18
+                  )
+                )}
               </span>
             </div>
 
@@ -461,6 +815,12 @@ const ProjectDetailPage = () => {
                           className="text-3xl font-bold text-white bg-transparent w-2/3 outline-none 
                           [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-moz-appearance:textfield]"
                           placeholder="enter"
+                          // value={Number(
+                          //   convertNumToOnChainFormat(
+                          //     Number(stakeAmount ?? 0),
+                          //     18
+                          //   )
+                          // )}
                           value={stakeAmount}
                           onChange={(e) => setStakeAmount(e.target.value)}
                         />
@@ -596,16 +956,22 @@ const ProjectDetailPage = () => {
                   {/* <!-- Row 1 --> */}
                   <div>
                     <p className="text-gray-400 text-lg">
-                      Total FDUSD tokens airdropped in the pool
+                      Total {token.toString()} tokens airdropped in the pool
                     </p>
                     <p className="text-lg font-bold text-white">
-                      720,000.0000 VANA
+                      {/* {totalProjectToken.toString()}  */}
+                      {Number(
+                        convertNumToOffchainFormat(
+                          BigInt(totalProjectToken ?? 0),
+                          18
+                        )
+                      )} {token.toString()}
                     </p>
                   </div>
                   <div>
                     <p className="text-gray-400 text-lg">Locked token</p>
                     <p className="text-lg font-bold text-green-500">
-                      ● {activeButton}
+                      ● {activeButton.toString()}
                     </p>
                   </div>
 
@@ -619,11 +985,18 @@ const ProjectDetailPage = () => {
                     </p>
                   </div> */}
                   <div>
+                    {/* Total Project Token Locked */}
                     <p className="text-gray-400 text-lg">
-                      Total FDUSD tokens locked
+                      Total {token.toString()} tokens locked
                     </p>
                     <p className="text-lg font-bold text-white">
-                      1,213,004,343.2789 {activeButton}
+                      {/* {totalPoolStaked.toString()}  */}
+                      {Number(
+                        convertNumToOffchainFormat(
+                          BigInt(totalPoolStaked ?? 0),
+                          18
+                        )
+                      )} {activeButton.toString()}
                     </p>
                   </div>
 

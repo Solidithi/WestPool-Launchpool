@@ -2,6 +2,7 @@ import { exec, ChildProcess } from 'child_process';
 import { ethers } from 'ethers';
 import { readFileSync, writeFileSync } from 'fs';
 import { PoolFactoryABI } from '../abi/';
+import { convertNumToOnChainFormat } from './decimals';
 
 export function startAnvil(): ChildProcess {
   // Spawn Anvil process
@@ -75,6 +76,14 @@ export async function deployContract(
       let vAsset: any = (chainConfigJSON[31337]["vAssets"] as object[]).find((obj: any) => obj["symbol"] === "vDOT")
       vAsset["address"] = contract.address;
     }
+    // else if (nameInConfig === "MockERC20MintOnInit") {
+    //   let contractSymbol = constructorArgs[1];
+    //   console.log(`Contract symbol: ${contractSymbol}`);
+    //   let vAsset: any = (chainConfigJSON[31337]["vAssets"] as object[]).find((obj: any) => obj["symbol"] === contractSymbol)
+    //   console.log(`vAsset: ${vAsset}`);
+    //   vAsset["address"] = contract.address;
+
+    // }
   }
   writeFileSync("app/config/chainConfig.json", JSON.stringify(chainConfigJSON, null, 2));
   console.log('\x1b[32m%s\x1b[0m', `Saved ${nameInConfig} contract address to app/config/chainConfig.json`);
@@ -96,16 +105,62 @@ async function run(): Promise<void> {
   const foundryTestPrivKey = "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d";
   const signer = getSigner(foundryTestPrivKey, provider)
 
-  const mockVAssetContract = await deployContract(
+
+  // const vTokenDataForCollateral = [
+  //   {
+  //     name: "voucher Astar",
+  //     symbol: "vASTAR",
+  //     amount: 1000000000,
+  //   },
+
+  //   {
+  //     name: "voucher WestEnd",
+  //     symbol: "vWND",
+  //     amount: 1000000000,
+  //   },
+
+  //   {
+  //     name: "voucher MoonBeam",
+  //     symbol: "vGLMR",
+  //     amount: 1000000000,
+  //   }
+
+  // ]
+  // // deploy mockVToken contract
+  // for (let i = 0; i < vTokenDataForCollateral.length; i++) {
+  //   const mockVAssetContract = await deployContract(
+  //     "MockERC20MintOnInit",
+  //     signer,
+  //     undefined,
+  //     vTokenDataForCollateral[i].name,
+  //     vTokenDataForCollateral[i].symbol,
+  //     convertNumToOnChainFormat(vTokenDataForCollateral[i].amount, 18),
+  //   );
+  //   const mockVTokenAddr = mockVAssetContract.address;
+  //   console.log('\x1b[36m%s\x1b[0m', `Mock VToken contract ${vTokenDataForCollateral[i].name} deployed to ${mockVTokenAddr}`);
+  // }
+  const mockVDot = await deployContract( //launchpool
     "MockVDot",
     signer,
     undefined,
   );
-  const mockVTokenAddr = mockVAssetContract.address;
+  const mockVDotAddress = mockVDot.address;
   // await mockVAssetContract.freeMoneyForEveryone(
   //     "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
   //     BigInt(1000 * (10 ** 9) * 10 ** 18),
   // );
+  // }
+
+  // const mockVAssetContract = await deployContract(
+  //   "",
+  //   signer,
+  //   undefined,
+  // );
+  // const mockVTokenAddr = mockVAssetContract.address;
+  // // await mockVAssetContract.freeMoneyForEveryone(
+  // //     "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266",
+  // //     BigInt(1000 * (10 ** 9) * 10 ** 18),
+  // // );
 
 
   // deploy BifrostEarningMock contract
@@ -113,7 +168,7 @@ async function run(): Promise<void> {
     "BifrostEarningMock",
     signer,
     undefined,
-    mockVTokenAddr,
+    mockVDotAddress,
     BigInt(10 ** 18),
   );
   const bifrostEarningMockAddr = bifrostEarningMockContract.address;
@@ -179,27 +234,27 @@ async function run(): Promise<void> {
   console.log('\x1b[36m%s\x1b[0m', `Mock BifrostEarning contract deployed to ${bifrostEarningMockAddr}`);
   console.log('\x1b[36m%s\x1b[0m', `PoolFactory contract deployed to ${factoryAddr}`);
   // console.log('\x1b[36m%s\x1b[0m', `Pool Address: ${poolAddr}`);
-  console.log('\x1b[36m%s\x1b[0m', `Mock VToken contract deployed to ${mockVTokenAddr}`);
+  console.log('\x1b[36m%s\x1b[0m', `Mock VToken contract deployed to ${mockVDotAddress}`);
   console.log('\x1b[36m%s\x1b[0m', `Mock ProjectToken contract deployed to ${mockProjectTokenAddr}`);
   // console.log('\x1b[36m%s\x1b[0m', `An example ProjectPool contract was created at address ${poolAddr}`);
-}
 
-async function invest() {
-  const provider = getProvider('http://localhost:8545');
-  const signer = getSigner("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80", provider);
-  const poolContract = new ethers.Contract(
-    "0xB7A5bd0345EF1Cc5E66bf61BdeC17D2461fBd968",
-    PoolFactoryABI,
-    signer
-  );
-
-  try {
-    const tx = await poolContract.investProject(
-      BigInt("9500000000000000000")
+  async function invest() {
+    const provider = getProvider('http://localhost:8545');
+    const signer = getSigner("0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80", provider);
+    const poolContract = new ethers.Contract(
+      "0xB7A5bd0345EF1Cc5E66bf61BdeC17D2461fBd968",
+      PoolFactoryABI,
+      signer
     );
-    console.debug(`invest response:\n${tx}`);
-  } catch (err) {
-    console.error(`error when sending invest():\n${err}`);
+
+    try {
+      const tx = await poolContract.investProject(
+        BigInt("9500000000000000000")
+      );
+      console.debug(`invest response:\n${tx}`);
+    } catch (err) {
+      console.error(`error when sending invest():\n${err}`);
+    }
   }
 }
 
@@ -224,6 +279,5 @@ async function testXCMOracle() {
   }
 
 }
-
 
 // invest().then().catch();

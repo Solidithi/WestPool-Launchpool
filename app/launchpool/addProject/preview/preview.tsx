@@ -15,6 +15,7 @@ import { useAddress, useChain, useContract, useContractEvents, useContractRead, 
 import { chainConfig } from "@/app/config";
 import { PoolFactoryABI } from "@/app/abi";
 import { convertNumToOnChainFormat } from "@/app/utils/decimals";
+import { ethers } from "ethers";
 const PreviewPage = () => {
   const [timeLeft, setTimeLeft] = useState({
     days: 0,
@@ -180,10 +181,10 @@ const PreviewPage = () => {
     error: createProjectError,
   } = useContractWrite(factoryContract, "createPool");
 
-  const { data: VTDecimals, error: VTDecimalsReadErr } = useContractRead(
-    VTContract,
-    "decimals"
-  );
+  // const { data: VTDecimals, error: VTDecimalsReadErr } = useContractRead(
+  //   VTContract,
+  //   "decimals"
+  // );
 
   const { data: PTDecimals, error: PTDecimalsReadErr } = useContractRead(
     PTContract,
@@ -220,6 +221,9 @@ const PreviewPage = () => {
           `Co event from smart contract due to error:\n${eventListenerError}`
         );
       }
+
+    
+
 
       if (poolCreatedEvt && !eventListenerError) {
         console.trace("Processing events");
@@ -333,20 +337,20 @@ const PreviewPage = () => {
 
     console.log("Success Smartcontract");
 
-    if (VTDecimalsReadErr) {
-      // showAlertWithText("Failed to read vToken decimals");
-      console.error(VTDecimalsReadErr);
-      return;
-    }
+    // if (VTDecimalsReadErr) {
+    //   // showAlertWithText("Failed to read vToken decimals");
+    //   console.error(VTDecimalsReadErr);
+    //   return;
+    // }
 
-    console.log("Success Decimals: " + VTDecimals);
+    // console.log("Success Decimals: " + VTDecimals);
 
     // if (PTDecimalsReadErr) {
     //   showAlertWithText(`Failed to retrieve information about project token`);
     //   console.error(PTDecimalsReadErr);
     // }
 
-    console.trace(`VTDecimals is ${VTDecimals}`);
+    // console.trace(`VTDecimals is ${VTDecimals}`);
     console.debug(`factoryAddress is : ${factoryAddress}`);
     console.debug(`Project Owner address is :${projectOwnerAddress}`);
 
@@ -365,20 +369,24 @@ const PreviewPage = () => {
         new Date(toDate).getTime() / 1000, //endDate
         convertNumToOnChainFormat(
           Number(poolBudget),
-          VTDecimals
+          // VTDecimals
+          18
           // PTDecimals
         ), //total Project Token
         convertNumToOnChainFormat(
           Number(maxStake),
-          VTDecimals
+          // VTDecimals
+          18
         ), //maxInvestment
         convertNumToOnChainFormat(
           Number(minStake),
-          VTDecimals
+          18
+          // VTDecimals
         ), //minInvestment 
         convertNumToOnChainFormat(
           Number(targetStake),
-          VTDecimals
+          18
+          // VTDecimals
         ), //targetStake
 
 

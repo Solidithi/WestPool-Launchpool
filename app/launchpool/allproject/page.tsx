@@ -267,7 +267,7 @@ const AllProject = () => {
     };
 
     fetchData();
-  }, [factoryContract]);
+  }, [factoryContract, userAddress]);
 
 
 

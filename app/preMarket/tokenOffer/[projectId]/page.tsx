@@ -9,11 +9,16 @@ import { useEffect, useState } from "react";
 import { useAddress, useChain } from "@thirdweb-dev/react";
 import { chainConfig } from "@/app/config";
 import { PoolFactoryABI, PoolABI } from "@/app/abi";
+import { ethers } from "ethers";
 
 
 const TokenOffer = () => {
   const [projectDetails, setProjectDetails] = useState<Offer[]>([]);
   const [loading, setLoading] = useState(true);
+  const [factoryAddress, setFactoryAddress] = useState<string | undefined>(
+    undefined
+  );
+  const [factoryContract, setFactoryContract] = useState<ethers.Contract | null>(null);
   const pageParam = useParams();
   const userAddress = useAddress();
 
