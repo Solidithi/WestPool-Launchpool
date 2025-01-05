@@ -1,3 +1,4 @@
+import { updateLaunchPoolNumberOfParticipantsWithCondition } from "@/app/utils/dbHelper";
 import prismaClient from "@/prisma";
 import { StakeType } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
@@ -27,13 +28,14 @@ export async function POST(req: NextRequest, res: NextResponse) {
       },
     });
 
-    if (getUser === null) {
-      const user = await prismaClient.user.create({
-        data: {
-          userAddress: userAddress,
-        },
-      });
-    }
+    // if (getUser === null) {
+    //   const user = await prismaClient.user.create({
+    //     data: {
+    //       userAddress: userAddress,
+    //     },
+    //   });
+    // }
+    updateLaunchPoolNumberOfParticipantsWithCondition(prismaClient)(getUser, userAddress);
 
     const createdStake = await prismaClient.investedProject.create({
       data: {

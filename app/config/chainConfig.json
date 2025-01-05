@@ -41,6 +41,20 @@
         "address": "0x8464135c8F25Da09e49BC8782676a84730C318bC",
         "icon": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvWgkOiR1hhHPj-S4ECiQOSEVwsPVFYBcWEOBYslnHs9DWI3Ne2y_zh7NnD9HVn49zn60&usqp=CAU",
         "decimals": 18
+      },
+      {
+        "name": "voucher Astar",
+        "symbol": "vASTAR",
+        "address": "0x000",
+        "icon": "https://www.stakingrewards.com/_next/image?url=https%3A%2F%2Fstorage.googleapis.com%2Fstakingrewards-static%2Fimages%2Fassets%2Fproduction%2Fbifrost-voucher-astr_logo.png%3Fv%3D1717150606436&w=3840&q=75",
+        "decimals": 18
+      },
+      {
+        "name": "voucher Moonbeam",
+        "symbol": "vGLMR",
+        "address": "0x000",
+        "icon": "https://www.stakingrewards.com/_next/image?url=https%3A%2F%2Fstorage.googleapis.com%2Fstakingrewards-static%2Fimages%2Fassets%2Fproduction%2Fbifrost-voucher-astr_logo.png%3Fv%3D1717150606436&w=3840&q=75",
+        "decimals": 18
       }
     ],
     "rpcNodes": [
