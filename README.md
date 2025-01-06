@@ -1,8 +1,12 @@
-# Decentralized Staking and Premarket dApp
+# WestPool
 
-Welcome to our revolutionary decentralized application (dApp) built to enhance the Web3 ecosystem, particularly the Polkadot and Kusama parachain ecosystems. This project leverages Bifrost's vAsset technology and the PolkaVM on the Westend network to create a robust launchpool staking platform and a cutting-edge premarket for trading project tokens.
+<h3 align="center">WESTPOOL</h3>
 
----
+Welcome to WestPool, our revolutionary decentralized application (dApp) built to enhance the Web3 ecosystem, particularly the Polkadot and Kusama parachain ecosystems. This project leverages Bifrost's vAsset technology and the PolkaVM on the Westend network to create a robust launchpool staking platform and a cutting-edge premarket for trading project tokens.
+
+<p align="center">
+    <img src="https://i.pinimg.com/736x/8e/9d/03/8e9d03183473f6b3a509228ce4a3fac5.jpg" alt="logo-white" width="150" height="150"/>
+</p>
 
 ## Features
 
@@ -121,4 +125,12 @@ Security and transparency are our top priorities. All processes are fully decent
 
 ---
 
-Made with ❤️ by
+## Check Out Our Demo Video
+
+<p align="center">
+  <a href="https://youtu.be/aPrm7U_5v5M">
+        <img src="https://img.youtube.com/vi/aPrm7U_5v5M/0.jpg" alt="Watch the video">
+    </a>
+</p>
+
+Made with ❤️ by WestPool
