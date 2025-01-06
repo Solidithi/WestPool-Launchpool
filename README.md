@@ -29,6 +29,8 @@ Our premarket feature allows users to trade project tokens before public listing
 - **Timely Settlements**: Sellers must deposit project tokens into the smart contract within 24 hours. If they fail, the buyer receives both parties' collateral.
 - **Use Case for vAsset**: Premarket trading provides another layer of utility for vAssets, rewarding users for staking and holding.
 
+WestPool combines a premarket and launchpool into a single platform to create a seamless and impactful experience for both stakers and project owners. By integrating these features, we enhance liquidity and enable early token transfers, allowing projects to build a strong and engaged community from the very start. Tokens gain activity immediately upon being claimed, fostering interest and utility at an early stage.
+
 ---
 
 ## Benefits
