@@ -88,24 +88,24 @@ const MyProjectPage = () => {
           provider
         );
 
-        // const poReward = await contract.getProjectOwnerReward();
+        const poReward = await contract.getProjectOwnerReward();
 
         if (project.projectStatus === "Upcoming") {
           console.log("Pending Projects: " + projects[i]);
           console.log("Pending Projects: " + projects[i].projectName);
-          pending.push(projects[i]);
-          // pending.push(
-          //   Object.assign(project, {
-          //     poReward
-          //   })
-          // );
+          // pending.push(projects[i]);
+          pending.push(
+            Object.assign(project, {
+              poReward
+            })
+          );
         } else {
-          ended.push(projects[i]);
-          // ended.push(
-          //   Object.assign(project, {
-          //     poReward
-          //   })
-          // );
+          // ended.push(projects[i]);
+          ended.push(
+            Object.assign(project, {
+              poReward
+            })
+          );
         }
       }
 
@@ -229,7 +229,7 @@ const MyProjectPage = () => {
                   >
                     <div className="flex items-center">
                       <div className="">
-                        <p className="">{data.poReward}</p>
+                        <p className="">{data.poReward.toString()}</p>
                       </div>
                       <div className="ml-auto mb-4 mr-5   ">
                         <button
@@ -285,7 +285,7 @@ const MyProjectPage = () => {
                   >
                     <div className="flex items-center">
                       <div className="">
-                        <p className="">{data.poReward}</p>
+                        <p className="">{data.poReward.toString()}</p>
                       </div>
                       <div className="ml-auto mb-4 mr-5   ">
                         <button

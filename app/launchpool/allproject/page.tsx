@@ -73,14 +73,24 @@ const AllProject = () => {
 
   // Phân loại dự án
   const liveProjects = projects.filter((data) => {
-    const daysLeft = Math.floor((new Date(data.toDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24));
-    return data.toDate && daysLeft > 0;
+    if (!data.toDate) return false;
+
+    const now = new Date().getTime();
+    const endDate = new Date(data.toDate).getTime();
+
+    return endDate > now;
   });
 
+
   const expiredProjects = projects.filter((data) => {
-    const daysLeft = Math.floor((new Date(data.toDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24));
-    return !data.toDate || daysLeft <= 0;
+    if (!data.toDate) return true;
+
+    const now = new Date().getTime();
+    const endDate = new Date(data.toDate).getTime();
+
+    return now >= endDate;
   });
+
 
   const connect = useConnect();
   const walletConfig = metamaskWallet();
@@ -507,7 +517,12 @@ const AllProject = () => {
                                 <div className="w-[600px] ">
                                   <div className="flex justify-between mb-4">
                                     <span>APR:</span>
-                                    {/* <span>{data.apr}</span> */}
+                                    <span>{Number(
+                                      convertNumToOffchainFormat(
+                                        BigInt(data.apr ?? 0),
+                                        2
+                                      )
+                                    )}</span>
                                   </div>
                                   <div className="flex justify-between mb-4">
                                     <span>Ends in:</span>
@@ -569,10 +584,14 @@ const AllProject = () => {
                                     START STAKING
                                   </span>
                                   {connectionStatus === "connected" ?
-                                    <button className="ml-2 bg-[#6D93CD] text-white py-1 px-4 rounded-3xl w-full h-[40px]"
+                                    <Link href={`/launchpool/projectDetail/${data.id}`} className="ml-2 bg-[#6D93CD] text-white py-1 px-4 rounded-3xl w-full h-[40px]"
                                     >
-                                      Stake
-                                    </button> :
+                                      <button
+                                      >
+                                        Stake
+                                      </button>
+                                    </Link>
+                                    :
                                     <button className="ml-2 bg-[#6D93CD] text-white py-1 px-4 rounded-3xl w-full h-[40px]"
                                       onClick={handleConnectWallet}>
                                       Connect Wallet
@@ -646,9 +665,17 @@ const AllProject = () => {
                         {/* <td>{data.earned}</td>
                           <td>{data.token}</td> */}
                         <td>
-                          {/* {data.invested} */}
+                          {data.totalStaked?.toString()}
                         </td>
-                        <td>3.13%</td>
+                        <td>
+                          {/* {data.apr} */}
+                          {Number(
+                            convertNumToOffchainFormat(
+                              BigInt(data.apr ?? 0),
+                              2
+                            )
+                          )}
+                        </td>
                         <td>
                           {data.toDate
                             ? (() => {
@@ -667,7 +694,12 @@ const AllProject = () => {
                               <div className="w-[600px] ">
                                 <div className="flex justify-between mb-4">
                                   <span>APR:</span>
-                                  {/* <span>{data.apr}</span> */}
+                                  <span>{Number(
+                                    convertNumToOffchainFormat(
+                                      BigInt(data.apr ?? 0),
+                                      2
+                                    )
+                                  )}</span>
                                 </div>
                                 <div className="flex justify-between mb-4">
                                   <span>Ends in:</span>
@@ -714,10 +746,12 @@ const AllProject = () => {
                                 <div className="flex justify-between items-center">
                                   <input
                                     type="text"
-                                    value={0}
+                                    value={data.userClaimReward}
                                     className="bg-transparent"
                                   />
-                                  <button className="bg-gray-500 text-white py-1 px-4 rounded-3xl h-[35px]">
+                                  <button
+                                    onClick={(e) => handleClaimReward(data)}
+                                    className="btn bg-gray-500 text-white py-1 px-4 rounded-3xl h-[35px]">
                                     Harvest
                                   </button>
                                 </div>
