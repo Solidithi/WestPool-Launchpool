@@ -9,7 +9,7 @@ import { Project } from "@/app/interface/interface";
 import { useAddress, useChain, useContract, useContractEvents } from "@thirdweb-dev/react";
 import { chainConfig } from "@/app/config";
 import { ethers } from "ethers";
-import { MockVAssetABI, PoolABI, PoolFactoryABI } from "@/app/abi";
+import { MockVDotABI, PoolABI, PoolFactoryABI } from "@/app/abi";
 import { convertNumToOffchainFormat, convertNumToOnChainFormat } from "@/app/utils/decimals";
 
 
@@ -283,7 +283,7 @@ const ProjectDetailPage = () => {
 
     const vAssetContract = new ethers.Contract(
       acceptedVTokenAddress as string,
-      MockVAssetABI,
+      MockVDotABI,
       signer
     );
 
@@ -406,7 +406,7 @@ const ProjectDetailPage = () => {
 
     const vAssetContract = new ethers.Contract(
       acceptedVTokenAddress as string,
-      MockVAssetABI,
+      MockVDotABI,
       signer
     );
 
@@ -562,7 +562,7 @@ const ProjectDetailPage = () => {
     const fetchVAssetDecimals = async () => {
       const vAssetContract = new ethers.Contract(
         acceptedVTokenAddress as string,
-        MockVAssetABI,
+        MockVDotABI,
         poolContract.provider
       );
 

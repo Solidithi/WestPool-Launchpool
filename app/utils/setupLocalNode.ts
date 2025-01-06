@@ -75,7 +75,11 @@ export async function deployContract(
     if (nameInConfig === "MockVDot") {
       let vAsset: any = (chainConfigJSON[31337]["vAssets"] as object[]).find((obj: any) => obj["symbol"] === "vDOT")
       vAsset["address"] = contract.address;
-    }
+    } 
+    // else if (nameInConfig === "MockVGLMR") {
+    //   let vAsset: any = (chainConfigJSON[31337]["vAssets"] as object[]).find((obj: any) => obj["symbol"] === "vGLMR")
+    //   vAsset["address"] = contract.address;
+    // } else
     // else if (nameInConfig === "MockERC20MintOnInit") {
     //   let contractSymbol = constructorArgs[1];
     //   console.log(`Contract symbol: ${contractSymbol}`);
