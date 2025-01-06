@@ -1,5 +1,5 @@
 import Image from "next/image";
-import logo from "@/public/Logo/DL_Logo.png";
+import logo from "@/public/Logo/IMG_7286.jpg";
 import bg from "@/public/Logo/image.png";
 
 export default function Home() {
@@ -30,7 +30,7 @@ export default function Home() {
           </span>
         </div>
         <div className="flex-2 flex justify-center items-center transition duration-500 ease-in-out transform hover:scale-110">
-          <Image src={logo} alt="Logo" width={350} height={400} />
+          <Image src={logo} alt="Logo" width={350} height={400} className="rounded-full" />
         </div>
       </div>
     </div>

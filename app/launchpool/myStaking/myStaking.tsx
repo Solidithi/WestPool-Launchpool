@@ -142,6 +142,8 @@ const MyStakingPage = () => {
 
 
 
+
+
   return (
     <div>
       <div className="py-10">
@@ -164,7 +166,7 @@ const MyStakingPage = () => {
                   <div className="collapse-title bg-gradient-to-r from-[#204275] to-[#4D75B3] text-white peer-checked:bg-[#3D69AC] peer-checked:text-white flex items-center">
                     <Image
                       className="rounded-full bg-gray-500"
-                      src={data.image}
+                      src={data.projectLogo}
                       alt="logo"
                       width={50}
                       height={50}
@@ -183,7 +185,7 @@ const MyStakingPage = () => {
                   >
                     <div className="flex items-center">
                       <div className="">
-                        <p className="">hello</p>
+                        <p className="">{data.longDescription}</p>
                       </div>
                       <div className="ml-auto mb-4 mr-5   ">
                         <button
@@ -218,7 +220,7 @@ const MyStakingPage = () => {
                   <div className="collapse-title bg-gradient-to-r from-[#204275] to-[#4D75B3] text-white peer-checked:bg-[#3D69AC] peer-checked:text-white flex items-center">
                     <Image
                       className="rounded-full bg-gray-500"
-                      src={data.projectImage}
+                      src={data.projectLogo}
                       alt="logo"
                       width={50}
                       height={50}
@@ -231,7 +233,7 @@ const MyStakingPage = () => {
                     </div>
                   </div>
 
-                  {/* <div
+                  <div
                     className="collapse-content bg-blue-500 text-white peer-checked:bg-[#628FD4] peer-checked:text-secondary-content
                                  border border-b rounded-b-2xl"
                   >
@@ -242,16 +244,13 @@ const MyStakingPage = () => {
                       <div className="ml-auto mb-4 mr-5   ">
                         <button
                           className="btn btn-xs sm:btn-sm md:btn-md lg:btn-md mt-4 rounded-2xl"
-                          onClick={(e) => {
-                            e.stopPropagation(); // Prevent collapse toggle
-                            console.log("Button clicked!");
-                          }}
+                          onClick={(e) => handleClaimReward(data)}
                         >
                           Withdraw
                         </button>
                       </div>
                     </div>
-                  </div> */}
+                  </div>
                 </div>
               ))}
             </>

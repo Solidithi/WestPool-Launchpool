@@ -5,7 +5,7 @@ import {
   ThirdwebProvider,
   metamaskWallet,
   coinbaseWallet,
-  walletConnect,    
+  walletConnect,
 } from "@thirdweb-dev/react";
 import {
   Astar,
@@ -16,7 +16,7 @@ import {
   MoonbaseAlpha,
 } from "@thirdweb-dev/chains";
 
-import { AssetHubWestend, LocalChain } from "./customSupportedChains";
+import { AssetHubWestend, WestendAssetHub } from "./customSupportedChains";
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -36,9 +36,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         Moonbeam,
         Moonriver,
         MoonbaseAlpha,
-        LocalChain,
+        WestendAssetHub,
       ]}
-      activeChain={LocalChain}
+      activeChain={WestendAssetHub}
       clientId={process.env.THIRDWEB_CLIENT_ID!}
     >
       {children}

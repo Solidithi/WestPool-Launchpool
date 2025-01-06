@@ -775,7 +775,7 @@ const ProjectDetailPage = () => {
                     {/* {totalStaked.toString()} FDUSD */}
                     {Number(
                       convertNumToOffchainFormat(
-                        BigInt(totalProjectToken ?? 0),
+                        BigInt(totalPoolStaked ?? 0),
                         18
                       )
                     )}

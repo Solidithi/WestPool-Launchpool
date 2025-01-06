@@ -6,7 +6,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ConnectWallet, useAddress } from "@thirdweb-dev/react";
 
-import logo from "@/public/Logo/DL_Logo.png";
+import logo from "@/public/Logo/IMG_7286.jpg";
+
 import polkadotlogo from "@/public/Logo/Polkadot_Token_Pink.png";
 
 
@@ -98,9 +99,9 @@ const Navbar = () => {
         <div className="flex justify-between items-center">
           <div className="flex items-center flex-shrink-0 transition-transform transform hover:-translate-y-1 duration-300">
             <Image src={polkadotlogo} alt="Logo" className="h-10 w-10 mr-2" />
-            <Image src={logo} alt="Logo" className="h-10 w-10 mr-2" />
+            <Image src={logo} alt="Logo" className="h-10 w-10 mr-2 rounded-full" />
             <Link href={"/"}>
-              <span className="text-xl tracking-tight">SwimmingPool</span>
+              <span className="text-xl tracking-tight">WestPool</span>
             </Link>
           </div>
           <ul className="hidden lg:flex ml-14 space-x-12">
