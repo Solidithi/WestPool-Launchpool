@@ -119,21 +119,6 @@ Security and transparency are our top priorities. All processes are fully decent
    Implements mechanisms to ensure transparency in all operations, aligning with the project's decentralized ethos.
    Plays a critical role in building trust within the ecosystem by delivering secure and auditable code.
 
-## Learn more
-
-- [Bifrost](https://bifrost.io)
-- [Bifrost Documentation](https://docs.bifrost.io)
-- [Parachains](https://parachains.info)
-- [Foundry Installation](https://getfoundry.sh/)
-- [Foundry Documentation](https://book.getfoundry.sh)
-- [PolkaVM - Westend](https://contracts.polkadot.io/tutorial/)
-
----
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
-
 ---
 
 Made with ❤️ by
