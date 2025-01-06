@@ -9,7 +9,7 @@ import { Project } from "@/app/interface/interface";
 import { useAddress, useChain, useContract, useContractEvents } from "@thirdweb-dev/react";
 import { chainConfig } from "@/app/config";
 import { ethers } from "ethers";
-import { MockVAssetABI, PoolABI, PoolFactoryABI } from "@/app/abi";
+import { MockVDotABI, PoolABI, PoolFactoryABI } from "@/app/abi";
 import { convertNumToOffchainFormat, convertNumToOnChainFormat } from "@/app/utils/decimals";
 
 
@@ -283,7 +283,7 @@ const ProjectDetailPage = () => {
 
     const vAssetContract = new ethers.Contract(
       acceptedVTokenAddress as string,
-      MockVAssetABI,
+      MockVDotABI,
       signer
     );
 
@@ -406,7 +406,7 @@ const ProjectDetailPage = () => {
 
     const vAssetContract = new ethers.Contract(
       acceptedVTokenAddress as string,
-      MockVAssetABI,
+      MockVDotABI,
       signer
     );
 
@@ -562,7 +562,7 @@ const ProjectDetailPage = () => {
     const fetchVAssetDecimals = async () => {
       const vAssetContract = new ethers.Contract(
         acceptedVTokenAddress as string,
-        MockVAssetABI,
+        MockVDotABI,
         poolContract.provider
       );
 
@@ -722,7 +722,7 @@ const ProjectDetailPage = () => {
           {projectDetails[0]?.acceptedVToken.map((token, index) => (
             <button
               key={index}
-              className={`btn btn-ghost rounded-3xl px-8 py-2 text-white transition-colors duration-300 ${activeButton === token ? "bg-[#6D93CD]" : "bg-transparent"
+              className={`btn btn-ghost rounded-3xl px-8 py-2 text-white transition-colors duration-300 ${activeButton === token ? "bg-[#6D93CD]" : "bg-[#6D93CD] opacity-50"
                 }`}
               onClick={() => setActiveButton(token.toString())}
             >
@@ -753,139 +753,144 @@ const ProjectDetailPage = () => {
           className="flex gap-40 w-full h-auto mt-10  px-8 
         sm:grid sm:grid-rows-2 sm:grid-flow-col sm:gap-20 md:grid md:grid-rows-2 md:grid-flow-col md:gap-20  lg:grid lg:grid-rows-2 lg:grid-flow-col lg:gap-20  xl:flex xl:flex-row xl:gap-40"
         >
-          <div className="flex flex-col gap-6">
-            <div className="flex items-center gap-5 w-full">
-              <Image
-                src="https://i.pinimg.com/736x/e4/29/e6/e429e66ab46e2c9d94f4921f70682ac1.jpg"
-                width={50}
-                height={50}
-                alt="icon"
-                className="rounded-full"
-              />
-              <span className="text-[20px] font-bold">My money</span>
-            </div>
+          {projectDetails[0]?.acceptedVToken.map((token, index) => (
+            <>
+              <div className="flex flex-col gap-6">
+                <div className="flex items-center gap-5 w-full">
+                  {/* <Image
+                    src="https://i.pinimg.com/736x/e4/29/e6/e429e66ab46e2c9d94f4921f70682ac1.jpg"
+                    width={50}
+                    height={50}
+                    alt="icon"
+                    className="rounded-full"
+                  /> */}
+                  <span className="text-[20px] font-bold">My money</span>
+                </div>
 
-            <div className="flex flex-col gap-1">
-              <span className="text-[16px] text-[#CACACA]">
-                FDUSD Tokens Locked
-              </span>
-              <span className="text-[36px] text-white font-bold">
-                {/* {totalStaked.toString()} FDUSD */}
-                {Number(
-                  convertNumToOffchainFormat(
-                    BigInt(totalStaked ?? 0),
-                    18
-                  )
-                )}
-              </span>
-            </div>
+                <div className="flex flex-col gap-1">
+                  <span className="text-[16px] text-[#CACACA]">
+                    {token} Tokens Locked
+                  </span>
+                  <span className="text-[36px] text-white font-bold">
+                    {/* {totalStaked.toString()} FDUSD */}
+                    {Number(
+                      convertNumToOffchainFormat(
+                        BigInt(totalProjectToken ?? 0),
+                        18
+                      )
+                    )}
+                  </span>
+                </div>
 
-            <div className="flex flex-col gap-2">
-              <span className="text-[16px] text-[#a7a7a7]">
-                Available: 0.0000 FDUSD
-              </span>
-              <div className="flex gap-5">
-                <button
-                  className=" bg-[#6D93CD] text-white rounded-md px-2 py-2 text-[13px] flex justify-center w-[300px] hover:scale-105 duration-300"
-                  onClick={() =>
-                    (
-                      document.getElementById("lock") as HTMLDialogElement
-                    ).showModal()
-                  }
-                >
-                  Lock
-                </button>
-                <dialog id="lock" className="modal">
-                  <div className="modal-box bg-[#2D468D]">
-                    <h3 className="font-bold text-lg mb-4 text-white">
-                      Please enter how many token you want to stake
-                    </h3>
+                <div className="flex flex-col gap-2">
+                  <span className="text-[16px] text-[#a7a7a7]">
+                    Available: 0.0000 FDUSD
+                  </span>
+                  <div className="flex gap-5">
+                    <button
+                      className=" bg-[#6D93CD] text-white rounded-md px-2 py-2 text-[13px] flex justify-center w-[300px] hover:scale-105 duration-300"
+                      onClick={() =>
+                        (
+                          document.getElementById("lock") as HTMLDialogElement
+                        ).showModal()
+                      }
+                    >
+                      Lock
+                    </button>
+                    <dialog id="lock" className="modal">
+                      <div className="modal-box bg-[#2D468D]">
+                        <h3 className="font-bold text-lg mb-4 text-white">
+                          Please enter how many token you want to stake
+                        </h3>
 
-                    <div className="bg-[#5A78B8] rounded-lg p-4 mb-4 relative">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-[#abcaf7] font-bold text-sm">
-                          Staking
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center mb-2">
-                        <input
-                          type="number"
-                          className="text-3xl font-bold text-white bg-transparent w-2/3 outline-none 
+                        <div className="bg-[#5A78B8] rounded-lg p-4 mb-4 relative">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-[#abcaf7] font-bold text-sm">
+                              Staking
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center mb-2">
+                            <input
+                              type="number"
+                              className="text-3xl font-bold text-white bg-transparent w-2/3 outline-none 
                           [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-moz-appearance:textfield]"
-                          placeholder="enter"
-                          // value={Number(
-                          //   convertNumToOnChainFormat(
-                          //     Number(stakeAmount ?? 0),
-                          //     18
-                          //   )
-                          // )}
-                          value={stakeAmount}
-                          onChange={(e) => setStakeAmount(e.target.value)}
-                        />
+                              placeholder="enter"
+                              // value={Number(
+                              //   convertNumToOnChainFormat(
+                              //     Number(stakeAmount ?? 0),
+                              //     18
+                              //   )
+                              // )}
+                              value={stakeAmount}
+                              onChange={(e) => setStakeAmount(e.target.value)}
+                            />
+                          </div>
+                        </div>
+
+                        <button
+                          onClick={() => handleStake("lock")}
+                          className="btn bg-white text-[#7BA9EF] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#2C3E6F]"
+                        >
+                          Stake
+                        </button>
                       </div>
-                    </div>
+                      <form method="dialog" className="modal-backdrop">
+                        <button>close</button>
+                      </form>
+                    </dialog>
 
                     <button
-                      onClick={() => handleStake("lock")}
-                      className="btn bg-white text-[#7BA9EF] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#2C3E6F]"
+                      className=" bg-[#2A5697] text-white rounded-md px-2 py-2 text-[13px] flex justify-center w-[100px] hover:scale-105 duration-300"
+                      onClick={() =>
+                        (
+                          document.getElementById("unlock") as HTMLDialogElement
+                        ).showModal()
+                      }
                     >
-                      Stake
+                      Unlock
                     </button>
-                  </div>
-                  <form method="dialog" className="modal-backdrop">
-                    <button>close</button>
-                  </form>
-                </dialog>
+                    <dialog id="unlock" className="modal">
+                      <div className="modal-box bg-[#2D468D]">
+                        <h3 className="font-bold text-lg mb-4 text-white">
+                          Please enter how many token you want to unstake
+                        </h3>
 
-                <button
-                  className=" bg-[#2A5697] text-white rounded-md px-2 py-2 text-[13px] flex justify-center w-[100px] hover:scale-105 duration-300"
-                  onClick={() =>
-                    (
-                      document.getElementById("unlock") as HTMLDialogElement
-                    ).showModal()
-                  }
-                >
-                  Unlock
-                </button>
-                <dialog id="unlock" className="modal">
-                  <div className="modal-box bg-[#2D468D]">
-                    <h3 className="font-bold text-lg mb-4 text-white">
-                      Please enter how many token you want to unstake
-                    </h3>
-
-                    <div className="bg-[#5A78B8] rounded-lg p-4 mb-4 relative">
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-[#abcaf7] font-bold text-sm">
-                          Unstaking
-                        </span>
-                      </div>
-                      <div className="flex justify-between items-center mb-2">
-                        <input
-                          type="number"
-                          className="text-3xl font-bold text-white bg-transparent w-2/3 outline-none 
+                        <div className="bg-[#5A78B8] rounded-lg p-4 mb-4 relative">
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-[#abcaf7] font-bold text-sm">
+                              Unstaking
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center mb-2">
+                            <input
+                              type="number"
+                              className="text-3xl font-bold text-white bg-transparent w-2/3 outline-none 
                           [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [&::-moz-appearance:textfield]"
-                          placeholder="enter"
-                          value={unStakeAmount}
-                          onChange={(e) => setUnStakeAmount(e.target.value)}
-                        />
-                      </div>
-                    </div>
+                              placeholder="enter"
+                              value={unStakeAmount}
+                              onChange={(e) => setUnStakeAmount(e.target.value)}
+                            />
+                          </div>
+                        </div>
 
-                    <button
-                      onClick={() => handleUnstake("unlock")}
-                      className="btn bg-white text-[#7BA9EF] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#2C3E6F]"
-                    >
-                      Unstake
-                    </button>
+                        <button
+                          onClick={() => handleUnstake("unlock")}
+                          className="btn bg-white text-[#7BA9EF] w-full py-2 mt-6 rounded-full font-bold text-lg hover:bg-[#2C3E6F]"
+                        >
+                          Unstake
+                        </button>
+                      </div>
+                      <form method="dialog" className="modal-backdrop">
+                        <button>close</button>
+                      </form>
+                    </dialog>
                   </div>
-                  <form method="dialog" className="modal-backdrop">
-                    <button>close</button>
-                  </form>
-                </dialog>
+                </div>
               </div>
-            </div>
-          </div>
+            </>
+          ))}
 
+          {/* 
           <div className="flex flex-col gap-6">
             <div className="flex items-center gap-5 w-full">
               <Image
@@ -936,12 +941,12 @@ const ProjectDetailPage = () => {
               </span>
               <span className="text-[36px] text-white font-bold">-- VANA</span>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 
-     {/* Similar to Binance */}
-     <div className="flex mt-10 w-full p-8 h-auto">
+      {/* Similar to Binance */}
+      <div className="flex mt-10 w-full p-8 h-auto">
         {projectDetails[0]?.acceptedVToken.map((token, index) => (
           activeButton === token && (
             <div
@@ -1003,20 +1008,20 @@ const ProjectDetailPage = () => {
                     <p className="text-gray-400 text-lg ">Project duration</p>
                     <p className="text-lg font-bold text-white">2 Days</p>
                   </div>
-                  <div>
+                  {/* <div>
                     <p className="text-gray-400 text-lg">Participants</p>
                     <p className="text-lg font-bold text-white">76,382</p>
-                  </div>
+                  </div> */}
 
                   {/* <!-- Row 4 --> */}
-                  <div>
+                  {/* <div>
                     <p className="text-gray-400 text-lg ">
                       Maximum hourly airdrop amount
                     </p>
                     <p className="text-lg font-bold text-white">
                       1,500.0000 VANA
                     </p>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             </div>

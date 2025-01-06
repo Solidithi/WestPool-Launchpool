@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 
 import { useAddress, useChain } from "@thirdweb-dev/react";
 import { chainConfig } from "@/app/config";
-import { PoolFactoryABI, PoolABI, MarketABI, PreMarketFactoryABI, MockVAssetABI } from "@/app/abi";
+import { PoolFactoryABI, PoolABI, MarketABI, PreMarketFactoryABI, MockVDotABI } from "@/app/abi";
 import { ethers } from "ethers";
 import { convertNumToOnChainFormat } from "@/app/utils/decimals";
 
@@ -84,6 +84,8 @@ const TokenOffer = () => {
     );
 
     setCollateralTokens(collateralTokens);
+    console.log("Collateral tokens:", collateralTokens);
+
 
   }, [currentChain]);
 
@@ -184,7 +186,7 @@ const TokenOffer = () => {
 
       const vAssetContract = new ethers.Contract(
         acceptedVTokenAddress,
-        MockVAssetABI,
+        MockVDotABI,
         signer
       );
 
@@ -240,8 +242,6 @@ const TokenOffer = () => {
   };
 
   //------------------------------------------------------------------------------------------------------------
-
-
 
   if (loading) return <div className="flex justify-center items-center h-[80vh]">
     <span className="loading loading-dots loading-lg "></span>

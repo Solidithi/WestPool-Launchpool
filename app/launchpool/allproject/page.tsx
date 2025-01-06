@@ -18,6 +18,11 @@ import { PoolFactoryABI, PoolABI } from "@/app/abi";
 import { convertNumToOffchainFormat } from "@/app/utils/decimals";
 
 
+import polkadot_pink from "@/public/Logo/Polkadot_Token_Pink.png";
+import polkadot_white from "@/public/Logo/Polkadot_Token_White.png";
+import polkadot_black from "@/public/Logo/Polkadot_Token_Black.png";
+
+
 const AllProject = () => {
   const [expandedRows, setExpandedRows] = useState<number[]>([]);
   const [activeId, setActiveId] = useState(banners[0].id);
@@ -224,6 +229,8 @@ const AllProject = () => {
           const apr = await contract.calculateCurrentAPR();
           const totalStaked = await contract.getTotalStaked();
 
+          const signer = provider.getSigner();
+
           console.log("APR:", apr.toString());
 
           // projectAPR.push(
@@ -233,8 +240,9 @@ const AllProject = () => {
           //   })
           // );
           try {
-            const userClaimReward = await contract.getUserCurrentAccumulatedRewards(userAddress);
-            console.log("userClaimReward", userClaimReward.toString());
+            console.log("userAddress", userAddress);
+            const userClaimReward = await contract.getClaimableRewards(userAddress);
+            console.log("userClaimReward", userClaimReward);
 
             if (userClaimReward && !userClaimReward.isZero()) {
               projectAPR.push(
@@ -256,12 +264,12 @@ const AllProject = () => {
           } catch (error) {
             console.log(`No claim reward found for project ID: ${project.id}, skipping...`);
           } finally {
-            projectAPR.push(
-              Object.assign(project, {
-                apr,
-                totalStaked,
-              })
-            );
+            // projectAPR.push(
+            //   Object.assign(project, {
+            //     apr,
+            //     totalStaked,
+            //   })
+            // );
           }
         }
 
@@ -411,19 +419,19 @@ const AllProject = () => {
           type="Total Project"
           count={totalProject[0]?.totalProject ?? 0}
           label="Total Project"
-          icon="https://i.pinimg.com/736x/5f/30/dd/5f30dd9e794a5a509398b45cd38274c2.jpg"
+          icon={polkadot_white}
         />
         <StatCard
           type="Unique Participant"
           count={totalProject[0]?.uniqueParticipants ?? 0}
           label="Unique Participant"
-          icon="https://i.pinimg.com/736x/ab/df/23/abdf233a4de440510677808f1c234a87.jpg"
+          icon={polkadot_black}
         />
         <StatCard
           type="Total Staking"
           count={totalProject[0]?.totalTx ?? 0}
           label="Total Staking"
-          icon="https://i.pinimg.com/736x/90/af/12/90af12758c4f2881b57866bfeffc0d92.jpg"
+          icon={polkadot_pink}
         />
       </div>
 
@@ -488,7 +496,13 @@ const AllProject = () => {
                           {/* <td>{data.earned}</td>
                           <td>{data.token}</td> */}
                           <td>
-                            {data.totalStaked?.toString()}
+                            {/* {data.totalStaked?.toString()} */}
+                            {Number(
+                              convertNumToOffchainFormat(
+                                BigInt(data.totalStaked ?? 0),
+                                18
+                              )
+                            )}
                           </td>
                           <td>
                             {/* {data.apr} */}
@@ -502,8 +516,16 @@ const AllProject = () => {
                           <td>
                             {data.toDate
                               ? (() => {
-                                const daysLeft = Math.floor((new Date(data.toDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24));
-                                return daysLeft > 0 ? `${daysLeft} days left` : "Expired";
+                                const now = new Date().getTime();
+                                const toDate = new Date(data.toDate).getTime();
+                                const timeDifference = toDate - now;
+
+                                if (timeDifference > 0) {
+                                  const daysLeft = Math.ceil(timeDifference / (1000 * 3600 * 24));
+                                  return `${daysLeft} day${daysLeft > 1 ? "s" : ""} left`;
+                                } else {
+                                  return "Expired";
+                                }
                               })()
                               : "--"}
                           </td>
@@ -528,8 +550,16 @@ const AllProject = () => {
                                     <span>Ends in:</span>
                                     <span>{data.toDate
                                       ? (() => {
-                                        const daysLeft = Math.floor((new Date(data.toDate).getTime() - new Date().getTime()) / (1000 * 3600 * 24));
-                                        return daysLeft > 0 ? `${daysLeft} days left` : "Expired";
+                                        const now = new Date().getTime();
+                                        const toDate = new Date(data.toDate).getTime();
+                                        const timeDifference = toDate - now;
+
+                                        if (timeDifference > 0) {
+                                          const daysLeft = Math.ceil(timeDifference / (1000 * 3600 * 24));
+                                          return `${daysLeft} day${daysLeft > 1 ? "s" : ""} left`;
+                                        } else {
+                                          return "Expired";
+                                        }
                                       })()
                                       : "--"}</span>
                                   </div>
@@ -665,7 +695,13 @@ const AllProject = () => {
                         {/* <td>{data.earned}</td>
                           <td>{data.token}</td> */}
                         <td>
-                          {data.totalStaked?.toString()}
+                          {/* {data.totalStaked?.toString()} */}
+                          {Number(
+                            convertNumToOffchainFormat(
+                              BigInt(data.totalStaked ?? 0),
+                              18
+                            )
+                          )}
                         </td>
                         <td>
                           {/* {data.apr} */}

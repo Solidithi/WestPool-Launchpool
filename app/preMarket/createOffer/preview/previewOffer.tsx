@@ -1,11 +1,15 @@
 "use client";
+import { MarketABI, MockERC20MintOnInitABI, MockVDotABI, PreMarketFactoryABI } from "@/app/abi";
+import { chainConfig } from "@/app/config";
+import { convertNumToOnChainFormat } from "@/app/utils/decimals";
 import { useCombinedStore } from "@/app/zustand/store";
 import { OfferType } from "@prisma/client";
 // import { OfferType } from "@/prisma/enum";
-import { useAddress } from "@thirdweb-dev/react";
+import { useAddress, useChain } from "@thirdweb-dev/react";
 import axios from "axios";
+import { ethers } from "ethers";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { use, useEffect, useState } from "react";
 
 const PreviewOfferPage = () => {
   const {
@@ -19,7 +23,15 @@ const PreviewOfferPage = () => {
     selectedCollateralToken,
   } = useCombinedStore();
 
+
+  const [preMarketFactory, setPreMarketFactory] = useState<ethers.Contract | null>(null);
+  const [marketAddress, setMarketAddress] = useState<string | null>(null);
+  const [marketContract, setMarketContract] = useState<ethers.Contract | null>(null);
+  const [projectId, setProjectId] = useState<string | null>(null);
+  const [collateralContract, setCollateralContract] = useState<ethers.Contract | null>(null);
+  const [collateralDecimal, setCollateralDecimal] = useState<number>(18);
   const creatorAddress = useAddress();
+
 
   const router = useRouter();
 
@@ -40,6 +52,121 @@ const PreviewOfferPage = () => {
       alert("Please fill all the fields");
       return;
     }
+
+    // if(!preMarketFactory) {
+    //   console.log("PreMarketFactory not found"); 
+    //   return;
+    // }
+
+
+    if (!marketContract) {
+      console.log("MarketContract not found");
+      return;
+    }
+
+    if (!collateralContract) {
+      console.log("Collateral Contract not found");
+      return;
+    }
+
+    if (!collateralDecimal) {
+      console.log("Collateral Decimal not found");
+      setCollateralDecimal(18);
+    }
+    const floatCollateral = parseFloat(collateral.toString());
+
+    const onChainCollateral = convertNumToOnChainFormat(floatCollateral, collateralDecimal);
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+    const signer = provider.getSigner();
+    console.log("Signer: " + await signer.getAddress());
+
+    console.trace(
+      `metamask provided a signer with address: ${await signer.getAddress()}`
+    );
+
+    console.log("Collateral Contract: " + collateralContract);
+
+    const marketContractWithSigner = marketContract.connect(signer);
+    console.log("Market Contract with Signer: " + marketContractWithSigner);
+
+    try {
+      // const currentAllowance = await collateralContract.allowance(creatorAddress, marketContract.address);
+      // console.log("Current allowance: ", currentAllowance.toString());
+      // if (currentAllowance.gte(onChainCollateral)) {
+      //   console.log("Already approved");
+      // } else {
+
+      //   const approvalTx = await collateralContract.approve(marketContract.address, onChainCollateral);
+      //   console.log("Approval tx: ", approvalTx.hash);
+      //   await approvalTx.wait();
+      // }
+      // console.log("Approved");
+
+      try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []); // Prompt user to connect MetaMask
+        const signer = provider.getSigner();
+      
+        const collateralContractWithSigner = collateralContract.connect(signer);
+      
+        const currentAllowance = await collateralContractWithSigner.allowance(
+          await signer.getAddress(), // Owner address
+          marketContract.address      // Spender address
+        );
+        console.log("Current allowance: ", currentAllowance.toString());
+      
+        if (currentAllowance.gte(onChainCollateral)) {
+          console.log("Allowance is sufficient, no need to approve.");
+        } else {
+          const approvalTx = await collateralContractWithSigner.approve(
+            marketContract.address,
+            onChainCollateral // Increase allowance to this value
+          );
+          console.log("Approval transaction hash: ", approvalTx.hash);
+          await approvalTx.wait();
+          console.log("Approval successful.");
+        }
+      } catch (approvalError) {
+        console.error("Error during approval: ", approvalError);
+        throw approvalError;
+      }
+
+      const offerType = role === OfferType.Buy ? 0 : 1;
+      const collateralAddress = tokenAddress[1];
+
+      const depositTx = await marketContractWithSigner.createOrder(
+        offerType,
+        convertNumToOnChainFormat(amount, 18),
+        onChainCollateral,
+        collateralAddress
+      )
+
+      console.log("Deposit tx hash: " + depositTx.hash);
+
+      await depositTx.wait();
+
+      if(!depositTx) {
+        console.error("Deposit failed");
+        return
+      }
+
+      console.log("Deposited");
+
+
+
+    } catch (error) {
+      console.error(`error depositing collateral:\n ${error}`);
+      return;
+    }
+
+
+
+
+
+
+
     try {
       const response = await axios.post("/api/preMarket/preview", {
         role,
@@ -67,6 +194,145 @@ const PreviewOfferPage = () => {
       console.log(error);
     }
   };
+
+  useEffect(() => {
+    if (!tokenAddress) {
+      console.log("Token address not found");
+      return;
+    }
+
+    console.log("Token address: " + tokenAddress[0]);
+    const getProjetId = async () => {
+      try {
+        const response = await axios.post("/api/preMarket/project", { tokenAddress });
+        console.log("response: " + response.data);
+
+        if (response.data.success) {
+          console.log("---------.------- " + response.data);
+        }
+
+        const projectId = response.data.projectId;
+
+        setProjectId(projectId);
+
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    getProjetId();
+  }, [tokenAddress]);
+
+
+
+  const currentChain = useChain();
+
+  //Get PreMarketFactory address
+  useEffect(() => {
+    // if (currentChain?.name !== selectedNetwork) {
+    //   router.push("/preMarket/createOffer");
+    // }
+    if (!currentChain) {
+      return;
+    }
+
+    if (!projectId) {
+      return;
+    }
+    console.log("Project Id: " + projectId);
+
+    const fetchPreMarketFactory = async () => {
+      const address: string =
+        chainConfig[currentChain.chainId.toString() as keyof typeof chainConfig].contracts.PreMarketFactory.address;
+      console.log("PreMarketFactory address: " + address);
+
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+      const factoryContract = new ethers.Contract(
+        address,
+        PreMarketFactoryABI,
+        provider
+      );
+
+      const marketAddress = await factoryContract.getMarket(projectId);
+      console.log("Market Address: " + marketAddress);
+
+      const marketContract = new ethers.Contract(
+        marketAddress,
+        MarketABI,
+        provider
+      );
+
+      setMarketAddress(marketAddress);
+      setMarketContract(marketContract);
+
+
+
+    }
+
+    fetchPreMarketFactory();
+
+  }, [currentChain, projectId]);
+
+  // fetch VAsset Collateral Token Decimal
+  useEffect(() => {
+    // if(!currentChain) {
+    //   return;
+    // }
+
+    // if(!marketContract){
+    //   return;
+    // }
+
+    const fetchVAssetCollateralTokenDecimal = async () => {
+      const collateralTokenAddress = tokenAddress[1];
+      console.log("Collateral Token Address: " + collateralTokenAddress);
+
+      if (!currentChain) {
+        console.log("Current chain not found");
+        return;
+      }
+
+      if (!marketContract) {
+        console.log("MarketContract not found");
+        return;
+      }
+
+      if (!selectedCollateralToken) {
+        console.log("Selected Collateral Token not found");
+        return;
+      }
+      let collateralTokenContract;
+      if (selectedCollateralToken === "vDOT") {
+        collateralTokenContract = new ethers.Contract(
+          collateralTokenAddress,
+          MockVDotABI,
+          marketContract.provider
+        )
+      } else {
+        collateralTokenContract = new ethers.Contract(
+          collateralTokenAddress,
+          MockERC20MintOnInitABI,
+          marketContract.provider
+        )
+      }
+      const collateralTokenDecimal = await collateralTokenContract.decimals();
+
+      console.log("Collateral Token Decimal: " + collateralTokenDecimal);
+      console.log("Collateral Token Contract Address: " + collateralTokenContract.address);
+
+      setCollateralContract(collateralTokenContract);
+      setCollateralDecimal(collateralTokenDecimal);
+    }
+
+    fetchVAssetCollateralTokenDecimal();
+  }, [currentChain, marketContract, selectedCollateralToken]);
+
+
+
+
+
+
 
   return (
     <div>
@@ -99,13 +365,13 @@ const PreviewOfferPage = () => {
               {role === OfferType.Buy ? (
                 <div className="text-[#2ab84e]">
                   <span>
-                    {pricePerToken} {selectedToken}
+                    {collateral} {selectedCollateralToken}
                   </span>
                 </div>
               ) : (
                 <div className="text-[#b10202]">
                   <span>
-                    {pricePerToken} {selectedToken}
+                    {collateral} {selectedCollateralToken}
                   </span>
                 </div>
               )}

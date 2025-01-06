@@ -1,11 +1,11 @@
 import React from "react";
 import clsx from "clsx";
-import Image from "next/image";
+import Image, { StaticImageData } from "next/image";
 interface StatCardProps {
   type: "Total Project" | "Total Staking" | "Unique Participant";
   count: number;
   label: string;
-  icon: string;
+  icon: StaticImageData;
 }
 
 const StatCard = ({ count = 0, label, icon, type }: StatCardProps) => {
