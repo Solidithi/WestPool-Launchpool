@@ -3,6 +3,8 @@ import { ethers } from 'ethers';
 import { readFileSync, writeFileSync } from 'fs';
 import { PoolFactoryABI } from '../abi/';
 import { convertNumToOnChainFormat } from './decimals';
+import prismaClient from '@/prisma';
+import { ProjectStatus } from '@prisma/client';
 
 export function startAnvil(): ChildProcess {
   // Spawn Anvil process
@@ -262,6 +264,36 @@ async function run(): Promise<void> {
   // const waitTx = await tx.wait();
   // console.log(waitTx);
   // const poolAddr = await factoryContract.getPoolAddress(1);
+
+
+  // const project = prismaClient.project.create({
+  //   data: {
+  //     id: "1",
+  //     projectName: "Jaquelin West",
+  //     tokenSymbol: "JQLW",
+  //     projectOwnerAddress: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+  //     verifiedTokenAddress: "0xbCF26943C0197d2eE0E5D05c716Be60cc2761508",
+  //     projectLogo: "https://www.google.com",
+  //     projectImage: ["https://www.google.com"],
+  //     shortDescription: "Short Description",
+  //     longDescription: "Long Description",
+  //     acceptedVToken: ["0x8464135c8F25Da09e49BC8782676a84730C318bC"],
+  //     minStake: 100,
+  //     maxStake: 1000,
+  //     fromDate: new Date(),
+  //     toDate: new Date(),
+  //     txHashCreated: "",
+  //     projectStatus: ProjectStatus.Upcoming,
+  //     chainName: "WestEnd",
+  //     poolBudget: 5000000,
+  //     targetStake: 2500000,
+  //   }
+    
+  // })
+
+  // if (!project) {
+  //   console.error("Error creating project");
+  // }
 
   console.log('\x1b[36m%s\x1b[0m', `Mock BifrostEarning contract deployed to ${bifrostEarningMockAddr}`);
   console.log('\x1b[36m%s\x1b[0m', `PoolFactory contract deployed to ${factoryAddr}`);

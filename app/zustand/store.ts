@@ -79,6 +79,7 @@ type CombinedState = {
   selectedNetwork: string;
   selectedToken: string;
   selectedCollateralToken: string;
+  offerId: string;
 
   //Create Offer Setters
   setRole: (value: OfferType) => void;
@@ -89,6 +90,7 @@ type CombinedState = {
   setSelectedToken: (value: string) => void;
   setSelectedCollateralToken: (value: string) => void;
   setTokenAddress: (value: string[]) => void;
+  setOfferId: (value: string) => void;
 };
 
 type CombinedSetters = {
@@ -189,6 +191,7 @@ const useCombinedStore = create<CombinedState>((set) => ({
   selectedNetwork: "Select Network",
   selectedToken: "Select Token",
   selectedCollateralToken: "Select Token",
+  offerId: "",
 
   // Dynamic Setters
   setChain: (value: string) => set({ chain: value }),
@@ -216,6 +219,7 @@ const useCombinedStore = create<CombinedState>((set) => ({
   setSelectedToken: (value: string) => set({ selectedToken: value }),
   setSelectedCollateralToken: (value: string) =>
     set({ selectedCollateralToken: value }),
+  setOfferId: (value: string) => set({ offerId: value }),
 }));
 
 const useCreateOfferStore = create<CreateOfferState>((set) => ({

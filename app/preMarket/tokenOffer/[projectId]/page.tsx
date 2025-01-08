@@ -9,8 +9,9 @@ import { useEffect, useState } from "react";
 import { useAddress, useChain } from "@thirdweb-dev/react";
 import { chainConfig } from "@/app/config";
 import { PoolFactoryABI, PoolABI, MarketABI, PreMarketFactoryABI, MockVDotABI } from "@/app/abi";
-import { ethers } from "ethers";
+import { BigNumber, ethers } from "ethers";
 import { convertNumToOnChainFormat } from "@/app/utils/decimals";
+import { useCombinedStore } from "@/app/zustand/store";
 
 
 const TokenOffer = () => {
@@ -22,22 +23,30 @@ const TokenOffer = () => {
   const [factoryContract, setFactoryContract] = useState<ethers.Contract | null>(null);
   const [tradeAmount, setTradeAmount] = useState("");
   const [collateralTokens, setCollateralTokens] = useState<any[]>([]);
+  const [marketAddress, setMarketAddress] = useState<string | undefined>(undefined);
+  const [marketContract, setMarketContract] = useState<ethers.Contract | null>(null);
+  const [acceptedVTokenAddress, setAcceptedVTokenAddress] = useState<string | undefined>(undefined);
+  const [vAssetContract, setVAssetContract] = useState<ethers.Contract | null>(null);
+  const {
+    offerId: offerIdz,
+  } = useCombinedStore();
+
   const pageParam = useParams();
   const userAddress = useAddress();
 
 
   const currentChain = useChain();
+  const { projectId } = pageParam;
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const { projectId } = pageParam;
         console.log("Project id: " + projectId);
 
         const res = await axios.post("/api/preMarket/tokenOffer", { projectId });
         console.log("Respnse data: " + res.data);
         const data = res.data;
-
+        console.log("Offer Id: ", data.data[0].id);
         if (data.success) {
           setProjectDetails(data.data);
           console.log("Project details: ", projectDetails);
@@ -129,6 +138,8 @@ const TokenOffer = () => {
     console.log("Factory contract address:", address);
   }, [currentChain]);
 
+
+
   const handleOffer = async (projectId: string, offerId: string, dialogId: string) => {
     if (!factoryContract) {
       console.error("Factory contract is not available.");
@@ -145,6 +156,17 @@ const TokenOffer = () => {
       return;
     }
 
+    if(!marketContract) {
+      console.error("Market contract is not available.");
+      return;
+    }
+
+    if(!vAssetContract) {
+      console.error("VAsset contract is not available.");
+      return;
+    }
+    
+
     const provider = window.ethereum
       ? new ethers.providers.Web3Provider(window.ethereum)
       : null;
@@ -157,65 +179,141 @@ const TokenOffer = () => {
     const signer = provider.getSigner();
 
     try {
-      const marketAddr = await factoryContract.getMarket(offerId);
-      console.log("Market address:", marketAddr);
+      // const marketAddr = await factoryContract.getMarket(offerId);
+      // console.log("Market address:", marketAddr);
 
-      // const poolAddr = await factoryContract.getPoolAddress(projectId);
-      // console.log("Pool address:", poolAddr);
+      // // const poolAddr = await factoryContract.getPoolAddress(projectId);
+      // // console.log("Pool address:", poolAddr);
 
-      if (!marketAddr) {
-        console.error("Market or Pool address not found.");
-        return;
-      }
+      // if (!marketAddr) {
+      //   console.error("Market or Pool address not found.");
+      //   return;
+      // }
 
-      const marketContract = new ethers.Contract(marketAddr, MarketABI, signer);
-      // const poolContract = new ethers.Contract(poolAddr, PoolABI, signer);
+      // const marketContract = new ethers.Contract(marketAddr, MarketABI, signer);
+      // // const poolContract = new ethers.Contract(poolAddr, PoolABI, signer);
 
-      console.log("Market contract:", marketContract);
-      // console.log("Pool contract:", poolContract);
+      // console.log("Market contract:", marketContract);
+      // // console.log("Pool contract:", poolContract);
 
-      const resp = await marketContract.joinOrder(offerId);
-      console.log("JoinOrder transaction:", resp);
+      
+      // const acceptedVTokenAddress = await marketContract.getAcceptedVAsset();
+      // console.log("Accepted VToken address:", acceptedVTokenAddress);
+      
+      // if (!acceptedVTokenAddress) {
+      //   console.error("Accepted VToken address not found.");
+      //   return;
+      // }
 
-      const acceptedVTokenAddress = await marketContract.getAcceptedVAsset();
+      // const vAssetContract = new ethers.Contract(
+      //   acceptedVTokenAddress,
+      //   MockVDotABI,
+      //   signer
+      // );
 
-      if (!acceptedVTokenAddress) {
-        console.error("Accepted VToken address not found.");
-        return;
-      }
-
-      const vAssetContract = new ethers.Contract(
-        acceptedVTokenAddress,
-        MockVDotABI,
-        signer
-      );
-
-      console.log("VAsset contract:", vAssetContract);
-
-      // const poolContractWithSigner = poolContract.connect(signer);
-      // console.log("Pool contract with signer:", poolContractWithSigner);
+      // console.log("VAsset contract:", vAssetContract);
+      
+      // // const poolContractWithSigner = poolContract.connect(signer);
+      // // console.log("Pool contract with signer:", poolContractWithSigner);
 
       const amount = parseFloat(tradeAmount);
       if (isNaN(amount)) {
         console.error("Invalid trade amount.");
         return;
       }
-
+      
+      console.log("Offer Id: " + offerId);
       const onChainAmount = convertNumToOnChainFormat(amount, 18);
-      const currentAllowance = await vAssetContract.allowance(userAddress, marketContract.address);
+      const marketContractWithSigner = marketContract.connect(signer);
+      console.log("Market Contract with signer:", marketContractWithSigner);
 
-      console.log("Current allowance:", currentAllowance.toString());
 
-      if (currentAllowance.gte(onChainAmount)) {
-        console.log("Already approved.");
-      } else {
-        const approvalTx = await vAssetContract.approve(marketContract.address, onChainAmount);
-        console.log("Approval transaction:", approvalTx.hash);
-        await approvalTx.wait();
+      try {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []); // Prompt user to connect MetaMask
+        const signer = provider.getSigner();
+      
+        const vAssetContractWithSigner = vAssetContract.connect(signer);
+      
+        const currentAllowance = await vAssetContractWithSigner.allowance(
+          await signer.getAddress(), // Owner address
+          marketContract.address      // Spender address
+        );
+        console.log("Current allowance: ", currentAllowance.toString());
+      
+        if (currentAllowance.gte(onChainAmount)) {
+          console.log("Allowance is sufficient, no need to approve.");
+        } else {
+          const approvalTx = await vAssetContractWithSigner.approve(
+            marketContract.address,
+            onChainAmount // Increase allowance to this value
+          );
+          console.log("Approval transaction hash: ", approvalTx.hash);
+          await approvalTx.wait();
+          console.log("Approval successful.");
+        }
+      } catch (approvalError) {
+        console.error("Error during approval: ", approvalError);
+        throw approvalError;
       }
 
-      console.log("Approved successfully.");
+      // console.log("Offer id", BigInt(offerId));
+      console.log("OfferId type and value:", typeof offerId, offerId);
+      console.log("OfferId type and value:bi", typeof BigInt(offerId), BigInt(offerId));
+      console.log("OfferId type and value:", typeof BigInt(offerId).toString(), BigInt(offerId).toString());
+      console.log("OfferId type and value:", typeof BigNumber.from(offerId), BigNumber.from(offerId));
+      console.log("OfferId type and value:", typeof BigNumber.from(offerId).toString(), BigNumber.from(offerId).toString());
+      console.log("OfferId type and value:idz", offerIdz);
 
+      const depositTx = await marketContractWithSigner.joinOrder(
+        BigInt(offerIdz),
+      );
+
+      console.log("Deposit tx hash: " + depositTx.hash);
+
+      await depositTx.wait();
+
+      if(!depositTx) {
+        console.error("Deposit failed");
+        return
+      }
+
+      console.log("Deposited");
+
+      // try {
+      //   // Validate offerId
+      //   if (!/^\d+$/.test(offerId)) {
+      //     console.error(`Invalid offerId for BigInt conversion: ${offerId}`);
+      //     return;
+      //   }
+      
+      //   const cleanOfferId = offerId.trim(); // Ensure it's clean and trimmed
+      //   const bigIntOfferId = BigInt(cleanOfferId); // Convert to BigInt
+      //   console.log("Converted OfferId to BigInt:", bigIntOfferId);
+      
+      //   const depositTx = await marketContractWithSigner.joinOrder(bigIntOfferId);
+      
+      //   console.log("Deposit tx hash:", depositTx.hash);
+      
+      //   await depositTx.wait();
+      
+      //   if (!depositTx) {
+      //     console.error("Deposit failed");
+      //     return;
+      //   }
+      
+      //   console.log("Deposited successfully.");
+      // } catch (error) {
+      //   console.error("Error depositing collateral:", error);
+      // }
+      
+
+
+    } catch (error) {
+      console.error(`error depositing collateral:\n ${error}`);
+      return;
+    }
+    try {
       // Call API to update trade status
       const response = await axios.post("/api/preMarket/trade", {
         userAddress,
@@ -239,7 +337,79 @@ const TokenOffer = () => {
       console.error("Error while executing:", error);
       alert("An unexpected error occurred. Please try again later.");
     }
+    
   };
+
+
+  useEffect(() => {
+    // if (currentChain?.name !== selectedNetwork) {
+    //   router.push("/preMarket/createOffer");
+    // }
+    if (!currentChain) {
+      return;
+    }
+
+    if (!projectId) {
+      return;
+    }
+    console.log("Project Id: " + projectId);
+
+    const fetchPreMarketFactory = async () => {
+      const address: string =
+        chainConfig[currentChain.chainId.toString() as keyof typeof chainConfig].contracts.PreMarketFactory.address;
+      console.log("PreMarketFactory address: " + address);
+
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+      const factoryContract = new ethers.Contract(
+        address,
+        PreMarketFactoryABI,
+        provider
+      );
+
+      const marketAddress = await factoryContract.getMarket(projectId);
+      console.log("Market Address: " + marketAddress);
+
+      const marketContract = new ethers.Contract(
+        marketAddress,
+        MarketABI,
+        provider
+      );
+
+      const acceptedVTokenAddresses = await marketContract.getAcceptedVTokens();
+      const acceptedVTokenAddress = acceptedVTokenAddresses[1];
+      console.log("Accepted VToken address:", acceptedVTokenAddress);
+
+      const vAssetContract = new ethers.Contract(
+        acceptedVTokenAddress,
+        MockVDotABI,
+        provider
+      );
+
+      console.log("VAsset contract:", vAssetContract);
+
+
+      setMarketAddress(marketAddress);
+      setMarketContract(marketContract);
+      setAcceptedVTokenAddress(acceptedVTokenAddress);
+      setVAssetContract(vAssetContract);
+
+
+
+    }
+
+    fetchPreMarketFactory();
+
+  }, [currentChain, projectId]);
+
+
+
+  
+
+
+  
+  
+
 
   //------------------------------------------------------------------------------------------------------------
 

@@ -1,12 +1,15 @@
 import prismaClient from "@/prisma";
 import { CreateOfferStatus, FillerOfferStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
+import { BigNumber } from "ethers";
+
 
 export async function POST(req: NextRequest, res: NextResponse) {
   const body = await req.json();
   console.log(body);
 
   const {
+    thisOfferId,
     role,
     pricePerToken,
     amount,
@@ -18,6 +21,11 @@ export async function POST(req: NextRequest, res: NextResponse) {
     creatorAddress,
   } = body;
 
+
+  console.log("ThisOfferId: " + thisOfferId);
+  const offerId = BigNumber.from(thisOfferId);
+  console.log("OfferId: " + offerId);
+  
   console.log("Role: " + role);
   console.log("PricePerToken: " + pricePerToken);
   console.log("Amount: " + amount);
@@ -50,6 +58,7 @@ export async function POST(req: NextRequest, res: NextResponse) {
     // const fillerStatus = FillerOfferStatus.NotYet
     const offer = await prismaClient.offer.create({
       data: {
+        id: offerId.toString(),
         pricePerToken: pricePerToken,
         amount: amount,
         collateral: collateral,
