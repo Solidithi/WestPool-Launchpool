@@ -194,6 +194,9 @@ async function run(): Promise<void> {
   );
   const bifrostEarningMockAddr = bifrostEarningMockContract.address;
 
+  //fund bifrostEarningMock contract
+  await mockVDot.transfer(bifrostEarningMockAddr, convertNumToOnChainFormat(1000000, 18));
+
   // deploy ProjectPoolFactory contract
   const factoryContract = await deployContract(
     "PoolFactory",
