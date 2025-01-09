@@ -1,7 +1,7 @@
 import { time } from "console";
 import { chainConfig } from "../config";
 import { readFileSync } from "fs";
-import banner from "@/public/banner.jpg";
+import banner from "@/public/Banner.png";
 // ----------------------------Navbar----------------------------------
 export const navItems = [
   // { label: "My Project", path: "/myProject" },

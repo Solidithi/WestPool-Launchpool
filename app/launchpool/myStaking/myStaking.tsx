@@ -103,7 +103,7 @@ const MyStakingPage = () => {
 
   const fetchMyProjects = async () => {
     try {
-      const response = await axios.post("/api/launchpool/myProject", {
+      const response = await axios.post("/api/launchpool/myInvestment", {
         investorAddress,
       });
       console.log(response.data);

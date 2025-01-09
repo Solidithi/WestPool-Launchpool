@@ -22,6 +22,12 @@ const Dashboard = () => {
           userAddress
         });
         const data = res.data;
+        console.log("Data:", data);
+
+        const buyOffer = [];
+        const sellOffer = [];
+
+
 
         if (data.success) {
           setProjects(data.data);
@@ -35,7 +41,7 @@ const Dashboard = () => {
       } finally {
         setLoading(false);
       }
-    };  
+    };
 
     fetchProjects();
   }, [userAddress,]);

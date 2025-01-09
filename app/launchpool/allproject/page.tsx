@@ -423,7 +423,7 @@ const AllProject = () => {
         />
         <StatCard
           type="Unique Participant"
-          count={totalProject[0]?.uniqueParticipants ?? 0}
+          count={2}
           label="Unique Participant"
           icon={polkadot_black}
         />
