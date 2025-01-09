@@ -17,6 +17,8 @@ const PreviewOfferPage = () => {
     pricePerToken,
     tokenAddress,
     amount,
+    offerId,
+    setOfferId,
     selectedNetwork,
     selectedToken,
     collateral,
@@ -30,6 +32,7 @@ const PreviewOfferPage = () => {
   const [projectId, setProjectId] = useState<string | null>(null);
   const [collateralContract, setCollateralContract] = useState<ethers.Contract | null>(null);
   const [collateralDecimal, setCollateralDecimal] = useState<number>(18);
+  const [currentOfferId, setCurrentOfferId] = useState<number | null>(null);
   const creatorAddress = useAddress();
 
 
@@ -91,6 +94,7 @@ const PreviewOfferPage = () => {
     const marketContractWithSigner = marketContract.connect(signer);
     console.log("Market Contract with Signer: " + marketContractWithSigner);
 
+    let thisOfferId;
     try {
       // const currentAllowance = await collateralContract.allowance(creatorAddress, marketContract.address);
       // console.log("Current allowance: ", currentAllowance.toString());
@@ -103,6 +107,7 @@ const PreviewOfferPage = () => {
       //   await approvalTx.wait();
       // }
       // console.log("Approved");
+
 
       try {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -154,6 +159,13 @@ const PreviewOfferPage = () => {
 
       console.log("Deposited");
 
+      thisOfferId = await marketContract.getOrdersCount();
+      console.log("Current offer id: " + thisOfferId);
+      // console.log("Current offer id0: " + currentOfferId[0]); 
+      // console.log("Current offer id1: " + currentOfferId[1]);
+      setCurrentOfferId(thisOfferId);
+      setOfferId(thisOfferId);
+
 
 
     } catch (error) {
@@ -168,7 +180,15 @@ const PreviewOfferPage = () => {
 
 
     try {
+      console.log("Current offer id: " + thisOfferId);
+      setOfferId(thisOfferId);
+      if(!thisOfferId) {
+        console.log("Current offer id not found");
+        return;
+      }
+
       const response = await axios.post("/api/preMarket/preview", {
+        thisOfferId,
         role,
         tokenAddress,
         pricePerToken,

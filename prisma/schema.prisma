@@ -80,7 +80,7 @@ model ProjectOwner {
 
 //Offer model buy sell like premarket
 model Offer {
-  id                     String            @id @default(uuid())
+  id                     String            @id
   index                  Int               @default(autoincrement())
   pricePerToken          Decimal
   amount                 Decimal
