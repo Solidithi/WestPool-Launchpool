@@ -90,7 +90,7 @@ const MyProjectPage = () => {
 
         const poReward = await contract.getProjectOwnerReward();
 
-        if (project.projectStatus === "Upcoming") {
+        if (project.projectStatus === "Upcoming" || project.projectStatus === "Ongoing") {
           console.log("Pending Projects: " + projects[i]);
           console.log("Pending Projects: " + projects[i].projectName);
           // pending.push(projects[i]);
@@ -134,10 +134,9 @@ const MyProjectPage = () => {
 
 
 
-  const handleClaimReward = async (project: Project) => {
-    console.log("Claiming reward for project:", project);
+  const handleWithdraw = async (project: Project) => {
+    console.log("Withdrawing rewards for project:", project);
 
-    // setClaimRewardProject(project);
     setIsCallingContract(true);
 
     try {
@@ -146,12 +145,7 @@ const MyProjectPage = () => {
       console.log("Provider", provider);
       console.log("Signer", signer);
 
-      console.log("Provider and signer set up successfully.");
-
-      const poolAddr = await factoryContract?.getPoolAddress(
-        // claimRewardProject?.id
-        project.id
-      );
+      const poolAddr = await factoryContract?.getPoolAddress(project.id);
       console.log("Pool address fetched:", poolAddr);
 
       const poolContract = new ethers.Contract(poolAddr, PoolABI, signer);
@@ -160,30 +154,36 @@ const MyProjectPage = () => {
       const resp = await poolContract.projectOwnerClaiming();
       console.log("Transaction response:", resp);
 
-      // Hiển thị thông báo thành công
-      console.log("Reward claim successful for project:", project.id);
-      alert("Claim rewards successful!");
+      // Show success message
+      alert("Withdrawal successful!");
 
     } catch (error: any) {
-      console.error("Error claiming reward:", error);
+      console.error("Error during withdrawal:", error);
 
       const errorMessage = error?.data?.message || error?.message || "";
 
       if (errorMessage.includes("Project is still ongoing")) {
-        alert("The project is still ongoing. You cannot claim rewards yet.");
+        alert(
+          "Unable to withdraw: The project is still ongoing. Please try again after the project ends."
+        );
       } else if (errorMessage.includes("No rewards available for project owner")) {
-        alert("No rewards are available for the project owner.");
-      } else if (errorMessage.includes("Insufficient contract balance")) {
-        alert("The contract does not have enough tokens.");
-      } else {
-        alert("An error occurred while claiming rewards.");
+        alert(
+          "Unable to withdraw: No rewards are currently available for the project owner."
+        );
+      } else if (errorMessage.includes("ERC20: transfer amount exceeds balance")) {
+        alert(
+          "Unable to withdraw: The contract does not have enough tokens to complete the transaction."
+        );
       }
-    }
-
-    finally {
+      else {
+        alert("An error occurred during the withdrawal process.");
+      }
+    } finally {
       setIsCallingContract(false);
     }
   };
+
+
 
 
 
@@ -235,7 +235,7 @@ const MyProjectPage = () => {
                         <button
                           className="btn btn-xs sm:btn-sm md:btn-md lg:btn-md mt-4 rounded-2xl"
                           onClick={(e) => {
-                            handleClaimReward(data);
+                            handleWithdraw(data);
                           }}
                         >
                           Withdraw
@@ -292,7 +292,7 @@ const MyProjectPage = () => {
                           className="btn btn-xs sm:btn-sm md:btn-md lg:btn-md mt-4 rounded-2xl"
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleClaimReward(data);
+                            handleWithdraw(data);
                           }}
                         >
                           Withdraw

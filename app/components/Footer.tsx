@@ -8,7 +8,7 @@ export function Footer() {
           color="blue-gray"
           className="text-center mt-1 font-normal !text-white"
         >
-          &copy; {CURRENT_YEAR} Made with Solidithi Squad
+          &copy; {CURRENT_YEAR} Made by Solidithi Squad
         </div>
       </div>
     </footer>

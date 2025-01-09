@@ -28,6 +28,8 @@ const MyStakingPage = () => {
 
   const currentChain = useChain();
 
+  const userAddress = useAddress()
+
   useEffect(() => {
     if (!currentChain) {
       return;
@@ -48,6 +50,8 @@ const MyStakingPage = () => {
     );
     setFactoryContract(factoryContract);
   }, [currentChain]);
+
+
 
   const handleClaimReward = async (project: Project) => {
     console.log("Claiming reward for project:", project);
@@ -112,14 +116,61 @@ const MyStakingPage = () => {
       const pending = [];
       const ended = [];
 
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+
       for (let i = 0; i < projects.length; i++) {
-        if (projects[i].projectStatus !== "Upcoming") {
-          console.log("Pending Projects: " + projects[i]);
-          console.log("Pending Projects: " + projects[i].projectName);
-          pending.push(projects[i]);
-        } else {
-          ended.push(projects[i]);
+        let project = projects[i];
+        const poolAddress = await factoryContract?.getPoolAddress(
+          project.id
+        );
+
+        console.log("poolAddress", poolAddress);
+
+        const contract = new ethers.Contract(
+          poolAddress,
+          PoolABI,
+          provider
+        );
+
+        try {
+          const userClaimReward = await contract.getClaimableRewards(userAddress);
+          if (userClaimReward && !userClaimReward.isZero()) {
+            if (project.projectStatus === "Upcoming" || project.projectStatus === "Ongoing") {
+              console.log("Pending Projects: " + projects[i]);
+              console.log("Pending Projects: " + projects[i].projectName);
+              pending.push(
+                Object.assign(project, {
+                  userClaimReward,
+                })
+              );
+            } else {
+              ended.push(
+                Object.assign(project, {
+                  userClaimReward,
+                })
+              );
+            }
+          } else {
+            if (projects[i].projectStatus !== "Upcoming") {
+              console.log("Pending Projects: " + projects[i]);
+              console.log("Pending Projects: " + projects[i].projectName);
+              pending.push(
+                Object.assign(project, {
+                  userClaimReward: "0",
+                })
+              );
+            } else {
+              ended.push(
+                Object.assign(project, {
+                  userClaimReward: "0",
+                })
+              );
+            }
+          }
+        } catch (error) {
+          console.log(`No claim reward found for project ID: ${project.id}, skipping...`);
         }
+
       }
 
       // Set state after loop
@@ -138,7 +189,7 @@ const MyStakingPage = () => {
   const fetchProjectWithDebounce = debounce(fetchMyProjects, 1000);
   useEffect(() => {
     fetchProjectWithDebounce();
-  }, [investorAddress]);
+  }, [investorAddress, fetchProjectWithDebounce]);
 
 
 
@@ -185,7 +236,8 @@ const MyStakingPage = () => {
                   >
                     <div className="flex items-center">
                       <div className="">
-                        <p className="">{data.longDescription}</p>
+                        {/* <p className="">{data.longDescription}</p> */}
+                        <p className="">{data.userClaimReward}</p>
                       </div>
                       <div className="ml-auto mb-4 mr-5   ">
                         <button
@@ -239,7 +291,7 @@ const MyStakingPage = () => {
                   >
                     <div className="flex items-center">
                       <div className="">
-                        <p className="">{data.longDescription}</p>
+                        <p className="">{data.userClaimReward}</p>
                       </div>
                       <div className="ml-auto mb-4 mr-5   ">
                         <button

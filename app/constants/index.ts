@@ -1,7 +1,7 @@
 import { time } from "console";
 import { chainConfig } from "../config";
 import { readFileSync } from "fs";
-
+import banner from "@/public/banner.jpg";
 // ----------------------------Navbar----------------------------------
 export const navItems = [
   // { label: "My Project", path: "/myProject" },
@@ -15,28 +15,28 @@ export const navItems = [
 export const banners = [
   {
     id: "item1",
-    src: "https://i.pinimg.com/736x/ad/26/0e/ad260e82393f75e8e463138070ca74fc.jpg",
+    src: { banner },
     alt: "Image 1",
-    width: 2000,
-    height: 2000,
+    width: 9999,
+    height: 9999,
   },
   {
     id: "item2",
-    src: "https://i.pinimg.com/736x/f8/a1/d6/f8a1d68246266f3ed11e00932dc1da88.jpg",
+    src: { banner },
     alt: "Image 2",
     width: 2000,
     height: 2000,
   },
   {
     id: "item3",
-    src: "https://i.pinimg.com/736x/2b/ca/2d/2bca2d8037abbd18e651933c45238487.jpg",
+    src: { banner },
     alt: "Image 3",
     width: 2000,
     height: 2000,
   },
   {
     id: "item4",
-    src: "https://i.pinimg.com/736x/c8/6f/d4/c86fd4b88b7ad89e688455c23ca1b71e.jpg",
+    src: { banner },
     alt: "Image 4",
     width: 2000,
     height: 2000,
@@ -439,4 +439,3 @@ export const availablePool = [
   //   name: "ADA",
   // },
 ];
-

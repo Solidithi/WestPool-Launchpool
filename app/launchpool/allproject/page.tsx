@@ -388,8 +388,8 @@ const AllProject = () => {
               className="carousel-item w-full flex  justify-center"
             >
               <Image
-                src={banner.src}
-                className="lg:w-[1400px] md:w-[800px] sm:w-[600px] h-[350px] rounded-lg "
+                src={typeof banner.src === 'string' ? banner.src : banner.src.banner}
+                className="lg:w-[1450px] md:w-[850px] sm:w-[650px] h-[450px] rounded-lg "
                 alt={banner.alt}
                 width={banner.width}
                 height={banner.height}
