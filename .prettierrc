@@ -24,9 +24,10 @@
 		},
 		{
 			"files": [
-				"*.json"
+				"*.json", "*.jsonc"
 			],
 			"options": {
+				"tabWdith": 4,
 				"singleQuote": false
 			}
 		},

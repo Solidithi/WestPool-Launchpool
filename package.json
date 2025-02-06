@@ -8,7 +8,17 @@
 		"start": "next start",
 		"lint": "next lint",
 		"lint:fix": "next lint --fix",
-		"format": "prettier --write ."
+		"format": "prettier --write .",
+		"prepare": "husky install"
+	},
+	"lint-staged": {
+		"*.{js,jsx,ts,tsx}": [
+			"eslint --fix",
+			"prettier --write"
+		],
+		"*.{json,css,md}": [
+			"prettier --write"
+		]
 	},
 	"dependencies": {
 		"@material-tailwind/react": "^2.1.10",
@@ -42,6 +52,7 @@
 		"prisma": "^6.1.0",
 		"tailwindcss": "^3",
 		"tsx": "^4.19.2",
-		"typescript": "^5.7.2"
+		"typescript": "^5.7.2",
+		"husky": "^8.0.0"
 	}
 }
