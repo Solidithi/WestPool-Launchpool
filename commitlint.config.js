@@ -10,27 +10,16 @@ module.exports = {
 			"always",
 			[
 				"feat", // new feature (without emoji)
-				"✨ feat", // new feature (with emoji)
 				"fix", // bug fix
-				"🐞 fix",
 				"docs", // documentation
-				"📃 docs",
 				"style", // formatting, missing semi colons, etc
-				"🌈 style",
 				"refactor", // refactoring code (changes to code that neither fix a bug nor add a feature)
-				"🦄 refactor",
 				"test", // adding tests, updating tests
-				"🧪 test",
 				"chore", // updating build tasks, package manager configs, etc
-				"🐳 chore",
 				"perf", // performance improvements
-				"🎈 perf",
 				"ci", // continuous integration
-				"🐎 ci",
 				"build", // changes that affect the build system
-				"🔧 build",
 				"revert", // reverts a previous commit
-				"↩ revert",
 			],
 		],
 		"type-case": [0, "always", "lower-case"], // Type must be in lower case
