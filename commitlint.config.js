@@ -9,7 +9,7 @@ module.exports = {
 			2,
 			"always",
 			[
-				"feat", // new feature (without emoji)
+				"feat", // new feature
 				"fix", // bug fix
 				"docs", // documentation
 				"style", // formatting, missing semi colons, etc
